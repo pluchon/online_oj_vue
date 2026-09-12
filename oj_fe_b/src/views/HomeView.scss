@@ -1,0 +1,38 @@
+// 首页样式
+.home-view {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f7fb;
+
+  .welcome-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 40px 60px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+
+    h2 {
+      font-size: 22px;
+      color: #1d2129;
+      margin-bottom: 16px;
+    }
+
+    .welcome-text {
+      font-size: 15px;
+      color: #86909c;
+      margin-bottom: 28px;
+
+      span {
+        color: #32c5ff;
+        font-weight: 600;
+      }
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}

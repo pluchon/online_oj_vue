@@ -1,0 +1,232 @@
+// 管理后台主布局样式
+$primary-color: #32c5ff;
+$primary-light: rgba(50, 197, 255, 0.1);
+$text-main: #1d2129;
+$text-sub: #86909c;
+$bg-page: #f5f7fa;
+$border-color: #f0f2f5;
+
+.layout-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: $bg-page;
+
+  // 侧边栏样式
+  .layout-aside {
+    background-color: #ffffff;
+    border-right: 1px solid $border-color;
+    box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: width 0.28s ease;
+    z-index: 10;
+
+    // 侧边栏 Logo 区域
+    .aside-logo {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      border-bottom: 1px solid $border-color;
+      background: #ffffff;
+
+      .logo-img {
+        width: 34px;
+        height: 34px;
+        margin-right: 12px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .logo-title {
+        font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: $text-main;
+        white-space: nowrap;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    // 菜单滚动包裹层
+    .aside-menu-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      // 菜单定制
+      .el-menu {
+        border-right: none;
+        padding: 12px 10px;
+        background-color: transparent;
+
+        .el-menu-item {
+          height: 48px;
+          line-height: 48px;
+          margin-bottom: 6px;
+          border-radius: 8px;
+          color: #4e5969;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+          .el-icon {
+            font-size: 18px;
+            margin-right: 10px;
+            color: #86909c;
+            transition: color 0.2s;
+          }
+
+          &:hover {
+            color: $primary-color;
+            background-color: $primary-light;
+
+            .el-icon {
+              color: $primary-color;
+            }
+          }
+
+          // 选中激活态
+          &.is-active {
+            color: $primary-color;
+            background-color: $primary-light;
+            font-weight: 600;
+
+            .el-icon {
+              color: $primary-color;
+            }
+
+            // 侧边光标指示条
+            &::after {
+              content: '';
+              position: absolute;
+              right: 0;
+              top: 14px;
+              bottom: 14px;
+              width: 3px;
+              background-color: $primary-color;
+              border-radius: 2px 0 0 2px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 右侧主体区域
+  .layout-main-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100vh;
+
+    // 顶部顶栏
+    .layout-header {
+      height: 60px;
+      background-color: #ffffff;
+      border-bottom: 1px solid $border-color;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 24px;
+      z-index: 9;
+
+      .header-right {
+        display: flex;
+        align-items: center;
+
+        .user-dropdown {
+          cursor: pointer;
+
+          .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+              background-color: #f2f3f5;
+            }
+
+            .user-avatar {
+              background: linear-gradient(135deg, #32c5ff 0%, #1698ff 100%);
+              color: #ffffff;
+              font-size: 13px;
+              font-weight: 600;
+              margin-right: 10px;
+              flex-shrink: 0;
+            }
+
+            .user-info {
+              display: flex;
+              align-items: center;
+              font-size: 14px;
+              color: $text-main;
+
+              .user-label {
+                color: $text-sub;
+                font-size: 13px;
+                margin-right: 4px;
+              }
+
+              .user-name {
+                font-weight: 600;
+                color: $text-main;
+              }
+            }
+
+            .dropdown-arrow {
+              font-size: 12px;
+              color: #86909c;
+              margin-left: 8px;
+              transition: transform 0.2s ease;
+            }
+          }
+        }
+      }
+    }
+
+    // 主内容展示区
+    .layout-content-main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+
+      // 业务内容白色卡片承载层
+      .content-card {
+        min-height: calc(100vh - 100px);
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+      }
+    }
+  }
+}
+
+// 定制细长柔和滚动条
+.aside-menu-wrapper,
+.layout-content-main {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #dcdfe6;
+    border-radius: 3px;
+
+    &:hover {
+      background: #c0c4cc;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
