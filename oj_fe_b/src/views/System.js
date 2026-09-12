@@ -1,5 +1,5 @@
 // 系统管理主布局逻辑
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -9,8 +9,8 @@ import {
   Document,
   Trophy
 } from '@element-plus/icons-vue'
-import { getUserDetailApi, logoutApi } from '@/api/user'
-import { removeToken } from '@/utils/auth'
+import { logoutApi } from '@/api/user'
+import { useUserStore } from '@/store/user'
 
 export default defineComponent({
   name: 'System',
@@ -23,20 +23,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter()
-    // 管理员昵称，直接从后端接口动态获取
-    const nickName = ref('')
-
-    // 页面挂载后获取当前管理员详情信息
-    onMounted(async () => {
-      try {
-        const data = await getUserDetailApi()
-        if (data && data.nickName) {
-          nickName.value = data.nickName
-        }
-      } catch (err) {
-        // 请求异常已由拦截器处理
-      }
-    })
+    // 管理员信息已在全局路由守卫前置校验并加载至 Store
+    const { nickName, resetUserInfoAction } = useUserStore()
 
     // 退出登录
     const handleLogout = () => {
@@ -48,8 +36,8 @@ export default defineComponent({
         try {
           // 调用后端退出登录接口销毁 Redis 中存储的 Token 会话
           await logoutApi()
-          // 后端会话销毁成功后，清理前端 Cookie 中存储的 Token
-          removeToken()
+          // 后端会话销毁成功后，通过 Action 同步清理 Store 状态与本地 Cookie
+          resetUserInfoAction()
           ElMessage.success('已安全退出登录')
           // 跳转回登录页
           router.push('/login')

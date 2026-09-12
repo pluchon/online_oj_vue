@@ -1,6 +1,6 @@
 // 登录页面逻辑实现
 import { defineComponent, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { loginApi } from '@/api/user'
 import { setToken } from '@/utils/auth'
@@ -9,6 +9,7 @@ export default defineComponent({
   name: 'Login',
   setup() {
     const router = useRouter()
+    const route = useRoute()
 
     // 表单双向绑定数据
     const loginForm = reactive({
@@ -65,8 +66,11 @@ export default defineComponent({
 
         ElMessage.success('登录成功，欢迎回来！')
 
-        // 成功后跳转至后台首页
-        router.push('/home')
+        // 成功后优先跳转至重定向来源页，无来源则默认跳转至后台首页
+        const redirect = (route.query?.redirect && route.query.redirect !== '/login')
+          ? route.query.redirect
+          : '/system'
+        router.push(redirect)
       } catch (err) {
         // request.js 拦截器已统一弹出错误，此处同步给行内错误展示
         errorMsg.value = err?.message || '登录验证失败，请检查账号密码'
