@@ -1,0 +1,178 @@
+// 管理端公共表格与筛选栏布局样式
+@use './variables' as *;
+@use './mixins' as *;
+
+// 顶部筛选与操作栏
+.filter-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .filter-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .filter-select {
+      width: 170px;
+    }
+
+    .filter-input {
+      width: 240px;
+    }
+
+    .btn-search {
+      background-color: $primary-color;
+      border-color: $primary-color;
+      padding: 8px 18px;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: $primary-hover;
+        border-color: $primary-hover;
+      }
+    }
+
+    .btn-reset {
+      padding: 8px 18px;
+      border-radius: 6px;
+    }
+  }
+
+  .filter-right {
+    .btn-add {
+      color: $primary-color;
+      border-color: $primary-color;
+      background-color: $primary-light;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-weight: 500;
+
+      &:hover {
+        color: #ffffff;
+        background-color: $primary-color;
+        border-color: $primary-color;
+      }
+    }
+  }
+}
+
+// 表格展示区容器
+.table-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+  @include hide-scrollbar;
+
+  .el-table {
+    .el-table__body-wrapper,
+    .el-scrollbar__wrap {
+      @include hide-scrollbar;
+    }
+
+    // 表头天蓝色定制（统一管理端蓝色 Header）
+    th.question-table-header,
+    th.custom-table-header {
+      background-color: $primary-color !important;
+      color: #ffffff !important;
+      font-weight: 600;
+      font-size: 14px;
+      height: 46px;
+      border: none;
+    }
+
+    // 行间距与悬浮交互
+    .question-table-row,
+    .custom-table-row {
+      height: 52px;
+      transition: background-color 0.2s ease;
+
+      &:hover > td.el-table__cell {
+        background-color: #f7faff !important;
+      }
+    }
+
+    .el-table__cell {
+      padding: 8px 0;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  // 表格操作按钮组
+  .action-btn-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    .btn-action-edit {
+      color: $difficulty-medium;
+      font-size: 13px;
+      padding: 0 4px;
+
+      &:hover {
+        color: #e06d00;
+        text-decoration: underline;
+      }
+    }
+
+    .btn-action-delete {
+      color: $primary-color;
+      font-size: 13px;
+      padding: 0 4px;
+
+      &:hover {
+        color: $primary-hover;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // 空状态居中
+  .table-empty-state {
+    padding: 40px 0;
+  }
+}
+
+// 底部固定高度翻页器
+.pagination-footer-wrapper {
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid $border-color;
+  background-color: #ffffff;
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  .custom-pagination {
+    .el-pagination__total,
+    .el-pagination__jump {
+      color: $text-sub;
+      font-size: 13px;
+    }
+
+    .btn-prev,
+    .btn-next,
+    .el-pager li {
+      border-radius: 4px;
+      background-color: #f4f5f7;
+
+      &.is-active {
+        background-color: $primary-color !important;
+        color: #ffffff !important;
+        font-weight: 600;
+      }
+
+      &:hover:not(.is-active) {
+        color: $primary-color;
+      }
+    }
+  }
+}

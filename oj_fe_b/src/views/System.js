@@ -1,6 +1,6 @@
 // 系统管理主布局逻辑
-import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Management,
@@ -23,8 +23,17 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter()
+    const route = useRoute()
     // 管理员信息已在全局路由守卫前置校验并加载至 Store
     const { nickName, resetUserInfoAction } = useUserStore()
+
+    // 动态计算当前激活菜单项
+    const activeMenu = computed(() => {
+      if (route.path.startsWith('/system/question')) {
+        return '/system/question'
+      }
+      return route.path
+    })
 
     // 退出登录
     const handleLogout = () => {
@@ -50,6 +59,7 @@ export default defineComponent({
     return {
       SwitchButton,
       nickName,
+      activeMenu,
       handleLogout
     }
   }

@@ -11,21 +11,21 @@
       <!-- 导航菜单 -->
       <div class="aside-menu-wrapper">
         <el-menu
-          default-active="1"
+          :default-active="activeMenu"
           class="el-menu"
-          :router="false"
+          :router="true"
         >
-          <el-menu-item index="1">
+          <el-menu-item index="/system/user" disabled>
             <el-icon><Management /></el-icon>
             <span>用户管理</span>
           </el-menu-item>
 
-          <el-menu-item index="2">
+          <el-menu-item index="/system/question">
             <el-icon><Document /></el-icon>
             <span>题目管理</span>
           </el-menu-item>
 
-          <el-menu-item index="3">
+          <el-menu-item index="/system/contest" disabled>
             <el-icon><Trophy /></el-icon>
             <span>竞赛管理</span>
           </el-menu-item>

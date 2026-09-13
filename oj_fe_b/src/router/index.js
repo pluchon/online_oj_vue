@@ -22,6 +22,14 @@ const router = createRouter({
       path: '/system',
       name: 'system',
       component: System,
+      redirect: '/system/question',
+      children: [
+        {
+          path: 'question',
+          name: 'QuestionManage',
+          component: () => import('../views/question/QuestionManage.vue'),
+        },
+      ],
     },
     {
       path: '/home',

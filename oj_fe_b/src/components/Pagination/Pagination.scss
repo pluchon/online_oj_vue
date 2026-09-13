@@ -1,0 +1,6 @@
+// 通用底部分页器样式
+.pagination-footer-wrapper {
+  &.hidden {
+    display: none;
+  }
+}

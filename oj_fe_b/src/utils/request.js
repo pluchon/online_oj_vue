@@ -63,6 +63,14 @@ service.interceptors.response.use(
       return res
     }
 
+    // 若后端返回的是 TableDataResult 列表分页实体（外层直接含 rows 与 total），直接向业务层返回 { rows, total }
+    if (res && res.rows !== undefined) {
+      return {
+        rows: res.rows || [],
+        total: res.total || 0
+      }
+    }
+
     // 5. 顶层脱壳策略：剥离后端 OJResult 外壳，直接向业务层返回纯净的业务数据 res.data
     // 若接口为 void 无实体返回（data 为 null 或 undefined），则返回 true 代表操作成功
     return res.data !== undefined && res.data !== null ? res.data : true

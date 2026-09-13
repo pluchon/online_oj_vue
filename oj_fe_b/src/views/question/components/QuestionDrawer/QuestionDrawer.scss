@@ -1,0 +1,64 @@
+// 题目抽屉样式表
+@import '@/styles/variables';
+
+.question-drawer {
+  :deep(.el-drawer__header) {
+    margin-bottom: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-main;
+  }
+
+  :deep(.el-drawer__body) {
+    padding: 20px 24px;
+    overflow-y: auto;
+  }
+
+  :deep(.el-drawer__footer) {
+    padding: 16px 24px;
+    border-top: 1px solid $border-color;
+    background-color: #ffffff;
+  }
+
+  .drawer-content {
+    min-height: 200px;
+  }
+
+  .question-form {
+    .full-width-number {
+      width: 100%;
+    }
+
+    :deep(.el-form-item__label) {
+      font-weight: 500;
+      color: $text-main;
+      padding-bottom: 6px;
+    }
+  }
+
+  .code-tabs-wrapper {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .code-tabs {
+      border-radius: 4px;
+      overflow: hidden;
+
+      :deep(.el-tabs__content) {
+        padding: 12px;
+      }
+    }
+
+    .code-form-item {
+      margin-bottom: 0;
+    }
+  }
+
+  .drawer-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+}

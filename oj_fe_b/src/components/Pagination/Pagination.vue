@@ -1,0 +1,18 @@
+<template>
+  <div :class="['pagination-footer-wrapper', { hidden: isHidden }]">
+    <el-pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :page-sizes="pageSizes"
+      :total="total"
+      :layout="layout"
+      :background="background"
+      class="custom-pagination"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
+</template>
+
+<script src="./Pagination.js"></script>
+<style scoped lang="scss" src="./Pagination.scss"></style>

@@ -1,0 +1,20 @@
+// 题目难度标识通用样式
+@use './variables' as *;
+
+.difficulty-tag {
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+
+  &.difficulty-easy {
+    color: $difficulty-easy;
+  }
+
+  &.difficulty-medium {
+    color: $difficulty-medium;
+  }
+
+  &.difficulty-hard {
+    color: $difficulty-hard;
+  }
+}

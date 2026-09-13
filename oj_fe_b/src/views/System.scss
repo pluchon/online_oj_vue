@@ -1,10 +1,5 @@
 // 管理后台主布局样式
-$primary-color: #32c5ff;
-$primary-light: rgba(50, 197, 255, 0.1);
-$text-main: #1d2129;
-$text-sub: #86909c;
-$bg-page: #f5f7fa;
-$border-color: #f0f2f5;
+@use '@/styles/variables' as *;
 
 .layout-container {
   width: 100vw;
@@ -204,6 +199,8 @@ $border-color: #f0f2f5;
         padding: 24px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
       }
     }
   }
