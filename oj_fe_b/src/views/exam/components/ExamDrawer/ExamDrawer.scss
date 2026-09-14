@@ -1,0 +1,93 @@
+// 竞赛新增与编辑抽屉样式
+@use '@/styles/variables' as *;
+
+.exam-drawer {
+  :deep(.el-drawer__header) {
+    margin-bottom: 16px;
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid $border-color;
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-main;
+  }
+
+  .drawer-body {
+    padding: 4px 24px 24px;
+
+    .exam-basic-form {
+      .form-title-input {
+        width: 340px;
+      }
+
+      .form-date-picker {
+        width: 380px;
+      }
+
+      .btn-save-basic {
+        padding: 8px 24px;
+        border-radius: 4px;
+        background-color: $primary-light;
+        border-color: $primary-color;
+        color: $primary-color;
+
+        &:hover {
+          background-color: $primary-color;
+          color: #ffffff;
+        }
+      }
+    }
+
+    .drawer-divider {
+      height: 1px;
+      background-color: #f0f2f5;
+      margin: 24px 0 20px;
+    }
+
+    .exam-questions-section {
+      .section-action-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+
+        .btn-add-question {
+          color: $primary-color;
+          font-size: 14px;
+          font-weight: 500;
+
+          &:hover {
+            color: $primary-hover;
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .custom-exam-question-table {
+        :deep(th.custom-table-header) {
+          background-color: $primary-color !important;
+          color: #ffffff !important;
+          font-weight: 600;
+          font-size: 14px;
+          height: 44px;
+          border: none;
+        }
+
+        :deep(.el-table__row) {
+          height: 48px;
+        }
+
+        .btn-remove-question {
+          color: #f53f3f;
+          font-size: 13px;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        .table-empty-state {
+          padding: 30px 0;
+        }
+      }
+    }
+  }
+}

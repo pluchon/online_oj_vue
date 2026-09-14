@@ -32,6 +32,9 @@ export default defineComponent({
       if (route.path.startsWith('/system/question')) {
         return '/system/question'
       }
+      if (route.path.startsWith('/system/exam')) {
+        return '/system/exam'
+      }
       return route.path
     })
 

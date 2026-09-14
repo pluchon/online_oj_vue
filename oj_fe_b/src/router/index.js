@@ -29,6 +29,11 @@ const router = createRouter({
           name: 'QuestionManage',
           component: () => import('../views/question/QuestionManage.vue'),
         },
+        {
+          path: 'exam',
+          name: 'ExamManage',
+          component: () => import('../views/exam/ExamManage.vue'),
+        },
       ],
     },
     {

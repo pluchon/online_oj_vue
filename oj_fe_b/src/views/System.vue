@@ -25,7 +25,7 @@
             <span>题目管理</span>
           </el-menu-item>
 
-          <el-menu-item index="/system/contest" disabled>
+          <el-menu-item index="/system/exam">
             <el-icon><Trophy /></el-icon>
             <span>竞赛管理</span>
           </el-menu-item>

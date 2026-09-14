@@ -1,0 +1,116 @@
+// 选择竞赛题目弹窗样式
+@use '@/styles/variables' as *;
+
+.exam-question-dialog {
+  :deep(.el-dialog__header) {
+    padding: 16px 20px 12px;
+    margin-right: 0;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .custom-dialog-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-main;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .required-star {
+      color: #f53f3f;
+      font-size: 16px;
+    }
+  }
+
+  .dialog-body-content {
+    padding: 4px 0 0;
+
+    .dialog-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 16px;
+
+      .filter-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        .dialog-select {
+          width: 150px;
+        }
+
+        .dialog-input {
+          width: 240px;
+        }
+
+        .btn-dialog-search {
+          background-color: $primary-color;
+          border-color: $primary-color;
+          padding: 8px 18px;
+          border-radius: 4px;
+
+          &:hover {
+            background-color: $primary-hover;
+            border-color: $primary-hover;
+          }
+        }
+
+        .btn-dialog-reset {
+          padding: 8px 18px;
+          border-radius: 4px;
+        }
+      }
+    }
+
+    .dialog-table-wrapper {
+      min-height: 320px;
+
+      .custom-dialog-table {
+        :deep(th.custom-table-header) {
+          background-color: $primary-color !important;
+          color: #ffffff !important;
+          font-weight: 600;
+          font-size: 14px;
+          height: 44px;
+          border: none;
+        }
+
+        :deep(.el-table__row) {
+          height: 48px;
+        }
+      }
+    }
+
+    .dialog-pagination-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+  }
+
+  .dialog-footer-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 4px;
+
+    .btn-submit-binding {
+      width: 100%;
+      max-width: 820px;
+      height: 38px;
+      font-size: 15px;
+      letter-spacing: 2px;
+      border-radius: 4px;
+      background-color: $primary-light;
+      border-color: $primary-color;
+      color: $primary-color;
+
+      &:hover {
+        background-color: $primary-color;
+        border-color: $primary-color;
+        color: #ffffff;
+      }
+    }
+  }
+}
