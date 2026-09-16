@@ -1,0 +1,61 @@
+.home-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+
+  .header {
+    height: 60px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .logo {
+        height: 32px;
+        width: auto;
+      }
+
+      .title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2f3d;
+      }
+    }
+
+    .user-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .welcome {
+        font-size: 14px;
+        color: #606266;
+      }
+    }
+  }
+
+  .main-content {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .welcome-card {
+      margin-top: 20px;
+
+      .card-header {
+        font-weight: 600;
+      }
+
+      .welcome-text {
+        color: #409eff;
+        font-size: 16px;
+      }
+    }
+  }
+}

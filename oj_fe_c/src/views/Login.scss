@@ -1,0 +1,252 @@
+// C端登录页面样式（精美毛玻璃极光风）
+$primary-color: #32c5ff;
+$primary-gradient: linear-gradient(135deg, #3dd2ff 0%, #1595ff 100%);
+$primary-hover-gradient: linear-gradient(135deg, #51d7ff 0%, #29a3ff 100%);
+$text-main: #1d2129;
+$text-sub: #86909c;
+$bg-input: #f7f8fa;
+$border-color: #e5e6eb;
+$danger-color: #fd4c40;
+
+.login-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f7fb;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.88) 100%);
+    backdrop-filter: blur(60px);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .aurora-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(45px);
+
+    &.orange {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(240, 113, 74, 0.75) 0%, rgba(240, 113, 74, 0) 70%);
+      left: 12%;
+      top: 38%;
+      animation: auraFloatOrange 14s ease-in-out infinite alternate;
+    }
+
+    &.blue {
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(50, 197, 255, 0.8) 0%, rgba(50, 197, 255, 0) 70%);
+      top: 14%;
+      left: 75%;
+      animation: auraFloatBlue 12s ease-in-out infinite alternate;
+
+      &.small {
+        width: 220px;
+        height: 220px;
+        top: 6%;
+        left: 36%;
+        animation-duration: 10s;
+      }
+    }
+  }
+
+  .login-box {
+    position: relative;
+    z-index: 10;
+    width: 440px;
+    padding: 44px 40px 36px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 20px 40px rgba(0, 32, 64, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+
+      .logo-img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+      }
+
+      .title-right {
+        .sys-name {
+          font-size: 20px;
+          font-weight: 700;
+          color: $text-main;
+          letter-spacing: 0.5px;
+        }
+
+        .sys-sub-name {
+          margin-top: 4px;
+          font-size: 13px;
+          color: $text-sub;
+        }
+      }
+    }
+
+    .form-box {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+
+      .form-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: $bg-input;
+        border: 1px solid $border-color;
+        border-radius: 10px;
+        padding: 0 14px;
+        transition: all 0.25s ease;
+
+        &:focus-within {
+          background: #fff;
+          border-color: $primary-color;
+          box-shadow: 0 0 0 3px rgba(50, 197, 255, 0.15);
+        }
+
+        .input-icon {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          opacity: 0.6;
+        }
+
+        :deep(.el-input) {
+          --el-input-border-color: transparent;
+          --el-input-hover-border-color: transparent;
+          --el-input-focus-border-color: transparent;
+          --el-input-bg-color: transparent;
+          box-shadow: none;
+          height: 48px;
+
+          .el-input__wrapper {
+            padding: 0;
+            background: transparent;
+            box-shadow: none !important;
+
+            input {
+              font-size: 15px;
+              color: $text-main;
+
+              &::placeholder {
+                color: #b7bdc6;
+              }
+            }
+          }
+        }
+
+        &.code-item {
+          padding: 0;
+          border: none;
+          background: transparent;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          &:focus-within {
+            box-shadow: none;
+            border-color: transparent;
+          }
+
+          .code-input-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: $bg-input;
+            border: 1px solid $border-color;
+            border-radius: 10px;
+            padding: 0 14px;
+            transition: all 0.25s ease;
+
+            &:focus-within {
+              background: #fff;
+              border-color: $primary-color;
+              box-shadow: 0 0 0 3px rgba(50, 197, 255, 0.15);
+            }
+          }
+
+          .send-code-btn {
+            height: 50px;
+            min-width: 120px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .form-error-text {
+        font-size: 13px;
+        color: $danger-color;
+        line-height: 1.4;
+      }
+
+      .submit-box {
+        margin-top: 8px;
+        height: 48px;
+        background: $primary-gradient;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 8px 16px rgba(21, 149, 255, 0.25);
+        transition: all 0.25s ease;
+
+        &:hover:not(.disabled) {
+          background: $primary-hover-gradient;
+          transform: translateY(-1px);
+          box-shadow: 0 10px 20px rgba(21, 149, 255, 0.35);
+        }
+
+        &:active:not(.disabled) {
+          transform: translateY(1px);
+          box-shadow: 0 4px 10px rgba(21, 149, 255, 0.2);
+        }
+
+        &.disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+      }
+
+      .form-tip {
+        text-align: center;
+        font-size: 12px;
+        color: #a8abb2;
+        margin-top: 4px;
+      }
+    }
+  }
+}
+
+@keyframes auraFloatOrange {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(60px, -40px) scale(1.15); }
+}
+
+@keyframes auraFloatBlue {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-50px, 30px) scale(1.1); }
+}

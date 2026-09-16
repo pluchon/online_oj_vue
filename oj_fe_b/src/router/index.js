@@ -22,8 +22,12 @@ const router = createRouter({
       path: '/system',
       name: 'system',
       component: System,
-      redirect: '/system/question',
       children: [
+        {
+          path: 'user',
+          name: 'UserManage',
+          component: () => import('../views/user/UserManage.vue'),
+        },
         {
           path: 'question',
           name: 'QuestionManage',

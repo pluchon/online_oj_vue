@@ -1,4 +1,4 @@
-// 管理员用户相关 API（对接 oj_system /sysUser）
+// 用户相关 API（包含管理员与普通用户接口）
 import request from '@/utils/request'
 
 /**
@@ -58,5 +58,35 @@ export function logoutApi() {
   return request({
     url: '/system/sysUser/logout',
     method: 'delete'
+  })
+}
+
+// ================= 普通用户（C端用户）管理 API =================
+
+// 分页查询普通用户列表（支持用户ID精确匹配与昵称模糊过滤）
+export function getUserListApi(params = {}) {
+  return request({
+    url: '/system/user/list',
+    method: 'get',
+    params
+  })
+}
+
+// 修改普通用户状态（拉黑 / 解禁）
+export function updateUserStatusApi(data) {
+  return request({
+    url: '/system/user/updateStatus',
+    method: 'put',
+    data
+  })
+}
+
+// 发送短信验证码接口（C端用户）
+export function sendCodeApi(data) {
+  const payload = typeof data === 'string' ? { phone: data } : data
+  return request({
+    url: '/friend/user/send-code',
+    method: 'post',
+    data: payload
   })
 }

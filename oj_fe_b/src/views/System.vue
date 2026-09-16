@@ -15,7 +15,7 @@
           class="el-menu"
           :router="true"
         >
-          <el-menu-item index="/system/user" disabled>
+          <el-menu-item index="/system/user">
             <el-icon><Management /></el-icon>
             <span>用户管理</span>
           </el-menu-item>

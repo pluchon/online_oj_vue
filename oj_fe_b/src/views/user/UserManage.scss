@@ -1,0 +1,126 @@
+// 用户管理页面专属样式
+@use '@/styles/variables' as *;
+
+.user-manage-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: calc(100vh - 148px);
+  background-color: #ffffff;
+  box-sizing: border-box;
+
+  .filter-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f2f5;
+
+    .filter-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .filter-label {
+        font-size: 14px;
+        color: #606266;
+        white-space: nowrap;
+      }
+
+      .filter-input {
+        width: 200px;
+      }
+
+      .filter-user-id {
+        width: 220px;
+      }
+
+      .filter-nick-name {
+        width: 200px;
+      }
+
+      .btn-search {
+        padding: 8px 18px;
+      }
+
+      .btn-reset {
+        padding: 8px 18px;
+      }
+    }
+  }
+
+  .table-container {
+    flex: 1;
+    padding: 16px 20px;
+    box-sizing: border-box;
+
+    .custom-user-table {
+      width: 100%;
+    }
+
+    // 性别文本定制色彩
+    .gender-text {
+      font-weight: 500;
+      font-size: 13px;
+
+      &.gender-male {
+        color: #1890ff;
+      }
+
+      &.gender-female {
+        color: #eb2f96;
+      }
+
+      &.gender-secret {
+        color: #909399;
+      }
+    }
+
+    // 状态标签
+    .user-status-tag {
+      border-radius: 4px;
+      font-size: 12px;
+      padding: 0 8px;
+      height: 24px;
+      line-height: 22px;
+    }
+
+    // 操作链接按钮
+    .action-btn-danger {
+      color: #f56c6c;
+      font-size: 13px;
+      padding: 0 4px;
+
+      &:hover {
+        color: #f78989;
+        text-decoration: underline;
+      }
+    }
+
+    .action-btn-primary {
+      color: #1890ff;
+      font-size: 13px;
+      padding: 0 4px;
+
+      &:hover {
+        color: #40a9ff;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // 底部分页栏
+  .pagination-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 12px 20px 20px;
+    gap: 16px;
+
+    .pagination-info {
+      font-size: 13px;
+      color: #606266;
+    }
+  }
+}
