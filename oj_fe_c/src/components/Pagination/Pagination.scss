@@ -1,0 +1,10 @@
+// 通用底部分页器样式
+.pagination-footer-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding: 24px 0 16px;
+
+  &.hidden {
+    display: none;
+  }
+}

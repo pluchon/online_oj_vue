@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <defs>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3c72" />
+      <stop offset="50%" stop-color="#2a5298" />
+      <stop offset="100%" stop-color="#00c6ff" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#4facfe" stop-opacity="0.3" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景底色 -->
+  <rect width="160" height="160" rx="10" fill="url(#cardBg)" />
+  
+  <!-- 网格装饰线条 -->
+  <path d="M0 40 H160 M0 80 H160 M0 120 H160" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+  <path d="M40 0 V160 M80 0 V160 M120 0 V160" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+  
+  <!-- 科技光晕 -->
+  <circle cx="80" cy="80" r="50" fill="url(#glowGrad)" filter="blur(10px)" />
+  
+  <!-- 算法代码折线图/柱状图 -->
+  <rect x="35" y="85" width="12" height="35" rx="3" fill="#ffffff" opacity="0.85" />
+  <rect x="55" y="65" width="12" height="55" rx="3" fill="#ffffff" opacity="0.95" />
+  <rect x="75" y="50" width="12" height="70" rx="3" fill="#38ef7d" />
+  <rect x="95" y="70" width="12" height="50" rx="3" fill="#ffffff" opacity="0.85" />
+  <rect x="115" y="40" width="12" height="80" rx="3" fill="#ffd200" />
+  
+  <!-- 折线连接趋势 -->
+  <path d="M41 85 L61 65 L81 50 L101 70 L121 40" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="41" cy="85" r="4" fill="#ffffff" />
+  <circle cx="61" cy="65" r="4" fill="#ffffff" />
+  <circle cx="81" cy="50" r="5" fill="#38ef7d" stroke="#ffffff" stroke-width="2" />
+  <circle cx="101" cy="70" r="4" fill="#ffffff" />
+  <circle cx="121" cy="40" r="5" fill="#ffd200" stroke="#ffffff" stroke-width="2" />
+  
+  <!-- 顶部科技代码标签与齿轮 -->
+  <rect x="35" y="22" width="46" height="16" rx="4" fill="rgba(0,0,0,0.25)" />
+  <text x="42" y="34" fill="#00f2fe" font-size="10" font-family="monospace" font-weight="bold">&lt;/&gt; OJ</text>
+  
+  <!-- 底部装饰弧线 -->
+  <path d="M20 145 Q80 135 140 145" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" />
+</svg>

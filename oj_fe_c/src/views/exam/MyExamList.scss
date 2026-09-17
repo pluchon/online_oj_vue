@@ -1,0 +1,396 @@
+// C端我的竞赛视觉样式
+.my-exam-page {
+  min-height: 100vh;
+  background-color: #f6f8fb;
+  padding: 0 0 40px;
+
+  // 顶部全局导航栏
+  .global-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #ebeef5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .brand-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+
+        .brand-logo {
+          height: 36px;
+          object-fit: contain;
+        }
+
+        .brand-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #1a1a1a;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-left: 36px;
+        flex: 1;
+
+        .nav-link {
+          font-size: 15px;
+          font-weight: 500;
+          color: #4e5969;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          position: relative;
+          padding: 8px 0;
+
+          &:hover {
+            color: #409eff;
+          }
+
+          &.active {
+            color: #409eff;
+            font-weight: 600;
+
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 2px;
+              background-color: #409eff;
+              border-radius: 2px;
+            }
+          }
+        }
+      }
+
+      .user-action-area {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .user-dropdown {
+          cursor: pointer;
+
+          .user-info-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 12px;
+            border-radius: 24px;
+            transition: all 0.25s ease;
+
+            &:hover {
+              background-color: #f0f5ff;
+            }
+
+            .user-avatar {
+              border: 2px solid #e1edff;
+              box-shadow: 0 2px 6px rgba(64, 158, 255, 0.15);
+              background: #ecf5ff;
+            }
+
+            .user-name {
+              font-size: 14px;
+              color: #303133;
+              font-weight: 600;
+              max-width: 120px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .arrow-icon {
+              font-size: 12px;
+              color: #909399;
+              transition: transform 0.25s ease;
+            }
+          }
+
+          &:hover .arrow-icon {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+  }
+
+  // 顶部主题 Banner
+  .exam-banner-section {
+    background: linear-gradient(135deg, #e8f3ff 0%, #d4e7fe 50%, #e0efff 100%);
+    border-bottom: 1px solid #d0e4fa;
+    padding: 36px 0;
+
+    .banner-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+
+      .banner-headline {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1a3b68;
+        margin: 0 0 8px;
+      }
+
+      .banner-subline {
+        font-size: 14px;
+        color: #4a6b98;
+        margin: 0;
+      }
+    }
+  }
+
+  // 顶部分类 Tab 栏
+  .category-tabs-wrap {
+    background-color: #ffffff;
+    border-bottom: 1px solid #ebeef5;
+
+    .tabs-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+
+      .tab-item {
+        position: relative;
+        padding: 16px 28px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #606266;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: #409eff;
+        }
+
+        &.active {
+          color: #409eff;
+          font-weight: 600;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            width: 60%;
+            height: 3px;
+            background-color: #409eff;
+            border-radius: 3px 3px 0 0;
+          }
+        }
+      }
+    }
+  }
+
+  // 主体卡片容器
+  .content-container {
+    max-width: 1400px;
+    margin: 24px auto 0;
+    padding: 0 32px;
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2f3d;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 18px;
+        background: linear-gradient(180deg, #409eff 0%, #0076fe 100%);
+        border-radius: 2px;
+        margin-right: 10px;
+      }
+    }
+
+    // 竞赛网格容器
+    .exam-grid-container {
+      min-height: 320px;
+
+      .exam-card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+
+        @media (max-width: 1200px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+
+        .exam-card {
+          display: flex;
+          align-items: center;
+          background: #ffffff;
+          border-radius: 10px;
+          border: 1px solid #ebeef5;
+          padding: 18px;
+          transition: all 0.25s ease;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+
+          &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: #dcdfe6;
+
+            .exam-title {
+              color: #409eff;
+            }
+          }
+
+          // 封面图
+          .card-cover {
+            position: relative;
+            width: 120px;
+            height: 130px;
+            flex-shrink: 0;
+            margin-right: 18px;
+            border-radius: 8px;
+            overflow: hidden;
+
+            .cover-img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 8px;
+            }
+
+            .status-badge {
+              position: absolute;
+              top: 6px;
+              left: 6px;
+              font-size: 11px;
+              line-height: 1;
+              padding: 4px 6px;
+              border-radius: 4px;
+              color: #ffffff;
+              font-weight: 500;
+
+              &.upcoming {
+                background-color: rgba(103, 194, 58, 0.9);
+              }
+
+              &.ongoing {
+                background-color: rgba(64, 158, 255, 0.9);
+              }
+
+              &.ended {
+                background-color: rgba(144, 147, 153, 0.9);
+              }
+            }
+          }
+
+          // 内容体
+          .card-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 130px;
+
+            .exam-title {
+              font-size: 16px;
+              font-weight: 600;
+              color: #2c3e50;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              transition: color 0.2s ease;
+            }
+
+            .exam-time-info {
+              margin: 4px 0;
+
+              .time-row {
+                font-size: 12px;
+                color: #909399;
+                line-height: 1.5;
+
+                .time-label {
+                  margin-right: 6px;
+                }
+
+                .time-val {
+                  color: #606266;
+                  font-family: Consolas, Monaco, monospace;
+                }
+              }
+            }
+
+            // 战报与成绩区域
+            .exam-result-info {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              margin: 2px 0 6px;
+
+              .result-badge {
+                font-size: 12px;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-weight: 500;
+
+                &.score {
+                  background-color: #fdf6ec;
+                  color: #e6a23c;
+                  border: 1px solid #faecd8;
+                }
+
+                &.rank {
+                  background-color: #f0f9eb;
+                  color: #67c23a;
+                  border: 1px solid #e1f3d8;
+                }
+              }
+            }
+
+            .card-action {
+              display: flex;
+              justify-content: flex-end;
+              gap: 8px;
+
+              .action-btn {
+                padding: 6px 14px;
+                font-size: 13px;
+                border-radius: 6px;
+              }
+            }
+          }
+        }
+      }
+
+      // 空状态
+      .empty-wrap {
+        padding: 60px 0;
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #ebeef5;
+      }
+    }
+  }
+}

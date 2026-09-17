@@ -2,14 +2,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import Login from '../views/Login.vue'
-import HomeView from '../views/HomeView.vue'
+import ExamList from '../views/exam/ExamList.vue'
+import MyExamList from '../views/exam/MyExamList.vue'
+import QuestionList from '../views/question/QuestionList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/home'
+      redirect: '/question'
     },
     {
       path: '/login',
@@ -17,15 +19,29 @@ const router = createRouter({
       component: Login
     },
     {
+      path: '/question',
+      name: 'question',
+      component: QuestionList
+    },
+    {
+      path: '/exam',
+      name: 'exam',
+      component: ExamList
+    },
+    {
+      path: '/my-exam',
+      name: 'myExam',
+      component: MyExamList
+    },
+    {
       path: '/home',
-      name: 'home',
-      component: HomeView
+      redirect: '/question'
     }
   ]
 })
 
 // 免登录白名单路由
-const whiteList = ['/login']
+const whiteList = ['/login', '/exam', '/question']
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {
@@ -33,7 +49,7 @@ router.beforeEach((to, from, next) => {
 
   if (hasToken) {
     if (to.path === '/login') {
-      next({ path: '/home' })
+      next({ path: '/exam' })
     } else {
       next()
     }
