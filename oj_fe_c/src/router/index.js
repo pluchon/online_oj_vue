@@ -34,6 +34,26 @@ const router = createRouter({
       component: MyExamList
     },
     {
+      path: '/user/profile',
+      name: 'userProfile',
+      component: () => import('../views/user/UserProfile.vue')
+    },
+    {
+      path: '/question/do',
+      name: 'questionDo',
+      component: () => import('../views/question/QuestionDo.vue')
+    },
+    {
+      path: '/message',
+      name: 'message',
+      component: () => import('../views/message/Message.vue')
+    },
+    {
+      path: '/exam/rank',
+      name: 'examRank',
+      component: () => import('../views/exam/ExamRank.vue')
+    },
+    {
       path: '/home',
       redirect: '/question'
     }
@@ -41,7 +61,7 @@ const router = createRouter({
 })
 
 // 免登录白名单路由
-const whiteList = ['/login', '/exam', '/question']
+const whiteList = ['/login', '/exam', '/exam/rank', '/question', '/question/do']
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {

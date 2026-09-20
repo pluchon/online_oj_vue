@@ -39,6 +39,16 @@ export const useUserStore = () => {
     }
   }
 
+  // 部分增量更新用户信息
+  const updateUserInfoAction = (partial) => {
+    if (!state.userInfo) {
+      state.userInfo = { ...partial }
+    } else {
+      state.userInfo = { ...state.userInfo, ...partial }
+    }
+    localStorage.setItem('user_info', JSON.stringify(state.userInfo))
+  }
+
   // 登出/清理状态
   const resetUserAction = () => {
     state.token = ''
@@ -54,6 +64,7 @@ export const useUserStore = () => {
     headImage,
     setTokenAction,
     setUserInfoAction,
+    updateUserInfoAction,
     resetUserAction
   }
 }

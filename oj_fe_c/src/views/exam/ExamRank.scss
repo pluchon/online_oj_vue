@@ -1,0 +1,588 @@
+// 竞赛排行榜样式表
+.exam-rank-page {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding-bottom: 60px;
+
+  // 顶部全局导航栏
+  .global-navbar {
+    height: 64px;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+
+      .brand-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+
+        .brand-logo {
+          height: 36px;
+          object-fit: contain;
+        }
+
+        .brand-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #1a1a1a;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-left: 36px;
+        flex: 1;
+
+        .nav-link {
+          font-size: 15px;
+          font-weight: 500;
+          color: #4e5969;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          position: relative;
+          padding: 8px 0;
+
+          &:hover,
+          &.active {
+            color: #165dff;
+          }
+
+          &.active {
+            font-weight: 600;
+
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 2px;
+              background-color: #165dff;
+              border-radius: 1px;
+            }
+          }
+        }
+      }
+
+      .user-action-area {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .msg-bell-trigger {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 6px;
+          border-radius: 50%;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #f2f3f5;
+            .bell-icon {
+              color: #165dff;
+            }
+          }
+
+          .bell-icon {
+            font-size: 20px;
+            color: #4e5969;
+          }
+
+          .badge-item {
+            display: flex;
+            align-items: center;
+          }
+        }
+
+        .user-dropdown {
+          cursor: pointer;
+
+          .user-info-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            transition: background 0.2s;
+
+            &:hover {
+              background: #f2f3f5;
+            }
+
+            .user-avatar {
+              background-color: #165dff;
+            }
+
+            .user-name {
+              font-size: 14px;
+              color: #1d2129;
+              font-weight: 500;
+            }
+
+            .arrow-icon {
+              font-size: 12px;
+              color: #86909c;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 竞赛头部横幅
+  .rank-banner-section {
+    background: linear-gradient(135deg, #1d2b4f 0%, #151e36 100%);
+    color: #ffffff;
+    padding: 32px 0 40px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+
+    .banner-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+
+      .back-bar {
+        margin-bottom: 16px;
+
+        .back-link {
+          color: #94a3b8;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 0;
+
+          &:hover {
+            color: #60a5fa;
+          }
+        }
+      }
+
+      .exam-title-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        .exam-main-title {
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          margin: 0;
+          color: #ffffff;
+        }
+
+        .status-tag {
+          font-size: 13px;
+          padding: 4px 12px;
+          border-radius: 4px;
+          font-weight: 600;
+        }
+      }
+
+      .exam-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        color: #cbd5e1;
+        font-size: 14px;
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          strong {
+            color: #fbbf24;
+            font-size: 16px;
+          }
+        }
+
+        .refresh-btn {
+          margin-left: auto;
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.3);
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+          }
+        }
+      }
+    }
+  }
+
+  // 主体容器
+  .rank-main-container {
+    max-width: 1400px;
+    margin: -24px auto 0;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    // 荣耀领奖台
+    .podium-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 32px 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+      .podium-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 28px;
+
+        .podium-trophy-icon {
+          font-size: 22px;
+          color: #f59e0b;
+        }
+
+        .podium-title {
+          font-size: 17px;
+          font-weight: 700;
+          color: #1e293b;
+        }
+      }
+
+      .podium-stage {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 40px;
+        padding-top: 20px;
+
+        .podium-col {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 170px;
+
+          .crown-icon {
+            font-size: 30px;
+            margin-bottom: -10px;
+            z-index: 2;
+            animation: bounce 2s infinite ease-in-out;
+          }
+
+          .player-avatar-wrap {
+            position: relative;
+            margin-bottom: 12px;
+
+            .medal-icon {
+              position: absolute;
+              bottom: -6px;
+              right: -6px;
+              font-size: 22px;
+              background: #ffffff;
+              border-radius: 50%;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+              padding: 2px;
+            }
+
+            .avatar-gold {
+              border: 3px solid #fbbf24;
+              box-shadow: 0 0 16px rgba(251, 191, 36, 0.5);
+            }
+
+            .avatar-silver {
+              border: 3px solid #94a3b8;
+              box-shadow: 0 0 12px rgba(148, 163, 184, 0.4);
+            }
+
+            .avatar-bronze {
+              border: 3px solid #d97706;
+              box-shadow: 0 0 12px rgba(217, 119, 6, 0.4);
+            }
+          }
+
+          .player-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+          }
+
+          .player-score {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 2px;
+          }
+
+          .player-score-gold {
+            font-size: 16px;
+            font-weight: 800;
+            color: #d97706;
+            margin-bottom: 2px;
+          }
+
+          .player-ac {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 12px;
+          }
+
+          .pillar {
+            width: 100%;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .pillar-rank {
+              font-size: 28px;
+              font-weight: 900;
+              color: rgba(255, 255, 255, 0.9);
+            }
+
+            &.pillar-gold {
+              height: 120px;
+              background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+              box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+            }
+
+            &.pillar-silver {
+              height: 88px;
+              background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+              box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
+            }
+
+            &.pillar-bronze {
+              height: 64px;
+              background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+              box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+            }
+          }
+        }
+      }
+    }
+
+    // 选手个人战报卡片
+    .my-rank-banner {
+      background: linear-gradient(90deg, #eff6ff 0%, #f0fdf4 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .banner-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .rank-badge-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: #3b82f6;
+          color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          flex-shrink: 0;
+        }
+
+        .rank-desc-wrap {
+          .my-rank-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .highlight-rank {
+              color: #dc2626;
+              font-size: 18px;
+            }
+
+            .total-rank-info {
+              font-size: 13px;
+              color: #64748b;
+              font-weight: 400;
+            }
+
+            &.un-enrolled,
+            &.un-login {
+              font-weight: 600;
+              color: #475569;
+            }
+          }
+
+          .my-rank-stats {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            strong {
+              color: #1e293b;
+              font-size: 15px;
+            }
+
+            .stat-divider {
+              color: #cbd5e1;
+            }
+          }
+        }
+      }
+    }
+
+    // 完整排名榜单表格卡片
+    .rank-table-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+      .table-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        .header-title-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .title-icon {
+            font-size: 20px;
+            color: #2563eb;
+          }
+
+          .title-text {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e293b;
+          }
+        }
+
+        .total-count-text {
+          font-size: 13px;
+          color: #64748b;
+        }
+      }
+
+      .leaderboard-table {
+        width: 100%;
+
+        .rank-col-badge {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .top-rank {
+            font-weight: 800;
+            font-size: 15px;
+            padding: 2px 8px;
+            border-radius: 6px;
+
+            &.rank-1 {
+              color: #d97706;
+              background: #fef3c7;
+            }
+
+            &.rank-2 {
+              color: #475569;
+              background: #f1f5f9;
+            }
+
+            &.rank-3 {
+              color: #b45309;
+              background: #ffedd5;
+            }
+          }
+
+          .normal-rank {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+          }
+        }
+
+        .user-cell {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .cell-avatar {
+            flex-shrink: 0;
+          }
+
+          .user-nickname {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+
+            &.is-me {
+              color: #2563eb;
+            }
+          }
+
+          .me-tag {
+            font-size: 11px;
+            padding: 0 6px;
+            height: 20px;
+            line-height: 20px;
+          }
+        }
+
+        .score-value {
+          font-size: 16px;
+          font-weight: 700;
+          color: #dc2626;
+        }
+
+        .submit-count-text,
+        .submit-time-text {
+          font-size: 13px;
+          color: #64748b;
+        }
+      }
+
+      .pagination-footer {
+        margin-top: 24px;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}

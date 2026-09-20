@@ -65,3 +65,43 @@ export function getMyExamListApi(params) {
     params
   })
 }
+
+/**
+ * 查询指定竞赛详情
+ * @param {Object} params - { examId }
+ * @returns {Promise}
+ */
+export function getExamDetailApi(params) {
+  return request({
+    url: '/friend/exam/detail',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 分页查询指定竞赛的选手排名榜单
+ * @param {Object} params - { examId, pageNum, pageSize }
+ * @returns {Promise} { rows: Array, total: Number }
+ */
+export function getExamRankListApi(params) {
+  return request({
+    url: '/friend/exam/rank/list',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取当前登录用户在指定竞赛中的成绩与排名
+ * @param {Object} params - { examId }
+ * @returns {Promise}
+ */
+export function getMyExamRankApi(params) {
+  return request({
+    url: '/friend/exam/rank/my',
+    method: 'get',
+    params
+  })
+}
+

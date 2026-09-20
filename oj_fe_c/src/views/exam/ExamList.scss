@@ -84,6 +84,32 @@
         align-items: center;
         gap: 16px;
 
+        .msg-bell-trigger {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 6px;
+          border-radius: 50%;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #f0f5ff;
+            .bell-icon {
+              color: #409eff;
+            }
+          }
+
+          .bell-icon {
+            font-size: 20px;
+            color: #606266;
+          }
+
+          .badge-item {
+            display: flex;
+            align-items: center;
+          }
+        }
+
         .user-dropdown {
           cursor: pointer;
 

@@ -3,10 +3,11 @@ import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getMyExamListApi } from '@/api/exam'
+import { getUnreadCountApi } from '@/api/message'
 import { useUserStore } from '@/store/user'
 import Pagination from '@/components/Pagination'
 import defaultAvatar from '@/assets/images/default-avatar.svg'
-import { UserFilled, User, Trophy, SwitchButton, ArrowDown } from '@element-plus/icons-vue'
+import { UserFilled, User, Trophy, SwitchButton, ArrowDown, Bell } from '@element-plus/icons-vue'
 
 export default defineComponent({
   name: 'MyExamList',
@@ -16,7 +17,8 @@ export default defineComponent({
     User,
     Trophy,
     SwitchButton,
-    ArrowDown
+    ArrowDown,
+    Bell
   },
   setup() {
     const router = useRouter()
@@ -24,6 +26,9 @@ export default defineComponent({
 
     // 是否已登录
     const isLogin = computed(() => Boolean(token.value))
+
+    // 未读消息数量
+    const unreadCount = ref(0)
 
     // 列表加载状态
     const loading = ref(false)
@@ -121,7 +126,11 @@ export default defineComponent({
 
     // 查看完赛排名
     const handleRank = (item) => {
-      ElMessage.info(`「${item.title}」官方排名榜单正在建设中，敬请期待`)
+      if (!item || !item.examId) return
+      router.push({
+        path: '/exam/rank',
+        query: { examId: item.examId }
+      })
     }
 
     // 跳转至竞赛大厅
@@ -139,6 +148,23 @@ export default defineComponent({
       router.push('/login')
     }
 
+    // 跳转至消息中心
+    const goToMessage = () => {
+      router.push('/message')
+    }
+
+    // 获取未读消息数
+    const fetchUnreadCount = async () => {
+      if (!isLogin.value) return
+      try {
+        const res = await getUnreadCountApi()
+        const count = res && res.data !== undefined ? res.data : res
+        unreadCount.value = typeof count === 'number' ? count : 0
+      } catch (err) {
+        unreadCount.value = 0
+      }
+    }
+
     // 退出登录
     const handleLogout = () => {
       resetUserAction()
@@ -151,14 +177,17 @@ export default defineComponent({
       if (command === 'logout') {
         handleLogout()
       } else if (command === 'profile') {
-        ElMessage.info('个人中心功能建设中，敬请期待')
+        router.push('/user/profile')
       } else if (command === 'myExam') {
         router.push('/my-exam')
+      } else if (command === 'message') {
+        goToMessage()
       }
     }
 
     onMounted(() => {
       loadMyExamList()
+      fetchUnreadCount()
     })
 
     return {
@@ -166,6 +195,7 @@ export default defineComponent({
       nickName,
       headImage,
       defaultAvatar,
+      unreadCount,
       loading,
       filterTabs,
       currentTab,
@@ -176,12 +206,14 @@ export default defineComponent({
       getStatusBadgeClass,
       getStatusText,
       loadMyExamList,
+      fetchUnreadCount,
       handleTabChange,
       handleStartExam,
       handlePractice,
       handleRank,
       goToExamList,
       goToHome,
+      goToMessage,
       handleLogin,
       handleLogout,
       handleUserCommand

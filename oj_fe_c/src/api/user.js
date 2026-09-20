@@ -27,3 +27,44 @@ export function loginApi(data) {
     data
   })
 }
+
+/**
+ * 获取当前登录用户个人资料
+ * @returns {Promise<Object>} UserVO 用户详情
+ */
+export function getUserProfileApi() {
+  return request({
+    url: '/friend/user/profile',
+    method: 'get'
+  })
+}
+
+/**
+ * 更新当前登录用户个人资料
+ * @param {Object} data - UserProfileUpdateDTO
+ * @returns {Promise<boolean>}
+ */
+export function updateUserProfileApi(data) {
+  return request({
+    url: '/friend/user/profile',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 上传当前登录用户头像
+ * @param {FormData} formData - 包含 file 的表单数据
+ * @returns {Promise<string>} 返回头像公网 URL
+ */
+export function uploadAvatarApi(formData) {
+  return request({
+    url: '/friend/user/avatar',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+

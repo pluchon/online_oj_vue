@@ -3,6 +3,7 @@ import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getQuestionListApi, getQuestionDetailApi, syncQuestionsApi } from '@/api/question'
+import { getUnreadCountApi } from '@/api/message'
 import { useUserStore } from '@/store/user'
 import Pagination from '@/components/Pagination'
 import defaultAvatar from '@/assets/images/default-avatar.svg'
@@ -13,7 +14,8 @@ import {
   SwitchButton,
   ArrowDown,
   Search,
-  Refresh
+  Refresh,
+  Bell
 } from '@element-plus/icons-vue'
 
 export default defineComponent({
@@ -26,7 +28,8 @@ export default defineComponent({
     SwitchButton,
     ArrowDown,
     Search,
-    Refresh
+    Refresh,
+    Bell
   },
   setup() {
     const router = useRouter()
@@ -34,6 +37,9 @@ export default defineComponent({
 
     // 是否已登录状态
     const isLogin = computed(() => Boolean(token.value))
+
+    // 未读消息数量
+    const unreadCount = ref(0)
 
     // 列表查询加载状态
     const loading = ref(false)
@@ -126,11 +132,8 @@ export default defineComponent({
     const openQuestionDetail = async (row) => {
       try {
         const res = await getQuestionDetailApi(row.questionId)
-        if (res && res.data) {
-          currentQuestion.value = res.data
-        } else {
-          currentQuestion.value = row
-        }
+        const data = res && res.data ? res.data : res
+        currentQuestion.value = data || row
         detailVisible.value = true
       } catch (err) {
         currentQuestion.value = row
@@ -177,10 +180,41 @@ export default defineComponent({
       router.push({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
     }
 
+    // 跳转至答题工作台
+    const goToQuestionDo = (row) => {
+      if (!row || !row.questionId) return
+      detailVisible.value = false
+      router.push({
+        path: '/question/do',
+        query: { questionId: row.questionId }
+      })
+    }
+
+    // 跳转至消息中心
+    const goToMessage = () => {
+      router.push('/message')
+    }
+
+    // 获取未读消息数
+    const fetchUnreadCount = async () => {
+      if (!isLogin.value) return
+      try {
+        const res = await getUnreadCountApi()
+        const count = res && res.data !== undefined ? res.data : res
+        unreadCount.value = typeof count === 'number' ? count : 0
+      } catch (err) {
+        unreadCount.value = 0
+      }
+    }
+
     // 用户下拉菜单指令处理
     const handleUserCommand = (command) => {
-      if (command === 'myExam') {
+      if (command === 'profile') {
+        router.push('/user/profile')
+      } else if (command === 'myExam') {
         router.push('/my-exam')
+      } else if (command === 'message') {
+        goToMessage()
       } else if (command === 'logout') {
         resetUserAction()
         ElMessage.success('已安全退出登录')
@@ -190,6 +224,7 @@ export default defineComponent({
 
     onMounted(() => {
       fetchQuestionList()
+      fetchUnreadCount()
     })
 
     return {
@@ -197,6 +232,7 @@ export default defineComponent({
       nickName,
       headImage,
       defaultAvatar,
+      unreadCount,
       loading,
       syncLoading,
       questionList,
@@ -206,6 +242,7 @@ export default defineComponent({
       difficultyOptions,
       queryParams,
       fetchQuestionList,
+      fetchUnreadCount,
       handleSearch,
       handleReset,
       selectDifficulty,
@@ -214,6 +251,8 @@ export default defineComponent({
       getDifficultyTagType,
       goToHome,
       goToLogin,
+      goToQuestionDo,
+      goToMessage,
       handleUserCommand
     }
   }

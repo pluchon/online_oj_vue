@@ -1,0 +1,103 @@
+// 编译器代码块样式表
+@use '@/styles/variables' as *;
+
+.code-editor-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border: 1px solid $border-color-light;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: #c0c4cc;
+  }
+
+  &:focus-within {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(50, 197, 255, 0.15);
+  }
+
+  &.is-dark {
+    border-color: #333333;
+    background-color: #1e1e1e;
+
+    .code-editor-header {
+      background-color: #252526;
+      border-bottom-color: #333333;
+      color: #cccccc;
+
+      .editor-title {
+        color: #e0e0e0;
+      }
+
+      .header-btn {
+        color: #999999;
+
+        &:hover {
+          color: #ffffff;
+          background-color: #37373d;
+        }
+      }
+    }
+  }
+
+  &.is-disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .code-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background-color: #fafafa;
+    border-bottom: 1px solid $border-color-lighter;
+    font-size: 13px;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .editor-title {
+        font-weight: 600;
+        color: $text-main;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .lang-select {
+        width: 110px;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .header-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        color: $text-regular;
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .code-editor-body {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+}

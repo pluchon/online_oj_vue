@@ -26,3 +26,41 @@ export function syncQuestionsApi() {
     method: 'post'
   })
 }
+
+// 获取上一题与下一题导航
+export function getQuestionPreAndNextApi(params) {
+  return request({
+    url: '/friend/question/preAndNext',
+    method: 'get',
+    params
+  })
+}
+
+// 获取首道题目ID
+export function getFirstQuestionApi(params) {
+  return request({
+    url: '/friend/question/first',
+    method: 'get',
+    params
+  })
+}
+
+// 提交代码进行评测（异步消息队列判题）
+export function submitQuestionApi(data) {
+  return request({
+    url: '/friend/question/submit',
+    method: 'post',
+    data
+  })
+}
+
+// 查询判题最新结果
+export function getSubmitResultApi(submitId) {
+  return request({
+    url: '/friend/question/submit/result',
+    method: 'get',
+    params: { submitId }
+  })
+}
+
+

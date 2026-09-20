@@ -11,9 +11,15 @@
           <router-link to="/question" class="nav-link active">题库中心</router-link>
           <router-link to="/exam" class="nav-link">竞赛中心</router-link>
           <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
+          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
         </div>
         <div class="user-action-area">
           <template v-if="isLogin">
+            <div class="msg-bell-trigger" title="消息中心" @click="goToMessage">
+              <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0" class="badge-item">
+                <el-icon class="bell-icon"><Bell /></el-icon>
+              </el-badge>
+            </div>
             <el-dropdown trigger="hover" class="user-dropdown" @command="handleUserCommand">
               <div class="user-info-trigger">
                 <el-avatar
@@ -28,9 +34,17 @@
               </div>
               <template #dropdown>
                 <el-dropdown-menu class="user-menu-list">
+                  <el-dropdown-item command="profile">
+                    <el-icon><User /></el-icon>
+                    <span>个人中心</span>
+                  </el-dropdown-item>
                   <el-dropdown-item command="myExam">
                     <el-icon><Trophy /></el-icon>
                     <span>我的竞赛管理</span>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="message">
+                    <el-icon><Bell /></el-icon>
+                    <span>消息中心</span>
                   </el-dropdown-item>
                   <el-dropdown-item divided command="logout">
                     <el-icon><SwitchButton /></el-icon>
@@ -163,19 +177,27 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="操作" width="130" align="center" fixed="right">
+          <el-table-column label="操作" width="160" align="center" fixed="right">
             <template #default="{ row }">
               <el-button
                 type="primary"
                 size="small"
                 class="action-btn"
+                @click="goToQuestionDo(row)"
+              >
+                去做题
+              </el-button>
+              <el-button
+                size="small"
+                text
                 @click="openQuestionDetail(row)"
               >
-                查看题目
+                详情
               </el-button>
             </template>
           </el-table-column>
         </el-table>
+
 
         <!-- 分页组件 -->
         <div class="pagination-wrapper">
@@ -221,6 +243,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="detailVisible = false">关闭</el-button>
+          <el-button type="primary" @click="goToQuestionDo(currentQuestion)">开始做题</el-button>
         </div>
       </template>
     </el-dialog>
