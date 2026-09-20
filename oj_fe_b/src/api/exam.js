@@ -86,3 +86,12 @@ export function deleteExamQuestionApi(examId, questionId) {
     method: 'delete'
   })
 }
+
+// 批量保存/覆盖竞赛关联题目列表
+export function saveExamQuestionsApi(data) {
+  return request({
+    url: '/system/exam/question/save',
+    method: 'post',
+    data
+  })
+}

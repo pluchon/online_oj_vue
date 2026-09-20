@@ -1,9 +1,10 @@
 <template>
   <div class="question-manage-container">
-    <!-- 顶部查询与操作栏 -->
+    <!-- 顶部查询与操作栏（左侧无占位符输入，右侧搜索/重置按钮） -->
     <div class="filter-header-bar">
       <div class="filter-left">
-        <!-- 题目难度选择通用组件 -->
+        <!-- 题目难度选择 -->
+        <span class="filter-label">题目难度</span>
         <question-difficulty-select
           v-model="queryParams.difficulty"
           include-all
@@ -12,56 +13,56 @@
         />
 
         <!-- 题目标题搜索 -->
+        <span class="filter-label">题目标题</span>
         <el-input
           v-model="queryParams.title"
-          placeholder="请输入要搜索的题目标题"
           clearable
           class="filter-input"
           @keyup.enter="handleSearch"
           @clear="handleSearch"
         />
-
-        <!-- 搜索与重置按钮 -->
-        <el-button type="primary" class="btn-search" :icon="Search" @click="handleSearch">
-          搜索
-        </el-button>
-        <el-button class="btn-reset" :icon="Refresh" @click="handleReset">
-          重置
-        </el-button>
       </div>
 
+      <!-- 右侧筛选操作按钮组（添加按钮已移至表格左下角） -->
       <div class="filter-right">
-        <!-- 添加题目操作按钮 -->
-        <el-button type="primary" class="btn-add" :icon="Plus" plain @click="handleAddQuestion">
-          + 添加题目
-        </el-button>
+        <button class="btn-search" @click="handleSearch">
+          <el-icon class="btn-icon"><Search /></el-icon>
+          <span>搜索</span>
+        </button>
+        <button class="btn-reset" @click="handleReset">
+          <el-icon class="btn-icon"><Refresh /></el-icon>
+          <span>重置</span>
+        </button>
       </div>
     </div>
 
-    <!-- 题目数据表格展示区 -->
+    <!-- 题目数据表格展示区（列宽科学配比，创建时间不截断） -->
     <div class="table-container">
       <el-table
         v-loading="loading"
         :data="questionList"
-        class="custom-question-table"
-        header-cell-class-name="question-table-header"
-        row-class-name="question-table-row"
-        stripe
+        class="custom-editorial-table"
+        header-cell-class-name="editorial-table-header"
+        row-class-name="editorial-table-row"
         style="width: 100%"
       >
         <!-- 题目 ID -->
         <el-table-column
           prop="questionId"
           label="题目id"
-          min-width="200"
+          width="190"
           show-overflow-tooltip
-        />
+        >
+          <template #default="{ row }">
+            <span class="tabular-text">{{ row.questionId }}</span>
+          </template>
+        </el-table-column>
 
         <!-- 题目标题 -->
         <el-table-column
           prop="title"
           label="题目标题"
-          min-width="180"
+          min-width="240"
           show-overflow-tooltip
         >
           <template #default="{ row }">
@@ -73,7 +74,7 @@
         <el-table-column
           prop="difficulty"
           label="题目难度"
-          width="120"
+          width="100"
           align="center"
         >
           <template #default="{ row }">
@@ -85,8 +86,9 @@
         <el-table-column
           prop="creatorName"
           label="创建人"
-          width="140"
+          width="130"
           align="center"
+          show-overflow-tooltip
         />
 
         <!-- 创建时间 -->
@@ -95,55 +97,61 @@
           label="创建时间"
           width="190"
           align="center"
-        />
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <span class="tabular-text">{{ row.createTime }}</span>
+          </template>
+        </el-table-column>
 
-        <!-- 操作栏 -->
+        <!-- 操作栏（规范统一规格按钮，独立操作色彩识别） -->
         <el-table-column
           label="操作"
-          width="130"
+          width="160"
           align="center"
           fixed="right"
         >
           <template #default="{ row }">
-            <div class="action-btn-group">
-              <el-button
-                link
-                type="primary"
-                class="btn-action-edit"
+            <div class="action-cell">
+              <button
+                type="button"
+                class="action-btn btn-action-edit"
                 @click="handleEditQuestion(row)"
               >
                 编辑
-              </el-button>
-              <el-button
-                link
-                type="danger"
-                class="btn-action-delete"
+              </button>
+              <button
+                type="button"
+                class="action-btn btn-action-delete"
                 @click="handleDeleteQuestion(row)"
               >
                 删除
-              </el-button>
+              </button>
             </div>
           </template>
         </el-table-column>
 
-        <!-- 空状态展示 -->
+        <!-- 空状态展示：使用小蒙定制插画与针对性文案 -->
         <template #empty>
-          <div class="table-empty-state">
-            <el-empty description="暂无符合条件的题目数据" :image-size="100">
-              <el-button type="primary" size="small" @click="handleReset">重置筛选</el-button>
-            </el-empty>
-          </div>
+          <OjEmpty text="暂无题目数据" :image-size="130" />
         </template>
       </el-table>
     </div>
 
-    <!-- 底部通用分页器组件 -->
+    <!-- 底部通用分页器组件（左下角布局“添加题目”操作按钮） -->
     <pagination
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       :total="total"
       @pagination="loadQuestionList"
-    />
+    >
+      <template #left>
+        <button class="btn-add-bottom" @click="handleAddQuestion">
+          <el-icon class="btn-icon"><Plus /></el-icon>
+          <span>添加题目</span>
+        </button>
+      </template>
+    </pagination>
 
     <!-- 题目新增与编辑抽屉组件 -->
     <QuestionDrawer

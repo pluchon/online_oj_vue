@@ -17,26 +17,31 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: { title: '管理员登录' },
     },
     {
       path: '/system',
       name: 'system',
       component: System,
+      redirect: '/system/user',
       children: [
         {
           path: 'user',
           name: 'UserManage',
           component: () => import('../views/user/UserManage.vue'),
+          meta: { title: '用户管理' },
         },
         {
           path: 'question',
           name: 'QuestionManage',
           component: () => import('../views/question/QuestionManage.vue'),
+          meta: { title: '题目管理' },
         },
         {
           path: 'exam',
           name: 'ExamManage',
           component: () => import('../views/exam/ExamManage.vue'),
+          meta: { title: '竞赛管理' },
         },
       ],
     },
@@ -88,4 +93,11 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
+// 全局后置守卫：动态更新浏览器标签页标题
+router.afterEach((to) => {
+  const pageTitle = to.meta?.title
+  document.title = pageTitle ? `${pageTitle} · 墨衡 OJ` : '墨衡 OJ · 在线代码评测与竞赛系统'
+})
+
 export default router
+

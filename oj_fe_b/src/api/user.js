@@ -81,6 +81,15 @@ export function updateUserStatusApi(data) {
   })
 }
 
+// 管理员编辑普通用户信息
+export function updateUserInfoApi(data) {
+  return request({
+    url: '/system/user/edit',
+    method: 'put',
+    data
+  })
+}
+
 // 发送短信验证码接口（C端用户）
 export function sendCodeApi(data) {
   const payload = typeof data === 'string' ? { phone: data } : data

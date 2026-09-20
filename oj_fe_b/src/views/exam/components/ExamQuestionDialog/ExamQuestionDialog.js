@@ -5,14 +5,22 @@ import { getQuestionListApi } from '@/api/question'
 import { addExamQuestionApi } from '@/api/exam'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import DifficultyTag from '@/components/DifficultyTag'
+import OjDialog from '@/components/OjDialog'
+import OjEmpty from '@/components/OjEmpty'
+import { Search, Refresh, Check } from '@element-plus/icons-vue'
 
 export default defineComponent({
   name: 'ExamQuestionDialog',
   components: {
+    OjDialog,
+    OjEmpty,
     QuestionDifficultySelect,
-    DifficultyTag
+    DifficultyTag,
+    Search,
+    Refresh,
+    Check
   },
-  emits: ['success'],
+  emits: ['success', 'selected'],
   setup(props, { emit }) {
     // 弹窗可见性
     const visible = ref(false)
@@ -123,31 +131,15 @@ export default defineComponent({
       selectedRows.value = selection
     }
 
-    // 提交题目绑定
-    const handleSubmit = async () => {
+    // 提交题目选择
+    const handleSubmit = () => {
       if (!selectedRows.value || selectedRows.value.length === 0) {
         ElMessage.warning('请至少选择一道题目')
         return
       }
-      if (!currentExamId.value) {
-        ElMessage.error('竞赛标识丢失，请重新打开')
-        return
-      }
-      submitting.value = true
-      try {
-        const questionIds = selectedRows.value.map((item) => item.questionId)
-        await addExamQuestionApi({
-          examId: currentExamId.value,
-          questionIds
-        })
-        ElMessage.success('题目已成功绑定至竞赛')
-        visible.value = false
-        emit('success')
-      } catch (err) {
-        ElMessage.error(err?.message || '题目绑定竞赛失败')
-      } finally {
-        submitting.value = false
-      }
+      emit('selected', selectedRows.value)
+      emit('success', selectedRows.value)
+      visible.value = false
     }
 
     return {

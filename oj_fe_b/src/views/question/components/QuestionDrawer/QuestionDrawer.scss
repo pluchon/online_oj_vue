@@ -1,64 +1,318 @@
-// 题目抽屉样式表
-@import '@/styles/variables';
+// 题目抽屉专属样式表（墨衡 · 博物学画卷古典展台）
+@use '@/styles/variables' as *;
 
 .question-drawer {
-  :deep(.el-drawer__header) {
-    margin-bottom: 16px;
-    padding: 20px 24px;
-    border-bottom: 1px solid $border-color;
-    font-size: 16px;
-    font-weight: 600;
-    color: $text-main;
-  }
-
-  :deep(.el-drawer__body) {
-    padding: 20px 24px;
-    overflow-y: auto;
-  }
-
-  :deep(.el-drawer__footer) {
-    padding: 16px 24px;
-    border-top: 1px solid $border-color;
-    background-color: #ffffff;
-  }
-
   .drawer-content {
     min-height: 200px;
   }
 
   .question-form {
-    .full-width-number {
-      width: 100%;
+    :deep(.el-form-item) {
+      margin-bottom: 20px;
+
+      .el-form-item__label {
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #3d352b;
+        letter-spacing: 0.5px;
+        padding-bottom: 6px;
+      }
     }
 
-    :deep(.el-form-item__label) {
-      font-weight: 500;
-      color: $text-main;
-      padding-bottom: 6px;
+    // 校验失败时的淡红底色与红边高亮
+    :deep(.el-form-item.is-error) {
+      .el-input__wrapper,
+      .el-textarea__inner,
+      .el-select__wrapper {
+        border-color: #d9534f !important;
+        background-color: rgba(254, 242, 242, 0.85) !important;
+        box-shadow: 0 0 0 1px #d9534f inset !important;
+
+        &.is-focus,
+        &:focus {
+          border-color: #c0392b !important;
+          background-color: #fff9f9 !important;
+          box-shadow: 0 0 0 1px #c0392b inset, 0 0 6px rgba(217, 83, 79, 0.25) !important;
+        }
+      }
+
+      .el-form-item__error {
+        color: #c0392b !important;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 12px;
+        padding-top: 4px;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .form-title-input {
+      :deep(.el-input__wrapper) {
+        background-color: rgba(246, 241, 233, 0.85) !important;
+        border: 1px solid rgba(188, 172, 154, 0.65) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        height: 36px;
+        padding: 0 12px;
+        transition: all 0.2s ease;
+
+        &.is-focus {
+          border-color: #24201c !important;
+          background-color: #ffffff !important;
+          box-shadow: 0 0 0 1px #24201c inset !important;
+        }
+      }
+
+      :deep(.el-input__inner) {
+        color: #24201c;
+        font-size: 13.5px;
+      }
+    }
+
+    .full-width-number {
+      width: 100%;
+
+      :deep(.el-input__wrapper) {
+        background-color: rgba(246, 241, 233, 0.85) !important;
+        border: 1px solid rgba(188, 172, 154, 0.65) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        height: 36px;
+
+        &.is-focus {
+          border-color: #24201c !important;
+          background-color: #ffffff !important;
+          box-shadow: 0 0 0 1px #24201c inset !important;
+        }
+      }
+
+      :deep(.el-input__inner) {
+        color: #24201c;
+        font-size: 13.5px;
+      }
+
+      :deep(.el-input-number__decrease),
+      :deep(.el-input-number__increase) {
+        background: transparent !important;
+        border-color: rgba(188, 172, 154, 0.6) !important;
+        color: #554839 !important;
+      }
     }
   }
 
+  // 题目用例标题与操作栏（标题左侧，添加用例按钮在这一行最右侧）
+  .case-form-item {
+    :deep(.el-form-item__label) {
+      width: 100% !important;
+      display: block !important;
+      padding-bottom: 8px !important;
+    }
+
+    .case-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+
+      .case-header-title {
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #3d352b;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-add-case {
+        height: 28px;
+        padding: 0 12px;
+        background-color: #272f26;
+        border: 1px solid #272f26;
+        color: #f7f4ee;
+        border-radius: 4px;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        .btn-icon {
+          font-size: 12px;
+        }
+
+        &:hover {
+          background-color: #171c16;
+          border-color: #171c16;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  // 结构化测试用例卡片组样式
+  .test-case-manager {
+    width: 100%;
+
+    .test-case-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .test-case-card {
+        background-color: rgba(246, 241, 233, 0.7);
+        border: 1px solid rgba(188, 172, 154, 0.6);
+        border-radius: 6px;
+        padding: 10px 14px 12px;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba(246, 241, 233, 0.95);
+          border-color: rgba(188, 172, 154, 0.85);
+        }
+
+        .card-top-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+
+          .case-index-tag {
+            font-family: 'Songti SC', 'SimSun', serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #383025;
+            letter-spacing: 1px;
+          }
+
+          .btn-delete-case {
+            background: transparent;
+            border: none;
+            color: #8c2a1e;
+            font-family: 'Songti SC', 'SimSun', serif;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            transition: color 0.2s ease;
+
+            .del-icon {
+              font-size: 13px;
+            }
+
+            &:hover {
+              color: #631911;
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .card-inputs-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .input-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+
+            .line-label {
+              min-width: 44px;
+              font-family: 'Songti SC', 'SimSun', serif;
+              font-size: 12.5px;
+              font-weight: 600;
+              color: #4a3e31;
+              padding-top: 6px;
+            }
+
+            .case-content-input {
+              flex: 1;
+
+              :deep(.el-textarea__inner) {
+                background-color: #ffffff !important;
+                border: 1px solid rgba(188, 172, 154, 0.65) !important;
+                border-radius: 4px !important;
+                box-shadow: none !important;
+                min-height: 34px !important;
+                line-height: 18px;
+                padding: 7px 10px;
+                font-size: 13px;
+                color: #24201c;
+                font-family: 'Consolas', 'Courier New', monospace;
+                resize: none !important;
+                transition: border-color 0.2s ease;
+
+                &:focus {
+                  border-color: #24201c !important;
+                  box-shadow: 0 0 0 1px #24201c inset !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 代码区域切换标签页
   .code-tabs-wrapper {
     margin-top: 10px;
     margin-bottom: 10px;
 
     .code-tabs {
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
+      border: 1px solid rgba(188, 172, 154, 0.65) !important;
+      background-color: #fbf8f2 !important;
+
+      :deep(.el-tabs__header) {
+        background-color: #ede3d3 !important;
+        border-bottom: 1px solid rgba(188, 172, 154, 0.6) !important;
+        margin: 0 !important;
+
+        .el-tabs__item {
+          font-family: 'Songti SC', 'SimSun', serif;
+          font-size: 13.5px;
+          color: #554839 !important;
+          letter-spacing: 1px;
+          height: 38px;
+          line-height: 38px;
+          border-right: 1px solid rgba(188, 172, 154, 0.5) !important;
+          transition: all 0.2s ease;
+
+          &.is-active {
+            background-color: #fbf8f2 !important;
+            color: #221f1c !important;
+            font-weight: 600;
+          }
+
+          &:hover:not(.is-active) {
+            color: #1f1c19 !important;
+            background-color: rgba(246, 241, 233, 0.8) !important;
+          }
+        }
+      }
 
       :deep(.el-tabs__content) {
         padding: 12px;
+        background-color: #fbf8f2 !important;
       }
     }
 
     .code-form-item {
-      margin-bottom: 0;
+      margin-bottom: 0 !important;
     }
   }
 
   .drawer-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 14px;
   }
 }

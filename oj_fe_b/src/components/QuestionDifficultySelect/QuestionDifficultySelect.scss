@@ -1,4 +1,33 @@
-// 题目难度通用选择器样式
+// 题目难度通用选择器样式（墨衡古籍画卷质感）
 .difficulty-select {
   width: 100%;
+
+  :deep(.el-select__wrapper) {
+    background-color: rgba(246, 241, 233, 0.85) !important;
+    border: 1px solid rgba(188, 172, 154, 0.65) !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    height: 36px;
+    padding: 0 12px;
+    transition: all 0.2s ease;
+
+    &.is-focused {
+      border-color: #24201c !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 1px #24201c inset !important;
+    }
+  }
+
+  :deep(.el-select__selected-item),
+  :deep(.el-select__placeholder) {
+    color: #24201c !important;
+    font-family: 'Songti SC', 'SimSun', serif !important;
+    font-size: 13.5px !important;
+    font-weight: 500;
+    opacity: 1 !important;
+  }
+
+  :deep(.el-select__caret) {
+    color: #7b6f60 !important;
+  }
 }

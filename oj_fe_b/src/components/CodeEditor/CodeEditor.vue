@@ -9,6 +9,7 @@
           v-model="currentLanguage"
           size="small"
           class="lang-select"
+          popper-class="dark-lang-select-popper"
           :disabled="disabled"
           @change="handleLanguageChange"
         >
@@ -52,6 +53,7 @@
     <div class="code-editor-body" :style="{ height: height }">
       <VueMonacoEditor
         :value="modelValue"
+        :path="editorPath"
         :language="currentLanguage"
         :theme="currentTheme"
         :options="mergedOptions"

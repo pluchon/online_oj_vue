@@ -1,5 +1,5 @@
 // 编译器代码块组件逻辑实现
-import { ref, shallowRef, computed, watch, defineComponent } from 'vue'
+import { ref, shallowRef, computed, watch, defineComponent, onBeforeUnmount } from 'vue'
 import * as monaco from 'monaco-editor'
 import { VueMonacoEditor, loader } from '@guolao/vue-monaco-editor'
 
@@ -29,6 +29,11 @@ export default defineComponent({
     },
     // 容器标题（如：默认代码块 / main函数）
     title: {
+      type: String,
+      default: ''
+    },
+    // 编辑器内部模型唯一路径标识（防止同页面多编辑器共享同一内存模型）
+    path: {
       type: String,
       default: ''
     },
@@ -63,6 +68,16 @@ export default defineComponent({
     // 编辑器实例引用与 monaco 全局对象引用
     const editorRef = shallowRef(null)
     const monacoRef = shallowRef(null)
+
+    // ResizeObserver 实例引用，保障尺寸变化与标签切换时自动重新计算布局
+    let resizeObserver = null
+
+    // 生成或指定 Monaco 内存模型唯一路径
+    const editorPath = computed(() => {
+      if (props.path) return props.path
+      const safeTitle = props.title ? encodeURIComponent(props.title) : 'editor'
+      return `inmemory://model/${safeTitle}_${props.language}.code`
+    })
 
     // 当前语言与主题响应式状态
     const currentLanguage = ref(props.language)
@@ -105,6 +120,20 @@ export default defineComponent({
     const handleEditorMount = (editor, monacoInstance) => {
       editorRef.value = editor
       monacoRef.value = monacoInstance
+
+      // 监听容器尺寸变化（应对 el-tabs 切换、抽屉打开动画完成等时刻），即时自动重排
+      if (typeof window !== 'undefined' && window.ResizeObserver) {
+        const domNode = editor.getDomNode()
+        const parent = domNode?.parentElement
+        if (parent) {
+          resizeObserver = new ResizeObserver(() => {
+            if (parent.clientWidth > 0 && parent.clientHeight > 0) {
+              editor.layout()
+            }
+          })
+          resizeObserver.observe(parent)
+        }
+      }
     }
 
     // 代码内容变动回调
@@ -152,11 +181,20 @@ export default defineComponent({
       }
     )
 
+    // 组件卸载时释放 ResizeObserver
+    onBeforeUnmount(() => {
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+        resizeObserver = null
+      }
+    })
+
     return {
       currentLanguage,
       currentTheme,
       languageOptions,
       mergedOptions,
+      editorPath,
       handleEditorMount,
       handleValueChange,
       handleLanguageChange,

@@ -1,10 +1,11 @@
 <template>
   <el-select
-    :model-value="modelValue"
-    :placeholder="placeholder"
+    :model-value="selectValue"
+    :placeholder="displayPlaceholder"
     :clearable="clearable"
     :disabled="disabled"
     :size="size"
+    popper-class="editorial-difficulty-popper"
     class="difficulty-select"
     @update:model-value="handleUpdateValue"
     @change="handleChange"
@@ -12,7 +13,7 @@
     <el-option
       v-if="includeAll"
       :label="allLabel"
-      :value="null"
+      value="ALL"
     />
     <el-option
       v-for="item in difficultyOptions"

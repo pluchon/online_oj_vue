@@ -1,115 +1,336 @@
-// 选择竞赛题目弹窗样式
+// 选择竞赛题目弹窗样式（墨衡古籍画卷规范）
 @use '@/styles/variables' as *;
 
-.exam-question-dialog {
-  :deep(.el-dialog__header) {
-    padding: 16px 20px 12px;
-    margin-right: 0;
-    border-bottom: 1px solid $border-color;
-  }
+.dialog-body-content {
+  padding: 0;
 
-  .custom-dialog-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: $text-main;
+  .dialog-filter-bar {
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 16px;
 
-    .required-star {
-      color: #f53f3f;
-      font-size: 16px;
-    }
-  }
-
-  .dialog-body-content {
-    padding: 4px 0 0;
-
-    .dialog-filter-bar {
+    .filter-left {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
 
-      .filter-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
+      .filter-label {
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #3d352b;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
 
-        .dialog-select {
-          width: 150px;
+        &:not(:first-child) {
+          margin-left: 8px;
         }
+      }
 
-        .dialog-input {
-          width: 240px;
+      .dialog-select {
+        width: 140px;
+
+        :deep(.el-select__wrapper) {
+          background-color: rgba(246, 241, 233, 0.85) !important;
+          border: 1px solid rgba(188, 172, 154, 0.65) !important;
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          height: 34px;
+
+          &.is-focused {
+            border-color: #24201c !important;
+            box-shadow: 0 0 0 1px #24201c inset !important;
+          }
+
+          .el-select__selected-item,
+          .el-select__placeholder {
+            color: #24201c !important;
+            font-family: 'Songti SC', 'SimSun', serif !important;
+            font-size: 13px !important;
+            font-weight: 500;
+            opacity: 1 !important;
+          }
         }
+      }
 
-        .btn-dialog-search {
-          background-color: $primary-color;
-          border-color: $primary-color;
-          padding: 8px 18px;
-          border-radius: 4px;
+      .dialog-input {
+        width: 220px;
 
-          &:hover {
-            background-color: $primary-hover;
-            border-color: $primary-hover;
+        :deep(.el-input__wrapper) {
+          background-color: rgba(246, 241, 233, 0.85) !important;
+          border: 1px solid rgba(188, 172, 154, 0.65) !important;
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          height: 34px;
+          padding: 0 12px;
+
+          &.is-focus {
+            border-color: #24201c !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 1px #24201c inset !important;
           }
         }
 
-        .btn-dialog-reset {
-          padding: 8px 18px;
-          border-radius: 4px;
+        :deep(.el-input__inner) {
+          color: #24201c;
+          font-size: 13px;
+          font-family: 'Songti SC', 'SimSun', serif;
         }
       }
     }
 
-    .dialog-table-wrapper {
-      min-height: 320px;
-
-      .custom-dialog-table {
-        :deep(th.custom-table-header) {
-          background-color: $primary-color !important;
-          color: #ffffff !important;
-          font-weight: 600;
-          font-size: 14px;
-          height: 44px;
-          border: none;
-        }
-
-        :deep(.el-table__row) {
-          height: 48px;
-        }
-      }
-    }
-
-    .dialog-pagination-wrapper {
+    .filter-right {
       display: flex;
-      justify-content: flex-end;
-      margin-top: 16px;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+
+      .btn-dialog-search {
+        height: 34px;
+        padding: 0 16px;
+        background-color: #272f26;
+        border: 1px solid #272f26;
+        color: #f7f4ee;
+        border-radius: 4px;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #171c16;
+          border-color: #171c16;
+          transform: translateY(-1px);
+        }
+      }
+
+      .btn-dialog-reset {
+        height: 34px;
+        padding: 0 16px;
+        background-color: rgba(246, 241, 233, 0.85);
+        border: 1px solid rgba(188, 172, 154, 0.7);
+        color: #3d352b;
+        border-radius: 4px;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #eee7db;
+          border-color: #8c7e6c;
+          color: #1f1c19;
+        }
+      }
     }
   }
 
-  .dialog-footer-wrapper {
-    display: flex;
-    justify-content: center;
-    padding: 8px 0 4px;
+  .dialog-table-wrapper {
+    min-height: 280px;
 
-    .btn-submit-binding {
-      width: 100%;
-      max-width: 820px;
-      height: 38px;
-      font-size: 15px;
-      letter-spacing: 2px;
+    .custom-dialog-table {
+      border: 1px solid rgba(188, 172, 154, 0.6);
+      border-radius: 6px;
+      overflow: hidden;
+      background: transparent !important;
+
+      :deep(th.editorial-table-header) {
+        background-color: #ede3d3 !important;
+        color: #26221d !important;
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+        font-weight: 600;
+        font-size: 13.5px;
+        letter-spacing: 1px;
+        height: 42px;
+        border-bottom: 1px solid rgba(188, 172, 154, 0.6) !important;
+      }
+
+      :deep(.editorial-table-row) {
+        height: 46px;
+        background-color: rgba(251, 248, 242, 0.6) !important;
+        transition: background-color 0.2s ease;
+
+        &:hover > td.el-table__cell {
+          background-color: rgba(238, 230, 218, 0.5) !important;
+        }
+      }
+
+      :deep(.el-table__cell) {
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(215, 202, 185, 0.45) !important;
+      }
+
+      // 复选框古墨主题化（彻底去除默认天蓝色）
+      :deep(.el-checkbox) {
+        .el-checkbox__inner {
+          background-color: #fbf8f2;
+          border-color: #9c8e7c;
+        }
+
+        &.is-checked .el-checkbox__inner {
+          background-color: #272f26 !important;
+          border-color: #272f26 !important;
+        }
+
+        &.is-indeterminate .el-checkbox__inner {
+          background-color: #272f26 !important;
+          border-color: #272f26 !important;
+        }
+      }
+
+      .tabular-code-text {
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 13px;
+        color: #554839;
+      }
+
+      .question-title-text {
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 13.5px;
+        color: #24201c;
+        font-weight: 500;
+      }
+
+      .bound-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 1px 8px;
+        border-radius: 3px;
+        font-size: 11.5px;
+        font-family: 'Songti SC', 'SimSun', serif;
+        background-color: rgba(238, 230, 218, 0.8);
+        border: 1px solid rgba(188, 172, 154, 0.6);
+        color: #706251;
+      }
+    }
+  }
+
+  // 底部控制栏：左侧分页器，右侧确认按钮，无横线
+  .dialog-bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 4px;
+    border-top: none;
+
+    .dialog-pagination-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 0;
+
+      .custom-pagination {
+        display: flex;
+        align-items: center;
+
+        :deep(.el-pagination__total) {
+          color: #5a4f42;
+          font-family: 'Songti SC', 'SimSun', serif;
+          font-size: 13px;
+          margin-left: 14px;
+          margin-right: 0;
+        }
+
+        :deep(.btn-prev),
+        :deep(.btn-next),
+        :deep(.el-pager li) {
+          background-color: rgba(246, 241, 233, 0.85) !important;
+          border: 1px solid rgba(188, 172, 154, 0.6) !important;
+          border-radius: 4px !important;
+          color: #3d352b !important;
+          min-width: 30px;
+          height: 30px;
+          line-height: 28px;
+          font-size: 12.5px;
+          margin: 0 3px;
+          transition: all 0.2s ease;
+
+          &.is-active {
+            background-color: #252b24 !important;
+            border-color: #252b24 !important;
+            color: #fbf8f2 !important;
+            font-weight: 600;
+          }
+
+          &:hover:not(.is-active):not(:disabled) {
+            border-color: #8c7e6c !important;
+            color: #1a1714 !important;
+          }
+
+          &.more {
+            background-color: transparent !important;
+            border: none !important;
+            color: #7b6f60 !important;
+            cursor: pointer;
+
+            &:hover {
+              background-color: rgba(238, 230, 218, 0.55) !important;
+              border-radius: 4px;
+              color: #252b24 !important;
+            }
+
+            .el-icon {
+              color: #7b6f60;
+            }
+          }
+        }
+
+        :deep(.btn-prev:disabled),
+        :deep(.btn-next:disabled) {
+          background-color: rgba(238, 230, 218, 0.4) !important;
+          border-color: rgba(200, 185, 170, 0.4) !important;
+          color: #b5a898 !important;
+          cursor: not-allowed;
+
+          .el-icon {
+            color: #b5a898 !important;
+          }
+        }
+      }
+    }
+
+    .btn-confirm-action {
+      height: 34px;
+      padding: 0 20px;
+      background-color: #272f26;
+      border: 1px solid #272f26;
+      color: #ffffff;
       border-radius: 4px;
-      background-color: $primary-light;
-      border-color: $primary-color;
-      color: $primary-color;
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      .btn-check-icon {
+        color: #ffffff !important;
+        font-size: 14px;
+      }
 
       &:hover {
-        background-color: $primary-color;
-        border-color: $primary-color;
-        color: #ffffff;
+        background-color: #171c16;
+        border-color: #171c16;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(39, 47, 38, 0.25);
       }
     }
   }

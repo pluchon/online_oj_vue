@@ -1,107 +1,124 @@
-// 管理后台主布局样式
-@use '@/styles/variables' as *;
-
+// 管理后台主布局样式（墨衡 · 博物学画卷框架）
 .layout-container {
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: $bg-page;
+  display: flex;
+  background-image: url('@/assets/images/b_index_background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f7f3ec;
 
-  // 侧边栏样式
+  // 左侧侧边栏
   .layout-aside {
-    background-color: #ffffff;
-    border-right: 1px solid $border-color;
-    box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+    background: transparent;
+    border-right: 1px solid rgba(195, 180, 160, 0.45);
     display: flex;
     flex-direction: column;
-    transition: width 0.28s ease;
     z-index: 10;
+    padding: 24px 14px 20px;
+    box-sizing: border-box;
+    transition: width 0.28s ease;
 
-    // 侧边栏 Logo 区域
-    .aside-logo {
-      height: 60px;
-      display: flex;
-      align-items: center;
-      padding: 0 18px;
-      border-bottom: 1px solid $border-color;
-      background: #ffffff;
+    .aside-brand {
+      padding: 12px 14px 34px;
 
-      .logo-img {
-        width: 34px;
-        height: 34px;
-        margin-right: 12px;
-        object-fit: contain;
-        flex-shrink: 0;
+      .brand-title {
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+        font-size: 38px;
+        font-weight: 700;
+        color: #221f1c;
+        letter-spacing: 6px;
+        margin: 0;
+        line-height: 1.1;
       }
 
-      .logo-title {
-        font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 16px;
-        font-weight: 700;
-        color: $text-main;
-        white-space: nowrap;
-        letter-spacing: 0.5px;
+      .brand-en {
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #554a3e;
+        letter-spacing: 4px;
+        margin-top: 8px;
+      }
+
+      .brand-oj {
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+        font-size: 10px;
+        font-weight: 500;
+        color: #7d7162;
+        letter-spacing: 3px;
+        margin-top: 3px;
       }
     }
 
-    // 菜单滚动包裹层
     .aside-menu-wrapper {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
 
-      // 菜单定制
       .el-menu {
-        border-right: none;
-        padding: 12px 10px;
-        background-color: transparent;
+        border: none;
+        background: transparent;
 
         .el-menu-item {
-          height: 48px;
-          line-height: 48px;
-          margin-bottom: 6px;
-          border-radius: 8px;
-          color: #4e5969;
-          font-size: 14px;
+          height: 46px;
+          line-height: 46px;
+          margin-bottom: 8px;
+          border-radius: 6px;
+          color: #484035;
+          font-size: 14.5px;
           font-weight: 500;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          padding: 0 16px !important;
+          display: flex;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.22s ease;
 
-          .el-icon {
-            font-size: 18px;
-            margin-right: 10px;
-            color: #86909c;
-            transition: color 0.2s;
+          .menu-icon {
+            font-size: 17px;
+            margin-right: 12px;
+            color: #786c5e;
+            transition: color 0.2s ease;
+          }
+
+          .menu-text {
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+            letter-spacing: 2px;
           }
 
           &:hover {
-            color: $primary-color;
-            background-color: $primary-light;
+            background-color: rgba(236, 227, 214, 0.55);
+            color: #1f1c19;
 
-            .el-icon {
-              color: $primary-color;
+            .menu-icon {
+              color: #1f1c19;
             }
           }
 
-          // 选中激活态
+          // 激活状态菜单项：左侧呈现挺拔沉稳的 "|" 竖线标识
           &.is-active {
-            color: $primary-color;
-            background-color: $primary-light;
+            background-color: rgba(234, 224, 209, 0.88) !important;
+            color: #1a1714 !important;
             font-weight: 600;
+            box-shadow: 0 2px 8px rgba(60, 50, 40, 0.05);
 
-            .el-icon {
-              color: $primary-color;
-            }
-
-            // 侧边光标指示条
-            &::after {
+            &::before {
               content: '';
               position: absolute;
-              right: 0;
-              top: 14px;
-              bottom: 14px;
-              width: 3px;
-              background-color: $primary-color;
-              border-radius: 2px 0 0 2px;
+              left: 0;
+              top: 7px;
+              bottom: 7px;
+              width: 3.5px;
+              background-color: #272f26;
+              border-radius: 0 2px 2px 0;
+            }
+
+            .menu-icon {
+              color: #1a1714;
             }
           }
         }
@@ -115,69 +132,80 @@
     flex-direction: column;
     overflow: hidden;
     height: 100vh;
+    background: transparent;
 
     // 顶部顶栏
     .layout-header {
-      height: 60px;
-      background-color: #ffffff;
-      border-bottom: 1px solid $border-color;
-      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.04);
+      position: relative;
+      height: 54px;
+      background: transparent;
+      border-bottom: 1px solid rgba(195, 180, 160, 0.35);
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding: 0 24px;
+      padding: 0 32px;
       z-index: 9;
+
+      .header-center-motto {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #554b3e;
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+        font-size: 14px;
+        letter-spacing: 3.5px;
+        white-space: nowrap;
+        pointer-events: none;
+
+        .motto-star {
+          font-size: 10px;
+          color: #8c7e6c;
+        }
+      }
 
       .header-right {
         display: flex;
         align-items: center;
 
-        .user-dropdown {
-          cursor: pointer;
+        .user-profile-direct {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-family: 'Songti SC', 'SimSun', serif;
+          font-size: 13.5px;
 
-          .user-profile {
-            display: flex;
+          .user-label {
+            color: #76695b;
+          }
+
+          .user-name {
+            font-weight: 600;
+            color: #24201c;
+          }
+
+          .logout-btn {
+            background: none;
+            border: none;
+            padding: 4px 6px;
+            cursor: pointer;
+            display: inline-flex;
             align-items: center;
-            padding: 6px 10px;
-            border-radius: 8px;
-            transition: background-color 0.2s ease;
+            justify-content: center;
+            color: #76695b;
+            border-radius: 4px;
+            margin-left: 4px;
+            transition: all 0.2s ease;
+
+            .logout-icon {
+              font-size: 16px;
+            }
 
             &:hover {
-              background-color: #f2f3f5;
-            }
-
-            .user-avatar {
-              background: linear-gradient(135deg, #32c5ff 0%, #1698ff 100%);
-              color: #ffffff;
-              font-size: 13px;
-              font-weight: 600;
-              margin-right: 10px;
-              flex-shrink: 0;
-            }
-
-            .user-info {
-              display: flex;
-              align-items: center;
-              font-size: 14px;
-              color: $text-main;
-
-              .user-label {
-                color: $text-sub;
-                font-size: 13px;
-                margin-right: 4px;
-              }
-
-              .user-name {
-                font-weight: 600;
-                color: $text-main;
-              }
-            }
-
-            .dropdown-arrow {
-              font-size: 12px;
-              color: #86909c;
-              margin-left: 8px;
-              transition: transform 0.2s ease;
+              color: #c0392b;
+              background-color: rgba(192, 57, 43, 0.1);
             }
           }
         }
@@ -187,18 +215,14 @@
     // 主内容展示区
     .layout-content-main {
       flex: 1;
-      padding: 20px;
+      padding: 24px 36px 28px;
       overflow-y: auto;
       box-sizing: border-box;
+      background: transparent;
 
-      // 业务内容白色卡片承载层
-      .content-card {
-        min-height: calc(100vh - 100px);
-        background-color: #ffffff;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        box-sizing: border-box;
+      .content-scroll-box {
+        width: 100%;
+        min-height: 100%;
         display: flex;
         flex-direction: column;
       }
@@ -206,20 +230,20 @@
   }
 }
 
-// 定制细长柔和滚动条
+// 柔和滚动条
 .aside-menu-wrapper,
 .layout-content-main {
   &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #dcdfe6;
-    border-radius: 3px;
+    background: rgba(175, 160, 140, 0.35);
+    border-radius: 4px;
 
     &:hover {
-      background: #c0c4cc;
+      background: rgba(145, 130, 110, 0.55);
     }
   }
 

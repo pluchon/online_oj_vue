@@ -1,5 +1,8 @@
 <template>
   <div :class="['pagination-footer-wrapper', { hidden: isHidden }]">
+    <div class="pagination-left">
+      <slot name="left" />
+    </div>
     <el-pagination
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"

@@ -1,0 +1,45 @@
+// 墨衡通用空状态组件样式（配典雅小蒙插画）
+.oj-empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  user-select: none;
+
+  .empty-image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+
+    .empty-image {
+      object-fit: contain;
+      filter: drop-shadow(0 6px 16px rgba(45, 38, 28, 0.08));
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+  }
+
+  .empty-text {
+    margin: 0;
+    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #6b5f50;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .empty-subtext {
+    margin: 4px 0 0;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12px;
+    color: #a39583;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+}

@@ -1,19 +1,20 @@
-// 全局 SCSS 变量
-$primary-color: #32c5ff;
-$primary-hover: #1ab8f3;
-$primary-light: rgba(50, 197, 255, 0.1);
+// 全局 SCSS 变量（墨衡 · 博物学画卷古典色系）
+$primary-color: #272f26;
+$primary-hover: #171c16;
+$primary-light: rgba(39, 47, 38, 0.08);
 
-$text-main: #1d2129;
-$text-regular: #4e5969;
-$text-sub: #86909c;
+$text-main: #24201c;
+$text-regular: #4e4438;
+$text-sub: #7a6e5f;
 
-$bg-page: #f5f7fa;
-$border-color: #f0f2f5;
-$border-color-light: #e4e7ed;
-$border-color-lighter: #ebeef5;
-$text-primary: #303133;
+$bg-page: #faf7f2;
+$border-color: #ded5c7;
+$border-color-light: #ece4d8;
+$border-color-lighter: #f5efe6;
+$text-primary: #24201c;
 
-// 难度状态语义色
-$difficulty-easy: #32c5ff;
-$difficulty-medium: #ff7d00;
-$difficulty-hard: #f53f3f;
+// 难度状态语义色（松绿、古珀、朱砂，彻底杜绝刺眼天蓝）
+$difficulty-easy: #2d7a4c;
+$difficulty-medium: #b37424;
+$difficulty-hard: #a8382b;
+

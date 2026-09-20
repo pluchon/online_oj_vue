@@ -1,14 +1,15 @@
 <template>
   <el-container class="layout-container">
-    <!-- 左侧侧边栏 -->
+    <!-- 左侧古籍编目风格侧边栏 -->
     <el-aside width="220px" class="layout-aside">
-      <!-- 品牌 Logo 与系统标题 -->
-      <div class="aside-logo">
-        <img class="logo-img" src="@/assets/images/logo.png" alt="比特OJ Logo" />
-        <span class="logo-title">比特OJ后台管理</span>
+      <!-- 品牌标识区域 -->
+      <div class="aside-brand">
+        <h1 class="brand-title">墨衡</h1>
+        <div class="brand-en">M O H E N G</div>
+        <div class="brand-oj">ONLINE JUDGE</div>
       </div>
 
-      <!-- 导航菜单 -->
+      <!-- 导航菜单（纯净图标+文字，去除多余编号） -->
       <div class="aside-menu-wrapper">
         <el-menu
           :default-active="activeMenu"
@@ -16,18 +17,18 @@
           :router="true"
         >
           <el-menu-item index="/system/user">
-            <el-icon><Management /></el-icon>
-            <span>用户管理</span>
+            <el-icon class="menu-icon"><User /></el-icon>
+            <span class="menu-text">用户管理</span>
           </el-menu-item>
 
           <el-menu-item index="/system/question">
-            <el-icon><Document /></el-icon>
-            <span>题目管理</span>
+            <el-icon class="menu-icon"><Document /></el-icon>
+            <span class="menu-text">题目管理</span>
           </el-menu-item>
 
           <el-menu-item index="/system/exam">
-            <el-icon><Trophy /></el-icon>
-            <span>竞赛管理</span>
+            <el-icon class="menu-icon"><Trophy /></el-icon>
+            <span class="menu-text">竞赛管理</span>
           </el-menu-item>
         </el-menu>
       </div>
@@ -37,32 +38,28 @@
     <el-container class="layout-main-wrapper">
       <!-- 顶部 Header 栏 -->
       <el-header class="layout-header">
-        <div class="header-right">
-          <el-dropdown trigger="click" placement="bottom-end" class="user-dropdown">
-            <span class="user-profile">
-              <el-avatar :size="30" class="user-avatar">{{ (nickName || '管').slice(0, 1) }}</el-avatar>
-              <div class="user-info">
-                <span class="user-label">当前用户：</span>
-                <span class="user-name">{{ nickName || '管理员' }}</span>
-              </div>
-              <el-icon class="dropdown-arrow"><ArrowDownBold /></el-icon>
-            </span>
+        <!-- 居中典雅星符标语 -->
+        <div class="header-center-motto">
+          <span class="motto-star">✦</span>
+          <span class="motto-text">以算法丈量世界 · 用代码书写答案</span>
+          <span class="motto-star">✦</span>
+        </div>
 
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item :icon="SwitchButton" @click="handleLogout">
-                  退出登录
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+        <!-- 右侧管理员信息与直接关机退出按钮（移除头像与下拉框） -->
+        <div class="header-right">
+          <div class="user-profile-direct">
+            <span class="user-label">当前用户：</span>
+            <span class="user-name">{{ nickName || '超级管理员' }}</span>
+            <button class="logout-btn" title="退出登录" @click="handleLogout">
+              <el-icon class="logout-icon"><SwitchButton /></el-icon>
+            </button>
+          </div>
         </div>
       </el-header>
 
-      <!-- 核心内容渲染区 -->
+      <!-- 核心画卷内容主区 -->
       <el-main class="layout-content-main">
-        <div class="content-card">
-          <!-- 子路由页面渲染出口 -->
+        <div class="content-scroll-box">
           <router-view />
         </div>
       </el-main>

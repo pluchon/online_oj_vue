@@ -1,12 +1,33 @@
-// 登录页面逻辑实现
+// 登录页面逻辑实现（墨衡后台管理）
 import { defineComponent, reactive, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { User, Lock } from '@element-plus/icons-vue'
 import { loginApi } from '@/api/user'
 import { setToken } from '@/utils/auth'
+import Masonry from '@/components/Masonry/Masonry.vue'
+
+// 导入生成的 12 张复古学术与算法美学背景图
+import bg1 from '@/assets/images/b_login_background_1.jpg'
+import bg2 from '@/assets/images/b_login_background_2.jpg'
+import bg3 from '@/assets/images/b_login_background_3.jpg'
+import bg4 from '@/assets/images/b_login_background_4.jpg'
+import bg5 from '@/assets/images/b_login_background_5.jpg'
+import bg6 from '@/assets/images/b_login_background_6.jpg'
+import bg7 from '@/assets/images/b_login_background_7.jpg'
+import bg8 from '@/assets/images/b_login_background_8.jpg'
+import bg9 from '@/assets/images/b_login_background_9.jpg'
+import bg10 from '@/assets/images/b_login_background_10.jpg'
+import bg11 from '@/assets/images/b_login_background_11.jpg'
+import bg12 from '@/assets/images/b_login_background_12.jpg'
 
 export default defineComponent({
   name: 'Login',
+  components: {
+    User,
+    Lock,
+    Masonry
+  },
   setup() {
     const router = useRouter()
     const route = useRoute()
@@ -17,14 +38,33 @@ export default defineComponent({
       password: ''
     })
 
+    // 记住我勾选项
+    const rememberMe = ref(false)
+
     // 提交过程中的加载状态（防重复点击）
     const loading = ref(false)
 
     // 行内表单校验错误提示
     const errorMsg = ref('')
 
+    // 右侧瀑布流卡片列表（分配高雅错落高度并绑定生成的12张复古工笔手稿图）
+    const cards = ref([
+      { id: 'card-1', height: 260, img: bg1 },
+      { id: 'card-2', height: 210, img: bg2 },
+      { id: 'card-3', height: 290, img: bg3 },
+      { id: 'card-4', height: 230, img: bg4 },
+      { id: 'card-5', height: 270, img: bg5 },
+      { id: 'card-6', height: 220, img: bg6 },
+      { id: 'card-7', height: 300, img: bg7 },
+      { id: 'card-8', height: 240, img: bg8 },
+      { id: 'card-9', height: 280, img: bg9 },
+      { id: 'card-10', height: 210, img: bg10 },
+      { id: 'card-11', height: 290, img: bg11 },
+      { id: 'card-12', height: 250, img: bg12 }
+    ])
+
     /**
-     * 处理登录提交
+     * 处理管理员登录提交
      */
     const handleLogin = async () => {
       // 提交期间禁止重复触发
@@ -53,14 +93,12 @@ export default defineComponent({
 
       try {
         // 调用 B 端管理员登录接口：POST /system/sysUser/login
-        // 拦截器已统一完成两层脱壳与结果断言，返回值即为纯净的 JWT 令牌字符串
         const token = await loginApi({
           userAccount: account,
           password: pwd
         })
 
         if (token) {
-          // 将 Token 存入 Cookie 中
           setToken(token)
         }
 
@@ -72,7 +110,6 @@ export default defineComponent({
           : '/system'
         router.push(redirect)
       } catch (err) {
-        // request.js 拦截器已统一弹出错误，此处同步给行内错误展示
         errorMsg.value = err?.message || '登录验证失败，请检查账号密码'
       } finally {
         loading.value = false
@@ -81,8 +118,10 @@ export default defineComponent({
 
     return {
       loginForm,
+      rememberMe,
       loading,
       errorMsg,
+      cards,
       handleLogin
     }
   }

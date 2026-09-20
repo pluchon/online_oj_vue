@@ -1,0 +1,125 @@
+// 编辑用户弹窗样式（墨衡 · 博物学古籍画卷质感）
+.dialog-form {
+  :deep(.el-form-item) {
+    margin-bottom: 18px;
+
+    .el-form-item__label {
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #40362c;
+      letter-spacing: 0.5px;
+      white-space: nowrap !important;
+      word-break: keep-all !important;
+    }
+
+    &.is-error {
+      .el-input__wrapper,
+      .el-textarea__inner {
+        border-color: #d9534f !important;
+        background-color: rgba(254, 242, 242, 0.85) !important;
+        box-shadow: 0 0 0 1px #d9534f inset !important;
+
+        &.is-focus,
+        &:focus {
+          border-color: #c0392b !important;
+          background-color: #fff9f9 !important;
+          box-shadow: 0 0 0 1px #c0392b inset, 0 0 6px rgba(217, 83, 79, 0.25) !important;
+        }
+      }
+
+      .el-form-item__error {
+        color: #c0392b !important;
+        font-family: 'Songti SC', 'SimSun', serif !important;
+        font-size: 12px !important;
+        padding-top: 4px !important;
+      }
+    }
+  }
+
+  .dialog-input {
+    :deep(.el-input__wrapper) {
+      background-color: rgba(246, 241, 233, 0.85) !important;
+      border: 1px solid rgba(188, 172, 154, 0.65) !important;
+      border-radius: 4px !important;
+      box-shadow: none !important;
+      height: 36px;
+      padding: 0 12px;
+      transition: all 0.2s ease;
+
+      &.is-focus {
+        border-color: #24201c !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 1px #24201c inset !important;
+      }
+    }
+
+    :deep(.el-input__inner) {
+      color: #24201c;
+      font-size: 13.5px;
+    }
+  }
+
+  .dialog-autosize-input {
+    width: 100%;
+
+    :deep(.el-textarea__inner) {
+      background-color: rgba(246, 241, 233, 0.85) !important;
+      border: 1px solid rgba(188, 172, 154, 0.65) !important;
+      border-radius: 4px !important;
+      box-shadow: none !important;
+      min-height: 36px !important;
+      line-height: 20px;
+      padding: 7px 12px;
+      font-size: 13.5px;
+      color: #24201c;
+      font-family: inherit;
+      resize: none !important;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+
+      &:focus {
+        border-color: #24201c !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 1px #24201c inset !important;
+      }
+    }
+  }
+
+  .dialog-radio-group {
+    :deep(.el-radio__label) {
+      font-family: 'Songti SC', 'SimSun', serif;
+      color: #484035;
+      font-size: 13.5px;
+    }
+
+    :deep(.el-radio__inner) {
+      border-color: #9c8e7c;
+      background-color: transparent;
+    }
+
+    :deep(.el-radio.is-checked .el-radio__inner) {
+      background-color: #252b24;
+      border-color: #252b24;
+    }
+
+    :deep(.el-radio.is-checked .el-radio__label) {
+      color: #201d1a;
+      font-weight: 600;
+    }
+  }
+}
+
+// 遵循通用模板的提示信息区域
+.dialog-prompt-message {
+  padding: 12px 16px 6px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 14.5px;
+    color: #383026;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+  }
+}

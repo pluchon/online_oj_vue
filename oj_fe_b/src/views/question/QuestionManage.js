@@ -6,6 +6,7 @@ import { getQuestionListApi, deleteQuestionApi } from '@/api/question'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import DifficultyTag from '@/components/DifficultyTag'
 import Pagination from '@/components/Pagination'
+import OjEmpty from '@/components/OjEmpty'
 import QuestionDrawer from './components/QuestionDrawer'
 
 export default defineComponent({
@@ -14,7 +15,11 @@ export default defineComponent({
     QuestionDifficultySelect,
     DifficultyTag,
     Pagination,
-    QuestionDrawer
+    QuestionDrawer,
+    OjEmpty,
+    Search,
+    Refresh,
+    Plus
   },
   setup() {
     // 列表加载状态

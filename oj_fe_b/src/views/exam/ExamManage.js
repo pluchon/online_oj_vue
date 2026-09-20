@@ -7,14 +7,20 @@ import {
   publishExamApi,
   cancelPublishExamApi
 } from '@/api/exam'
+import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import Pagination from '@/components/Pagination'
+import OjEmpty from '@/components/OjEmpty'
 import ExamDrawer from './components/ExamDrawer'
 
 export default defineComponent({
   name: 'ExamManage',
   components: {
     Pagination,
-    ExamDrawer
+    ExamDrawer,
+    OjEmpty,
+    Search,
+    Refresh,
+    Plus
   },
   setup() {
     // 列表加载状态
@@ -213,6 +219,9 @@ export default defineComponent({
     })
 
     return {
+      Search,
+      Refresh,
+      Plus,
       loading,
       examList,
       total,

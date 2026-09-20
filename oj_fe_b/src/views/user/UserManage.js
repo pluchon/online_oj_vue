@@ -1,10 +1,19 @@
-// 用户管理业务逻辑
+// 用户管理业务逻辑（墨衡后台管理）
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Search, Refresh } from '@element-plus/icons-vue'
 import { getUserListApi, updateUserStatusApi } from '@/api/user'
+import UserEditDialog from './components/UserEditDialog/UserEditDialog.vue'
+import OjEmpty from '@/components/OjEmpty'
 
 export default {
   name: 'UserManage',
+  components: {
+    Search,
+    Refresh,
+    UserEditDialog,
+    OjEmpty,
+  },
   setup() {
     // 表格加载状态
     const loading = ref(false)
@@ -14,6 +23,9 @@ export default {
 
     // 数据总条数
     const total = ref(0)
+
+    // 弹窗引用
+    const editDialogRef = ref(null)
 
     // 查询筛选条件表单
     const queryParams = reactive({
@@ -31,11 +43,9 @@ export default {
           pageNum: queryParams.pageNum,
           pageSize: queryParams.pageSize,
         }
-        // 用户ID安全修剪与格式清洗
         if (queryParams.userId && queryParams.userId.trim()) {
           params.userId = queryParams.userId.trim()
         }
-        // 昵称安全修剪
         if (queryParams.nickName && queryParams.nickName.trim()) {
           params.nickName = queryParams.nickName.trim()
         }
@@ -57,7 +67,6 @@ export default {
 
     // 搜索过滤操作
     const handleSearch = () => {
-      // 容错：如果用户输入了非纯数字作为用户ID，进行轻量格式校验
       if (queryParams.userId && queryParams.userId.trim() && !/^\d+$/.test(queryParams.userId.trim())) {
         ElMessage.warning('用户ID必须为纯数字')
         return
@@ -80,11 +89,9 @@ export default {
       loadUserList()
     }
 
-    // 每页条数切换
-    const handleSizeChange = (size) => {
-      queryParams.pageSize = size
-      queryParams.pageNum = 1
-      loadUserList()
+    // 点击编辑用户，唤起弹窗
+    const handleEdit = (row) => {
+      editDialogRef.value?.open(row)
     }
 
     // 切换用户状态（拉黑 / 解禁）
@@ -114,9 +121,7 @@ export default {
         } finally {
           row.statusLoading = false
         }
-      }).catch(() => {
-        // 用户取消操作，不做处理
-      })
+      }).catch(() => {})
     }
 
     // 页面挂载加载首屏数据
@@ -125,15 +130,18 @@ export default {
     })
 
     return {
+      Search,
+      Refresh,
       loading,
       userList,
       total,
       queryParams,
+      editDialogRef,
       loadUserList,
       handleSearch,
       handleReset,
       handlePageChange,
-      handleSizeChange,
+      handleEdit,
       handleToggleStatus,
     }
   },

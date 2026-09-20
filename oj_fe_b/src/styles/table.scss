@@ -1,4 +1,4 @@
-// 管理端公共表格与筛选栏布局样式
+// 管理端公共表格与筛选栏布局样式（墨衡 · 古籍学术画卷公共规范）
 @use './variables' as *;
 @use './mixins' as *;
 
@@ -7,55 +7,128 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
 
   .filter-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     flex-wrap: wrap;
+
+    .filter-label {
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3d352b;
+      letter-spacing: 1px;
+    }
 
     .filter-select {
       width: 170px;
+
+      :deep(.el-select__wrapper) {
+        background-color: rgba(246, 241, 233, 0.85) !important;
+        border: 1px solid rgba(188, 172, 154, 0.65) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        height: 36px;
+      }
     }
 
     .filter-input {
-      width: 240px;
+      width: 220px;
+
+      :deep(.el-input__wrapper) {
+        background-color: rgba(246, 241, 233, 0.85) !important;
+        border: 1px solid rgba(188, 172, 154, 0.65) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        height: 36px;
+        padding: 0 12px;
+
+        &.is-focus {
+          border-color: #24201c !important;
+          background-color: #ffffff !important;
+          box-shadow: 0 0 0 1px #24201c inset !important;
+        }
+      }
+
+      :deep(.el-input__inner) {
+        color: #24201c;
+        font-size: 13.5px;
+
+        &::placeholder {
+          color: #a39583;
+        }
+      }
     }
 
     .btn-search {
-      background-color: $primary-color;
-      border-color: $primary-color;
-      padding: 8px 18px;
-      border-radius: 6px;
+      height: 36px;
+      padding: 0 20px;
+      background-color: #272f26;
+      border: 1px solid #272f26;
+      color: #f7f4ee;
+      border-radius: 4px;
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
 
       &:hover {
-        background-color: $primary-hover;
-        border-color: $primary-hover;
+        background-color: #171c16;
+        border-color: #171c16;
+        transform: translateY(-1px);
       }
     }
 
     .btn-reset {
-      padding: 8px 18px;
-      border-radius: 6px;
+      height: 36px;
+      padding: 0 20px;
+      background-color: rgba(246, 241, 233, 0.85);
+      border: 1px solid rgba(188, 172, 154, 0.7);
+      color: #3d352b;
+      border-radius: 4px;
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #eee7db;
+        border-color: #8c7e6c;
+        color: #1f1c19;
+      }
     }
   }
 
   .filter-right {
     .btn-add {
-      color: $primary-color;
-      border-color: $primary-color;
-      background-color: $primary-light;
-      border-radius: 6px;
-      padding: 8px 18px;
+      color: #faf7f2;
+      border-color: #272f26;
+      background-color: #272f26;
+      border-radius: 4px;
+      padding: 8px 20px;
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
       font-weight: 500;
+      letter-spacing: 2px;
 
       &:hover {
-        color: #ffffff;
-        background-color: $primary-color;
-        border-color: $primary-color;
+        background-color: #161c15;
+        border-color: #161c15;
       }
     }
   }
@@ -66,74 +139,178 @@
   flex: 1;
   overflow: hidden;
   position: relative;
-  border-radius: 8px;
+  border-radius: 4px;
   @include hide-scrollbar;
 
   .el-table {
+    background: transparent !important;
+
+    &::before,
+    .el-table__inner-wrapper::before {
+      display: none !important;
+    }
+
     .el-table__body-wrapper,
     .el-scrollbar__wrap {
       @include hide-scrollbar;
     }
 
-    // 表头天蓝色定制（统一管理端蓝色 Header）
+    // 表头古籍典雅羊皮纸原木色
     th.question-table-header,
-    th.custom-table-header {
-      background-color: $primary-color !important;
-      color: #ffffff !important;
+    th.custom-table-header,
+    th.editorial-table-header {
+      background-color: #ebe1d1 !important;
+      color: #26221d !important;
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+      font-size: 13.5px;
       font-weight: 600;
-      font-size: 14px;
-      height: 46px;
-      border: none;
+      letter-spacing: 1.5px;
+      height: 44px;
+      border: none !important;
+      border-bottom: 1px solid rgba(195, 180, 160, 0.7) !important;
+
+      .cell {
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+      }
     }
+
 
     // 行间距与悬浮交互
     .question-table-row,
-    .custom-table-row {
-      height: 52px;
+    .custom-table-row,
+    .editorial-table-row {
+      height: 50px;
+      background-color: transparent !important;
       transition: background-color 0.2s ease;
 
       &:hover > td.el-table__cell {
-        background-color: #f7faff !important;
+        background-color: rgba(238, 230, 218, 0.45) !important;
       }
     }
 
     .el-table__cell {
-      padding: 8px 0;
-      border-bottom: 1px solid $border-color;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(215, 202, 185, 0.45) !important;
     }
   }
 
-  // 表格操作按钮组
+  // 表格操作列按钮统一规格与雅致矿彩规范
+  .action-cell,
   .action-btn-group {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
 
-    .btn-action-edit {
-      color: $difficulty-medium;
-      font-size: 13px;
-      padding: 0 4px;
+    .action-btn {
+      width: 66px;
+      height: 26px;
+      line-height: 24px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      user-select: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
-      &:hover {
-        color: #e06d00;
-        text-decoration: underline;
+      &.btn-action-edit {
+        background-color: #344a3e;
+        border-color: #344a3e;
+        color: #ffffff;
+
+        &:hover {
+          background-color: #24352b;
+          border-color: #24352b;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(52, 74, 62, 0.28);
+        }
       }
-    }
 
-    .btn-action-delete {
-      color: $primary-color;
-      font-size: 13px;
-      padding: 0 4px;
+      &.btn-action-delete {
+        background-color: #a3382d;
+        border-color: #a3382d;
+        color: #ffffff;
 
-      &:hover {
-        color: $primary-hover;
-        text-decoration: underline;
+        &:hover {
+          background-color: #85281e;
+          border-color: #85281e;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(163, 56, 45, 0.28);
+        }
+      }
+
+      &.btn-action-ban {
+        background-color: #8b352a;
+        border-color: #8b352a;
+        color: #ffffff;
+
+        &:hover:not(:disabled) {
+          background-color: #6e251c;
+          border-color: #6e251c;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(139, 53, 42, 0.28);
+        }
+      }
+
+      &.btn-action-unban {
+        background-color: #286b58;
+        border-color: #286b58;
+        color: #ffffff;
+
+        &:hover:not(:disabled) {
+          background-color: #1b4f40;
+          border-color: #1b4f40;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(40, 107, 88, 0.28);
+        }
+      }
+
+      &.btn-action-publish {
+        background-color: #24546d;
+        border-color: #24546d;
+        color: #ffffff;
+
+        &:hover {
+          background-color: #183e52;
+          border-color: #183e52;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(36, 84, 109, 0.28);
+        }
+      }
+
+      &.btn-action-unpublish {
+        background-color: #875824;
+        border-color: #875824;
+        color: #ffffff;
+
+        &:hover {
+          background-color: #6e4517;
+          border-color: #6e4517;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(135, 88, 36, 0.28);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
       }
     }
   }
 
-  // 空状态居中
   .table-empty-state {
     padding: 40px 0;
   }
@@ -141,37 +318,62 @@
 
 // 底部固定高度翻页器
 .pagination-footer-wrapper {
-  height: 56px;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  border-top: 1px solid $border-color;
-  background-color: #ffffff;
-  padding: 0 10px;
+  justify-content: space-between;
+  border-top: 1px solid rgba(195, 180, 160, 0.35);
+  background-color: transparent;
+  padding: 16px 10px 4px;
   box-sizing: border-box;
 
   .custom-pagination {
     .el-pagination__total,
     .el-pagination__jump {
-      color: $text-sub;
+      color: #6b5f50;
+      font-family: 'Songti SC', 'SimSun', serif;
       font-size: 13px;
     }
 
     .btn-prev,
     .btn-next,
     .el-pager li {
-      border-radius: 4px;
-      background-color: #f4f5f7;
+      background-color: rgba(246, 241, 233, 0.85) !important;
+      border: 1px solid rgba(188, 172, 154, 0.6) !important;
+      border-radius: 4px !important;
+      color: #3d352b !important;
+      min-width: 28px;
+      height: 28px;
+      line-height: 26px;
+      font-size: 13px;
+      transition: all 0.2s ease;
 
       &.is-active {
-        background-color: $primary-color !important;
-        color: #ffffff !important;
+        background-color: #252b24 !important;
+        border-color: #252b24 !important;
+        color: #fbf8f2 !important;
         font-weight: 600;
       }
 
       &:hover:not(.is-active) {
-        color: $primary-color;
+        border-color: #8c7e6c !important;
+        color: #1a1714 !important;
+      }
+
+      &.more {
+        background-color: transparent !important;
+        border: none !important;
+        color: #7b6f60 !important;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(238, 230, 218, 0.55) !important;
+          border-radius: 4px;
+          color: #252b24 !important;
+        }
+
+        .el-icon {
+          color: #7b6f60;
+        }
       }
     }
   }

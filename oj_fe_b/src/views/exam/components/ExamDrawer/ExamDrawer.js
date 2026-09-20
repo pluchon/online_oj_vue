@@ -1,21 +1,27 @@
 // 竞赛新增与编辑抽屉业务逻辑
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   addExamApi,
   getExamDetailApi,
   editExamApi,
   getExamQuestionListApi,
-  deleteExamQuestionApi
+  deleteExamQuestionApi,
+  addExamQuestionApi
 } from '@/api/exam'
 import DifficultyTag from '@/components/DifficultyTag'
+import OjEmpty from '@/components/OjEmpty'
+import { Plus, Check } from '@element-plus/icons-vue'
 import ExamQuestionDialog from '../ExamQuestionDialog'
 
 export default defineComponent({
   name: 'ExamDrawer',
   components: {
     DifficultyTag,
-    ExamQuestionDialog
+    ExamQuestionDialog,
+    OjEmpty,
+    Plus,
+    Check
   },
   emits: ['success'],
   setup(props, { emit }) {
@@ -30,6 +36,9 @@ export default defineComponent({
 
     // 保存基本信息按钮加载态
     const saving = ref(false)
+
+    // 保存关联题目按钮加载态
+    const savingQuestions = ref(false)
 
     // 题目列表加载态
     const questionLoading = ref(false)
@@ -110,7 +119,6 @@ export default defineComponent({
       questionLoading.value = true
       try {
         const res = await getExamQuestionListApi(examId)
-        // 兼容 request.js 自动脱壳返回数组与含 data 属性两种结构
         const list = Array.isArray(res) ? res : (res?.data || [])
         boundQuestionList.value = list
       } catch (err) {
@@ -141,7 +149,6 @@ export default defineComponent({
         detailLoading.value = true
         try {
           const detailRes = await getExamDetailApi(examId)
-          // 兼容 request.js 自动脱壳直接返回 ExamDetailVO 与包含 res.data 两种格式
           const data = detailRes?.data || detailRes
           if (data && data.examId) {
             formData.examId = data.examId
@@ -151,7 +158,6 @@ export default defineComponent({
             if (data.startTime && data.endTime) {
               formData.dateRange = [data.startTime, data.endTime]
             }
-            // 记录初始快照，用于保存前对比是否有变更
             initialBasicData.value = {
               title: (data.title || '').trim(),
               startTime: data.startTime || '',
@@ -184,13 +190,11 @@ export default defineComponent({
       saving.value = true
       try {
         if (!formData.examId) {
-          // 新增竞赛
           const res = await addExamApi({
             title: formData.title.trim(),
             startTime: formData.startTime,
             endTime: formData.endTime
           })
-          // 兼容 request.js 脱壳直接返回字符串ID与包含 data 两种结构
           const newExamId = typeof res === 'string' || typeof res === 'number' ? res : (res?.data || res)
           if (newExamId) {
             formData.examId = newExamId
@@ -198,7 +202,6 @@ export default defineComponent({
             ElMessage.success('竞赛基本信息保存成功，请在下方点击添加题目')
           }
         } else {
-          // 编辑竞赛前校验内容是否发生改变，无改变无需重复发送请求
           const currentTitle = formData.title.trim()
           if (
             initialBasicData.value &&
@@ -215,14 +218,12 @@ export default defineComponent({
             startTime: formData.startTime,
             endTime: formData.endTime
           })
-          // 更新快照
           initialBasicData.value = {
             title: currentTitle,
             startTime: formData.startTime,
             endTime: formData.endTime
           }
           ElMessage.success('竞赛基本信息修改成功')
-          // 通知列表联动刷新，保持在当前页展示更新后的竞赛信息
           emit('success', 'edit')
         }
       } catch (err) {
@@ -242,32 +243,58 @@ export default defineComponent({
       questionDialogRef.value?.open(formData.examId, boundIds)
     }
 
-    // 题目绑定成功回调
-    const handleQuestionDialogSuccess = async () => {
-      await loadBoundQuestions(formData.examId)
-      // 若是在新增阶段绑定题目，按照需求直接关闭抽屉并通知列表跳转第一页展示
-      if (mode.value === 'add' || isNewlyCreated.value) {
-        visible.value = false
-        emit('success', 'add')
-      } else {
-        emit('success', 'edit')
+    // 题目弹窗选择确认后追加到当前列表
+    const handleQuestionsSelected = (newSelectedRows) => {
+      if (!Array.isArray(newSelectedRows) || newSelectedRows.length === 0) return
+      const existingIds = new Set(boundQuestionList.value.map((item) => item.questionId))
+      const added = newSelectedRows.filter((item) => !existingIds.has(item.questionId))
+      boundQuestionList.value = [...boundQuestionList.value, ...added]
+      ElMessage.success(`已添加 ${added.length} 道题目，请点击“保存题目”完成保存`)
+    }
+
+    // 点击“保存题目”按钮持久化关联题目
+    const handleSaveQuestions = async () => {
+      if (!formData.examId) {
+        ElMessage.warning('请先保存竞赛基本信息')
+        return
+      }
+      if (boundQuestionList.value.length === 0) {
+        ElMessage.warning('当前暂无关联题目，请先添加题目')
+        return
+      }
+      savingQuestions.value = true
+      try {
+        const questionIds = boundQuestionList.value.map((item) => item.questionId)
+        await addExamQuestionApi({
+          examId: formData.examId,
+          questionIds
+        })
+        ElMessage.success('竞赛关联题目保存成功')
+        await loadBoundQuestions(formData.examId)
+        emit('success', mode.value)
+      } catch (err) {
+        ElMessage.error(err?.message || '保存题目失败')
+      } finally {
+        savingQuestions.value = false
       }
     }
 
-    // 移除已绑定的题目
-    const handleRemoveQuestion = (row) => {
-      ElMessageBox.confirm(`确定要从当前竞赛中移出题目【${row.title}】吗？`, '提示', {
+    // 移出题目
+    const handleRemoveQuestion = (row, index) => {
+      ElMessageBox.confirm(`确定要从当前列表中移出题目【${row.title}】吗？`, '提示', {
         confirmButtonText: '确定移出',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        try {
-          await deleteExamQuestionApi(formData.examId, row.questionId)
-          ElMessage.success('已成功移出该题目')
-          await loadBoundQuestions(formData.examId)
-        } catch (err) {
-          ElMessage.error(err?.message || '移出题目失败')
+        boundQuestionList.value.splice(index, 1)
+        if (formData.examId && row.questionId) {
+          try {
+            await deleteExamQuestionApi(formData.examId, row.questionId)
+          } catch (e) {
+            // 后端若尚未持久化则静默跳过
+          }
         }
+        ElMessage.success('已移出该题目')
       }).catch(() => {})
     }
 
@@ -285,6 +312,7 @@ export default defineComponent({
       drawerTitle,
       detailLoading,
       saving,
+      savingQuestions,
       questionLoading,
       formRef,
       questionDialogRef,
@@ -296,7 +324,8 @@ export default defineComponent({
       open,
       handleSaveBasic,
       handleOpenQuestionDialog,
-      handleQuestionDialogSuccess,
+      handleQuestionsSelected,
+      handleSaveQuestions,
       handleRemoveQuestion,
       handleBeforeClose
     }

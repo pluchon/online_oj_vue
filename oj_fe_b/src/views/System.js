@@ -3,7 +3,7 @@ import { defineComponent, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  Management,
+  User,
   ArrowDownBold,
   SwitchButton,
   Document,
@@ -15,7 +15,7 @@ import { useUserStore } from '@/store/user'
 export default defineComponent({
   name: 'System',
   components: {
-    Management,
+    User,
     ArrowDownBold,
     SwitchButton,
     Document,
@@ -24,7 +24,6 @@ export default defineComponent({
   setup() {
     const router = useRouter()
     const route = useRoute()
-    // 管理员信息已在全局路由守卫前置校验并加载至 Store
     const { nickName, resetUserInfoAction } = useUserStore()
 
     // 动态计算当前激活菜单项
@@ -46,15 +45,12 @@ export default defineComponent({
         type: 'warning'
       }).then(async () => {
         try {
-          // 调用后端退出登录接口销毁 Redis 中存储的 Token 会话
           await logoutApi()
-          // 后端会话销毁成功后，通过 Action 同步清理 Store 状态与本地 Cookie
           resetUserInfoAction()
           ElMessage.success('已安全退出登录')
-          // 跳转回登录页
           router.push('/login')
         } catch (err) {
-          // 退出接口异常时拦截器已全局弹窗报错，前端保持在当前页面不清除会话
+          // 异常已由拦截器处理
         }
       }).catch(() => {})
     }

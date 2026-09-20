@@ -1,0 +1,152 @@
+// Masonry 瀑布流双轨无缝平滑滚动样式
+.masonry-infinite-container {
+  display: flex;
+  gap: 18px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  // 上下渐隐羽化边缘（产生自然隐入隐出的呼吸感）
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 1) 5%, rgba(0, 0, 0, 1) 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 1) 5%, rgba(0, 0, 0, 1) 95%, transparent 100%);
+
+  .masonry-column {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    &.col-dir-up .scroll-group {
+      animation: infiniteScrollUp var(--scroll-duration, 48s) linear infinite;
+    }
+
+    &.col-dir-down .scroll-group {
+      animation: infiniteScrollDown var(--scroll-duration, 55s) linear infinite;
+    }
+
+    .scroll-group {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      flex-shrink: 0;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      perspective: 1000px;
+
+      .masonry-card-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+        flex-shrink: 0;
+        cursor: pointer;
+
+        .masonry-card {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: 12px;
+          background-color: #faf6ef;
+          border: 1px solid rgba(196, 182, 163, 0.65);
+          box-shadow:
+            0 10px 24px -8px rgba(65, 52, 38, 0.08),
+            0 2px 6px rgba(65, 52, 38, 0.03);
+          overflow: hidden;
+          background-size: cover;
+          background-position: center;
+          transform: translate3d(0, 0, 0) scale(1);
+          transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                      border-color 0.3s ease,
+                      box-shadow 0.3s ease;
+
+          &:hover {
+            transform: scale(0.96);
+            border-color: rgba(140, 122, 100, 0.9);
+            box-shadow:
+              0 16px 36px -8px rgba(65, 52, 38, 0.15),
+              0 4px 10px rgba(65, 52, 38, 0.05);
+          }
+
+          .card-engraving {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            background: linear-gradient(145deg, #fdfbf7 0%, #f4eee2 100%);
+            box-sizing: border-box;
+
+            .card-inner-frame {
+              position: absolute;
+              inset: 8px;
+              border: 1px solid rgba(182, 168, 148, 0.35);
+              border-radius: 8px;
+              pointer-events: none;
+            }
+
+            .engraving-motif {
+              width: 65%;
+              height: 65%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #8e806d;
+              opacity: 0.72;
+              transition: opacity 0.3s ease, transform 0.35s ease, color 0.3s ease;
+
+              .motif-svg {
+                width: 100%;
+                height: 100%;
+              }
+            }
+
+            &:hover .engraving-motif {
+              opacity: 0.95;
+              transform: scale(1.05);
+              color: #5c4f40;
+            }
+          }
+
+          .card-hover-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(175, 150, 120, 0.12) 0%, rgba(90, 75, 60, 0.08) 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+          }
+
+          &:hover .card-hover-overlay {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 向上无限平滑循环（双轨组精密无缝公式：平移自身完整高度 + 1个间距）
+@keyframes infiniteScrollUp {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, calc(-100% - 18px), 0);
+  }
+}
+
+// 向下无限平滑循环
+@keyframes infiniteScrollDown {
+  0% {
+    transform: translate3d(0, calc(-100% - 18px), 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}

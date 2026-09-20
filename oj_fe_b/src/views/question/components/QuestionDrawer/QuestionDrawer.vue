@@ -2,7 +2,8 @@
   <el-drawer
     v-model="visible"
     :title="drawerTitle"
-    size="760px"
+    size="820px"
+    :show-close="false"
     :before-close="handleBeforeClose"
     :destroy-on-close="true"
     class="question-drawer"
@@ -15,14 +16,13 @@
         label-position="top"
         class="question-form"
       >
-        <!-- 基础配置行：标题 -->
+        <!-- 基础配置行：题目标题 -->
         <el-form-item label="题目标题" prop="title">
           <el-input
             v-model="formData.title"
-            placeholder="请输入题目标题（如：两数之和）"
             maxlength="50"
-            show-word-limit
             clearable
+            class="form-title-input"
           />
         </el-form-item>
 
@@ -33,7 +33,6 @@
               <QuestionDifficultySelect
                 v-model="formData.difficulty"
                 :include-all="false"
-                placeholder="请选择难度"
               />
             </el-form-item>
           </el-col>
@@ -63,45 +62,97 @@
           </el-col>
         </el-row>
 
-        <!-- 题目描述：富文本编辑器 -->
+        <!-- 题目描述：轻量级 Markdown 左右分栏编辑器（左侧编辑，右侧实时排版） -->
         <el-form-item label="题目描述" prop="content">
-          <RichTextEditor
+          <MarkdownEditor
             v-model="formData.content"
-            height="260px"
-            placeholder="请在此排版题目的详细描述、输入输出要求及示例说明..."
+            height="290px"
           />
         </el-form-item>
 
-        <!-- 题目用例 -->
-        <el-form-item label="题目用例" prop="questionCase">
-          <el-input
-            v-model="formData.questionCase"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入题目用例数据（格式可为文本或 JSON 字符串）"
-            maxlength="1000"
-            show-word-limit
-          />
+        <!-- 题目用例：标题展示“题目用例 · 共 xx 组”，最右侧展示“添加用例”按钮 -->
+        <el-form-item required class="case-form-item">
+          <template #label>
+            <div class="case-header-row">
+              <span class="case-header-title">题目用例 · 共 {{ testCaseList.length }} 组</span>
+              <button
+                type="button"
+                class="btn-add-case"
+                @click="handleAddTestCase"
+              >
+                <el-icon class="btn-icon"><Plus /></el-icon>
+                <span>添加用例</span>
+              </button>
+            </div>
+          </template>
+
+          <div class="test-case-manager">
+            <div class="test-case-list">
+              <div
+                v-for="(item, index) in testCaseList"
+                :key="index"
+                class="test-case-card"
+              >
+                <div class="card-top-bar">
+                  <span class="case-index-tag">用例 #{{ index + 1 }}</span>
+                  <button
+                    v-if="testCaseList.length > 1"
+                    type="button"
+                    class="btn-delete-case"
+                    @click="handleRemoveTestCase(index)"
+                  >
+                    <el-icon class="del-icon"><Delete /></el-icon>
+                    <span>删除</span>
+                  </button>
+                </div>
+
+                <div class="card-inputs-grid">
+                  <div class="input-line">
+                    <span class="line-label">输入：</span>
+                    <el-input
+                      v-model="item.input"
+                      type="textarea"
+                      :autosize="{ minRows: 1, maxRows: 3 }"
+                      resize="none"
+                      class="case-content-input"
+                    />
+                  </div>
+                  <div class="input-line">
+                    <span class="line-label">输出：</span>
+                    <el-input
+                      v-model="item.output"
+                      type="textarea"
+                      :autosize="{ minRows: 1, maxRows: 3 }"
+                      resize="none"
+                      class="case-content-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </el-form-item>
 
         <!-- 代码区域标签页切换 -->
         <div class="code-tabs-wrapper">
           <el-tabs v-model="activeCodeTab" class="code-tabs" type="border-card">
-            <el-tab-pane label="默认代码模板" name="defaultCode">
+            <el-tab-pane label="默认代码模板" name="defaultCode" :lazy="true">
               <el-form-item prop="defaultCode" class="code-form-item">
                 <CodeEditor
                   v-model="formData.defaultCode"
                   title="用户默认代码模板"
+                  path="inmemory://question/defaultCode.java"
                   height="260px"
                 />
               </el-form-item>
             </el-tab-pane>
 
-            <el-tab-pane label="Main 评测函数" name="mainFunc">
+            <el-tab-pane label="Main 评测函数" name="mainFunc" :lazy="true">
               <el-form-item prop="mainFunc" class="code-form-item">
                 <CodeEditor
                   v-model="formData.mainFunc"
-                  title="系统评测运行入口"
+                  title="Main 评测函数"
+                  path="inmemory://question/mainFunc.java"
                   height="260px"
                 />
               </el-form-item>
@@ -111,7 +162,7 @@
       </el-form>
     </div>
 
-    <!-- 抽屉吸底按钮操作栏 -->
+    <!-- 抽屉吸底操作栏 -->
     <template #footer>
       <div class="drawer-footer">
         <el-button :disabled="submitting" @click="handleClose">

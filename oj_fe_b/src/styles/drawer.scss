@@ -1,0 +1,158 @@
+// 全局抽屉组件公共样式规范（墨衡 · 博物学画卷古典展台）
+@use './variables' as *;
+
+.el-drawer {
+  background-color: #fbf8f2 !important;
+  border-left: 1px solid rgba(195, 180, 160, 0.7) !important;
+  box-shadow: -10px 0 40px rgba(45, 38, 28, 0.15) !important;
+
+  // 抽屉头部标题加粗居中，彻底去除右上角 "X" 叉号
+  .el-drawer__header {
+    padding: 18px 24px 14px !important;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid rgba(195, 180, 160, 0.45) !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    .el-drawer__title {
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif !important;
+      font-size: 18px !important;
+      font-weight: 700 !important;
+      color: #221f1c !important;
+      text-align: center !important;
+      width: 100% !important;
+      letter-spacing: 2px !important;
+    }
+
+    // 彻底隐藏抽屉右上角的关闭叉号
+    .el-drawer__close-btn,
+    .el-drawer__headerbtn {
+      display: none !important;
+    }
+  }
+
+  // 抽屉主体区域：严格隐藏滚动条，保持平滑滚动
+  .el-drawer__body {
+    background-color: #fbf8f2 !important;
+    padding: 24px 28px !important;
+    overflow-y: auto !important;
+
+    // 隐藏滚动条
+    scrollbar-width: none !important; // Firefox
+    -ms-overflow-style: none !important; // IE/Edge
+
+    &::-webkit-scrollbar {
+      display: none !important; // Chrome / Safari / Edge
+      width: 0 !important;
+      height: 0 !important;
+    }
+  }
+
+  // 抽屉吸底按钮操作栏
+  .el-drawer__footer {
+    background-color: #fbf8f2 !important;
+    border-top: 1px solid rgba(195, 180, 160, 0.35) !important;
+    padding: 16px 28px 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 14px !important;
+
+    .el-button {
+      height: 36px !important;
+      padding: 0 24px !important;
+      border-radius: 4px !important;
+      font-family: 'Songti SC', 'SimSun', serif !important;
+      font-size: 13.5px !important;
+      letter-spacing: 1.5px !important;
+      transition: all 0.2s ease !important;
+    }
+
+    // 次要取消按钮
+    .el-button:not(.el-button--primary) {
+      background-color: rgba(246, 241, 233, 0.85) !important;
+      border: 1px solid rgba(188, 172, 154, 0.7) !important;
+      color: #3d352b !important;
+
+      &:hover {
+        background-color: #eee7db !important;
+        border-color: #8c7e6c !important;
+        color: #1f1c19 !important;
+      }
+    }
+
+    // 主要确定提交按钮
+    .el-button--primary {
+      background-color: #272f26 !important;
+      border-color: #272f26 !important;
+      color: #f7f4ee !important;
+
+      &:hover {
+        background-color: #171c16 !important;
+        border-color: #171c16 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(39, 47, 38, 0.2) !important;
+      }
+    }
+  }
+}
+
+// 代码编辑器深色语言下拉菜单浮层
+.dark-lang-select-popper.el-popper {
+  background-color: #252526 !important;
+  border: 1px solid #3c3836 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+
+  .el-popper__arrow::before {
+    background-color: #252526 !important;
+    border-color: #3c3836 !important;
+  }
+
+  .el-select-dropdown__item {
+    font-family: 'Consolas', 'Courier New', 'Songti SC', serif !important;
+    color: #d6cebf !important;
+    font-size: 13px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+
+    &.hover,
+    &:hover {
+      background-color: #333338 !important;
+      color: #ffffff !important;
+    }
+
+    &.is-selected {
+      color: #e5b869 !important; // 温暖古金，绝无默认天蓝色
+      font-weight: 700 !important;
+      background-color: #38342e !important;
+    }
+  }
+}
+
+// 全局表单项校验失败时的淡红底色与红边描边高亮
+.el-form-item.is-error {
+  .el-input__wrapper,
+  .el-textarea__inner,
+  .el-select__wrapper {
+    border-color: #d9534f !important;
+    background-color: rgba(254, 242, 242, 0.85) !important;
+    box-shadow: 0 0 0 1px #d9534f inset !important;
+
+    &.is-focus,
+    &:focus {
+      border-color: #c0392b !important;
+      background-color: #fff9f9 !important;
+      box-shadow: 0 0 0 1px #c0392b inset, 0 0 6px rgba(217, 83, 79, 0.25) !important;
+    }
+  }
+
+  .el-form-item__error {
+    color: #c0392b !important;
+    font-family: 'Songti SC', 'SimSun', serif !important;
+    font-size: 12px !important;
+    padding-top: 4px !important;
+    letter-spacing: 0.5px !important;
+  }
+}

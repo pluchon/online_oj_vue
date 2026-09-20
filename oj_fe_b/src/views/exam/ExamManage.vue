@@ -1,15 +1,16 @@
 <template>
   <div class="exam-manage-container">
-    <!-- 顶部筛选与操作栏 -->
+    <!-- 顶部筛选与操作栏（左侧无占位符输入，右侧操作按钮） -->
     <div class="filter-header-bar">
       <div class="filter-left">
         <!-- 时间范围筛选 -->
+        <span class="filter-label">时间范围</span>
         <el-date-picker
           v-model="dateRange"
           type="datetimerange"
           range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          start-placeholder=""
+          end-placeholder=""
           value-format="YYYY-MM-DD HH:mm:ss"
           :default-time="defaultTime"
           class="filter-date-picker"
@@ -17,48 +18,44 @@
         />
 
         <!-- 竞赛名称搜索 -->
+        <span class="filter-label">竞赛名称</span>
         <el-input
           v-model="queryParams.title"
-          placeholder="请输入您要搜索的竞赛名称"
           clearable
           class="filter-input"
           @keyup.enter="handleSearch"
           @clear="handleSearch"
         />
-
-        <!-- 搜索与重置按钮 -->
-        <el-button type="primary" class="btn-search" @click="handleSearch">
-          搜索
-        </el-button>
-        <el-button class="btn-reset" @click="handleReset">
-          重置
-        </el-button>
       </div>
 
+      <!-- 右侧操作按钮组（添加按钮已移至表格左下角） -->
       <div class="filter-right">
-        <!-- 添加竞赛操作按钮 -->
-        <el-button type="primary" class="btn-add" plain @click="handleAddExam">
-          + 添加竞赛
-        </el-button>
+        <button class="btn-search" @click="handleSearch">
+          <el-icon class="btn-icon"><Search /></el-icon>
+          <span>搜索</span>
+        </button>
+        <button class="btn-reset" @click="handleReset">
+          <el-icon class="btn-icon"><Refresh /></el-icon>
+          <span>重置</span>
+        </button>
       </div>
     </div>
 
-    <!-- 竞赛数据表格展示区 -->
+    <!-- 竞赛数据表格展示区（列宽科学配比，时间不截断） -->
     <div class="table-container">
       <el-table
         v-loading="loading"
         :data="examList"
-        class="custom-exam-table"
-        header-cell-class-name="custom-table-header"
-        row-class-name="custom-table-row"
-        stripe
+        class="custom-editorial-table"
+        header-cell-class-name="editorial-table-header"
+        row-class-name="editorial-table-row"
         style="width: 100%"
       >
         <!-- 竞赛标题 -->
         <el-table-column
           prop="title"
           label="竞赛标题"
-          min-width="180"
+          min-width="200"
           show-overflow-tooltip
         >
           <template #default="{ row }">
@@ -72,7 +69,12 @@
           label="竞赛开始时间"
           width="190"
           align="center"
-        />
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <span class="tabular-text">{{ row.startTime }}</span>
+          </template>
+        </el-table-column>
 
         <!-- 竞赛结束时间 -->
         <el-table-column
@@ -80,37 +82,48 @@
           label="竞赛结束时间"
           width="190"
           align="center"
-        />
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <span class="tabular-text">{{ row.endTime }}</span>
+          </template>
+        </el-table-column>
 
-        <!-- 是否开赛（前端动态计算开赛状态） -->
+        <!-- 是否开赛 -->
         <el-table-column
           label="是否开赛"
-          width="120"
+          width="100"
           align="center"
         >
           <template #default="{ row }">
-            <el-tag
-              :type="isStarted(row.startTime) ? 'warning' : 'info'"
-              class="exam-status-tag"
-            >
-              {{ isStarted(row.startTime) ? '已开赛' : '未开赛' }}
-            </el-tag>
+            <div class="status-indicator">
+              <span
+                class="status-dot"
+                :class="isStarted(row.startTime) ? 'dot-active' : 'dot-waiting'"
+              >●</span>
+              <span class="status-label">
+                {{ isStarted(row.startTime) ? '已开赛' : '未开赛' }}
+              </span>
+            </div>
           </template>
         </el-table-column>
 
         <!-- 是否发布 -->
         <el-table-column
           label="是否发布"
-          width="120"
+          width="100"
           align="center"
         >
           <template #default="{ row }">
-            <el-tag
-              :type="row.status === 1 ? 'success' : 'info'"
-              class="exam-status-tag"
-            >
-              {{ row.status === 1 ? '已发布' : '未发布' }}
-            </el-tag>
+            <div class="status-indicator">
+              <span
+                class="status-dot"
+                :class="row.status === 1 ? 'dot-active' : 'dot-waiting'"
+              >●</span>
+              <span class="status-label">
+                {{ row.status === 1 ? '已发布' : '未发布' }}
+              </span>
+            </div>
           </template>
         </el-table-column>
 
@@ -118,8 +131,9 @@
         <el-table-column
           prop="creatorName"
           label="创建用户"
-          width="140"
+          width="130"
           align="center"
+          show-overflow-tooltip
         />
 
         <!-- 创建时间 -->
@@ -128,12 +142,17 @@
           label="创建时间"
           width="190"
           align="center"
-        />
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <span class="tabular-text">{{ row.createTime }}</span>
+          </template>
+        </el-table-column>
 
-        <!-- 操作栏 -->
+        <!-- 操作栏（规范统一规格按钮，独立操作色彩识别） -->
         <el-table-column
           label="操作"
-          width="180"
+          width="245"
           align="center"
           fixed="right"
         >
@@ -141,53 +160,54 @@
             <span v-if="isStarted(row.startTime)" class="action-disabled-text">
               已开赛，不允许操作
             </span>
-            <div v-else class="action-btn-group">
-              <el-button
-                link
-                type="primary"
-                class="action-btn-link"
+            <div v-else class="action-cell">
+              <button
+                type="button"
+                class="action-btn btn-action-edit"
                 @click="handleEditExam(row)"
               >
                 编辑
-              </el-button>
-              <el-button
-                link
-                type="primary"
-                class="action-btn-link"
+              </button>
+              <button
+                type="button"
+                class="action-btn btn-action-delete"
                 @click="handleDeleteExam(row)"
               >
                 删除
-              </el-button>
-              <el-button
-                link
-                type="primary"
-                class="action-btn-link"
+              </button>
+              <button
+                type="button"
+                class="action-btn"
+                :class="row.status === 1 ? 'btn-action-unpublish' : 'btn-action-publish'"
                 @click="handleTogglePublish(row)"
               >
                 {{ row.status === 1 ? '撤销发布' : '发布' }}
-              </el-button>
+              </button>
             </div>
           </template>
         </el-table-column>
 
-        <!-- 空状态展示 -->
+        <!-- 空状态展示：使用小蒙定制插画与针对性文案 -->
         <template #empty>
-          <div class="table-empty-state">
-            <el-empty description="暂无符合条件的竞赛数据" :image-size="100">
-              <el-button type="primary" size="small" @click="handleReset">重置筛选</el-button>
-            </el-empty>
-          </div>
+          <OjEmpty text="暂无竞赛数据" :image-size="130" />
         </template>
       </el-table>
     </div>
 
-    <!-- 底部通用分页器组件 -->
+    <!-- 底部通用分页器组件（左下角布局“添加竞赛”操作按钮） -->
     <pagination
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       :total="total"
       @pagination="loadExamList"
-    />
+    >
+      <template #left>
+        <button class="btn-add-bottom" @click="handleAddExam">
+          <el-icon class="btn-icon"><Plus /></el-icon>
+          <span>添加竞赛</span>
+        </button>
+      </template>
+    </pagination>
 
     <!-- 竞赛新增与编辑抽屉组件 -->
     <ExamDrawer

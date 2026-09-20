@@ -1,0 +1,269 @@
+// 全局弹窗、消息提示框与浮层通用样式（墨衡古籍画卷规范）
+@use './variables' as *;
+
+// Element Plus 消息弹窗（ElMessageBox）全局主题化
+.el-message-box {
+  background-color: #fbf8f2 !important;
+  border: 1px solid rgba(195, 180, 160, 0.7) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 18px 50px -12px rgba(45, 38, 28, 0.22) !important;
+  padding: 22px 28px 20px !important;
+
+  .el-message-box__header {
+    padding: 0 0 14px !important;
+    border-bottom: 1px solid rgba(195, 180, 160, 0.4) !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 28px !important;
+
+    .el-message-box__title {
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif !important;
+      font-size: 17px !important;
+      font-weight: 700 !important;
+      color: #221f1c !important;
+      text-align: center !important;
+      width: 100% !important;
+      letter-spacing: 2px !important;
+      line-height: 28px !important;
+      margin: 0 !important;
+    }
+
+    .el-message-box__headerbtn {
+      position: absolute !important;
+      top: 0 !important;
+      right: 0 !important;
+      width: 28px !important;
+      height: 28px !important;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      .el-message-box__close {
+        color: #7b6f60 !important;
+        font-size: 18px !important;
+
+        &:hover {
+          color: #1f1c19 !important;
+        }
+      }
+    }
+  }
+
+  // 彻底移除提示弹窗中的感叹号 (!) 图标
+  .el-message-box__status {
+    display: none !important;
+  }
+
+  .el-message-box__content {
+    padding: 22px 12px 18px !important;
+    color: #3d352b !important;
+    font-size: 14.5px !important;
+    font-family: 'Songti SC', 'SimSun', serif !important;
+    text-align: center !important;
+    line-height: 1.6 !important;
+
+    .el-message-box__container {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .el-message-box__message {
+      padding: 0 !important;
+      margin: 0 !important;
+      text-align: center !important;
+      width: 100% !important;
+
+      p {
+        margin: 0 !important;
+        text-align: center !important;
+      }
+    }
+  }
+
+  .el-message-box__btns {
+    padding-top: 16px !important;
+    border-top: 1px solid rgba(195, 180, 160, 0.35) !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 14px !important;
+
+    .el-button {
+      height: 36px !important;
+      padding: 0 22px !important;
+      border-radius: 4px !important;
+      font-family: 'Songti SC', 'SimSun', serif !important;
+      font-size: 13.5px !important;
+      letter-spacing: 1px !important;
+      transition: all 0.2s ease !important;
+    }
+
+    // 次要取消按钮
+    .el-button:not(.el-button--primary):not(.el-button--danger) {
+      background-color: rgba(246, 241, 233, 0.85) !important;
+      border: 1px solid rgba(188, 172, 154, 0.7) !important;
+      color: #3d352b !important;
+
+      &:hover {
+        background-color: #eee7db !important;
+        border-color: #8c7e6c !important;
+        color: #1f1c19 !important;
+      }
+    }
+
+    // 主要确定按钮
+    .el-button--primary {
+      background-color: #272f26 !important;
+      border-color: #272f26 !important;
+      color: #f7f4ee !important;
+
+      &:hover {
+        background-color: #171c16 !important;
+        border-color: #171c16 !important;
+        transform: translateY(-1px) !important;
+      }
+    }
+
+    // 危险操作确定按钮（如彻底删除）
+    .el-button--danger {
+      background-color: #8a2a22 !important;
+      border-color: #8a2a22 !important;
+      color: #faf5ed !important;
+
+      &:hover {
+        background-color: #6e1e17 !important;
+        border-color: #6e1e17 !important;
+      }
+    }
+  }
+}
+
+// 下拉菜单浮层全局羊皮纸主题（移除任何天蓝色元素）
+.el-select__popper.el-popper,
+.el-popper.is-light {
+  background: #fbf8f2 !important;
+  border: 1px solid rgba(195, 180, 160, 0.7) !important;
+  box-shadow: 0 10px 30px rgba(45, 38, 28, 0.12) !important;
+
+  .el-popper__arrow::before {
+    background: #fbf8f2 !important;
+    border-color: rgba(195, 180, 160, 0.7) !important;
+  }
+
+  .el-select-dropdown__item {
+    font-family: 'Songti SC', 'SimSun', serif !important;
+    color: #3d352b !important;
+    font-size: 13.5px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+
+    &.hover,
+    &:hover {
+      background-color: rgba(238, 230, 218, 0.6) !important;
+      color: #1f1c19 !important;
+    }
+
+    &.is-selected {
+      color: #24201c !important;
+      font-weight: 700 !important;
+      background-color: rgba(230, 219, 203, 0.8) !important;
+    }
+  }
+}
+
+// 日期时间范围选择浮层全局羊皮纸主题
+.el-picker__popper.el-popper {
+  background: #fbf8f2 !important;
+  border: 1px solid rgba(195, 180, 160, 0.7) !important;
+  box-shadow: 0 12px 36px rgba(45, 38, 28, 0.15) !important;
+
+  .el-date-range-picker {
+    background: #fbf8f2 !important;
+    color: #2d261e !important;
+  }
+
+  .el-date-range-picker__header {
+    font-family: 'Songti SC', 'SimSun', serif !important;
+    color: #24201c !important;
+
+    button {
+      color: #7b6f60 !important;
+
+      &:hover {
+        color: #24201c !important;
+      }
+    }
+  }
+
+  .el-date-table {
+    th {
+      color: #6b5f50 !important;
+      font-family: 'Songti SC', 'SimSun', serif !important;
+      border-bottom: 1px solid rgba(195, 180, 160, 0.3) !important;
+    }
+
+    td {
+      &.in-range .el-date-table-cell {
+        background-color: rgba(233, 222, 205, 0.5) !important;
+      }
+
+      &.start-date .el-date-table-cell__text,
+      &.end-date .el-date-table-cell__text {
+        background-color: #272f26 !important;
+        color: #fbf8f2 !important;
+      }
+
+      &.today .el-date-table-cell__text {
+        color: #8c5b24 !important;
+        font-weight: 700 !important;
+      }
+
+      .el-date-table-cell__text {
+        color: #3d352b !important;
+      }
+    }
+  }
+
+  .el-picker-panel__footer {
+    background: #f8f4ec !important;
+    border-top: 1px solid rgba(195, 180, 160, 0.4) !important;
+
+    .el-button--primary {
+      background-color: #272f26 !important;
+      border-color: #272f26 !important;
+      color: #f7f4ee !important;
+    }
+  }
+}
+
+// 弹窗与通用表单项校验失败淡红底色与描边高亮
+.el-form-item.is-error {
+  .el-input__wrapper,
+  .el-textarea__inner,
+  .el-select__wrapper {
+    border-color: #d9534f !important;
+    background-color: rgba(254, 242, 242, 0.85) !important;
+    box-shadow: 0 0 0 1px #d9534f inset !important;
+
+    &.is-focus,
+    &:focus {
+      border-color: #c0392b !important;
+      background-color: #fff9f9 !important;
+      box-shadow: 0 0 0 1px #c0392b inset, 0 0 6px rgba(217, 83, 79, 0.25) !important;
+    }
+  }
+
+  .el-form-item__error {
+    color: #c0392b !important;
+    font-family: 'Songti SC', 'SimSun', serif !important;
+    font-size: 12px !important;
+    padding-top: 4px !important;
+    letter-spacing: 0.5px !important;
+  }
+}

@@ -1,6 +1,91 @@
-// 通用底部分页器样式
+// 通用底部分页器样式（墨衡古籍画卷风格）
 .pagination-footer-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(195, 180, 160, 0.35);
+  background-color: transparent;
+  padding: 16px 8px 4px;
+  box-sizing: border-box;
+
   &.hidden {
     display: none;
+  }
+
+  .pagination-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .custom-pagination {
+    display: flex;
+    align-items: center;
+
+    :deep(.el-pagination__total) {
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      color: #5a4f42;
+      margin-right: 18px;
+    }
+
+    :deep(.btn-prev),
+    :deep(.btn-next),
+    :deep(.el-pager li) {
+      background-color: rgba(246, 241, 233, 0.85) !important;
+      border: 1px solid rgba(188, 172, 154, 0.6) !important;
+      border-radius: 4px !important;
+      color: #3d352b !important;
+      min-width: 32px;
+      height: 32px;
+      line-height: 30px;
+      font-size: 13.5px;
+      margin: 0 4px;
+      transition: all 0.2s ease;
+
+      &.is-active {
+        background-color: #252b24 !important;
+        border-color: #252b24 !important;
+        color: #fbf8f2 !important;
+        font-weight: 600;
+      }
+
+      &:hover:not(.is-active) {
+        border-color: #8c7e6c !important;
+        color: #1a1714 !important;
+      }
+
+      &.more {
+        background-color: transparent !important;
+        border: none !important;
+        color: #7b6f60 !important;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(238, 230, 218, 0.55) !important;
+          border-radius: 4px;
+          color: #252b24 !important;
+        }
+
+        .el-icon {
+          color: #7b6f60;
+        }
+      }
+    }
+
+    :deep(.el-pagination__jump) {
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      color: #5a4f42;
+      margin-left: 18px;
+
+      .el-input__wrapper {
+        background-color: rgba(246, 241, 233, 0.85) !important;
+        border: 1px solid rgba(188, 172, 154, 0.6) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        height: 32px;
+        width: 48px;
+      }
+    }
   }
 }
