@@ -92,16 +92,3 @@ export function getExamRankListApi(params) {
   })
 }
 
-/**
- * 获取当前登录用户在指定竞赛中的成绩与排名
- * @param {Object} params - { examId }
- * @returns {Promise}
- */
-export function getMyExamRankApi(params) {
-  return request({
-    url: '/friend/exam/rank/my',
-    method: 'get',
-    params
-  })
-}
-

@@ -1,222 +1,451 @@
 <template>
   <div class="question-do-page" v-loading="pageLoading">
-    <!-- 顶部状态栏与返回导航 -->
-    <header class="do-header">
-      <div class="header-left">
-        <el-button link class="back-btn" @click="handleBack">
-          <el-icon><ArrowLeft /></el-icon>
-          <span>{{ isExamMode ? '返回竞赛' : '返回题目列表' }}</span>
-        </el-button>
-        <span class="divider">|</span>
-        <span class="mode-badge" :class="{ 'is-exam': isExamMode }">
-          {{ isExamMode ? '竞赛答题模式' : '日常练习模式' }}
-        </span>
-      </div>
+    <!-- 顶部全局典雅导航栏 -->
+    <header class="global-navbar">
+      <div class="nav-inner">
+        <!-- 品牌标识 -->
+        <div class="brand-area" @click="goToHome">
+          <span class="brand-title">墨衡</span>
+        </div>
 
-      <div class="header-center">
-        <span class="exam-title-badge" v-if="isExamMode && examTitle">
-          {{ examTitle }}
-        </span>
-      </div>
+        <!-- 核心导航栏 -->
+        <nav class="nav-links">
+          <router-link to="/question" class="nav-link" :class="{ active: !isExamMode }">题库中心</router-link>
+          <router-link to="/exam" class="nav-link" :class="{ active: isExamMode }">竞赛中心</router-link>
+          <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
+          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
+          <router-link v-if="isLogin" to="/user/profile" class="nav-link">个人中心</router-link>
+        </nav>
 
-      <div class="header-right">
-        <el-button
-          type="primary"
-          class="submit-top-btn"
-          :loading="submitting"
-          @click="handleSubmit"
-        >
-          <el-icon><Check /></el-icon>
-          <span>提交代码</span>
-        </el-button>
+        <!-- 用户行为区 -->
+        <div class="user-action-area">
+          <template v-if="isLogin">
+            <div class="user-direct-info">
+              <div class="user-avatar-box">
+                <img
+                  :src="userAvatar"
+                  class="user-avatar-img"
+                  alt="头像"
+                  @error="handleAvatarError"
+                />
+              </div>
+              <span class="user-name">{{ nickName || '学者' }}</span>
+              <button type="button" class="direct-logout-btn" @click="handleLogout">
+                退出登录
+              </button>
+            </div>
+          </template>
+          <template v-else>
+            <button type="button" class="nav-login-btn" @click="goToLogin">
+              登录 / 注册
+            </button>
+          </template>
+        </div>
       </div>
     </header>
 
-    <!-- 主工作台双栏容器 -->
-    <main class="do-workbench">
-      <!-- 左栏：题目描述与上下题导航 -->
-      <section class="panel-left">
-        <div class="panel-header">
-          <div class="tab-item active">
-            <el-icon><Document /></el-icon>
-            <span>题目描述</span>
-          </div>
+    <!-- 双卡工作台主容器 -->
+    <main class="question-workbench-layout">
+      <!-- 左侧：题目详情卡片 -->
+      <section class="problem-spec-card">
+        <!-- 卡片头部：返回与上下题切换 -->
+        <div class="card-header-bar">
+          <button type="button" class="btn-back-breadcrumb" @click="handleBack">
+            <el-icon class="back-icon"><ArrowLeft /></el-icon>
+            <span>{{ isExamMode ? '竞赛' : '题库' }}</span>
+          </button>
 
-          <div class="nav-actions">
-            <el-button
-              size="small"
-              class="nav-btn"
-              text
+          <div class="nav-quick-btns">
+            <button
+              type="button"
+              class="nav-quick-btn"
               :disabled="!preQuestionId || navLoading"
               @click="handlePreQuestion"
             >
-              <span>上一题</span>
               <el-icon><ArrowLeft /></el-icon>
-            </el-button>
-
-            <el-button
-              size="small"
-              class="nav-btn"
-              text
+              <span>上一题</span>
+            </button>
+            <button
+              type="button"
+              class="nav-quick-btn"
               :disabled="!nextQuestionId || navLoading"
               @click="handleNextQuestion"
             >
-              <el-icon><ArrowRight /></el-icon>
               <span>下一题</span>
-            </el-button>
+              <el-icon><ArrowRight /></el-icon>
+            </button>
           </div>
         </div>
 
-        <div class="panel-body">
-          <template v-if="question">
-            <h1 class="question-title">{{ question.title }}</h1>
-
-            <div class="question-meta">
-              <span class="meta-item">
-                <span class="meta-label">题目难度:</span>
-                <span class="difficulty-tag" :class="'diff-' + question.difficulty">
-                  {{ question.difficultyDesc || getDiffText(question.difficulty) }}
-                </span>
+        <!-- 题目内部可滚动内容区 -->
+        <div class="spec-scroll-body">
+          <!-- 标题与属性区 -->
+          <div class="problem-header-area">
+            <h1 class="problem-main-title">{{ question?.title }}</h1>
+            <div class="problem-tags-row">
+              <span class="diff-badge" :class="'diff-' + (question?.difficulty || 1)">
+                {{ question?.difficultyDesc || getDiffText(question?.difficulty || 1) }}
               </span>
-
-              <span class="meta-item">
-                <span class="meta-label">时间限制:</span>
-                <span class="meta-val">{{ question.timeLimit }} ms</span>
+              <span class="limit-pill">
+                <el-icon><Timer /></el-icon>
+                {{ question?.timeLimit || 1000 }} ms
               </span>
-
-              <span class="meta-item">
-                <span class="meta-label">空间限制:</span>
-                <span class="meta-val">{{ question.spaceLimit }} MB</span>
+              <span class="limit-pill">
+                <el-icon><Coin /></el-icon>
+                {{ question?.spaceLimit || 128 }} MB
               </span>
             </div>
+          </div>
 
-            <div class="question-content">
-              <p class="content-text">{{ question.content }}</p>
+          <!-- 1. 题目描述 -->
+          <div class="problem-section-block">
+            <div class="description-text" v-html="formattedDescriptionHtml"></div>
+          </div>
+
+          <!-- 2. 示例卡片 -->
+          <div class="problem-section-block" v-if="displayExamples.length > 0">
+            <h3 class="section-title">示例</h3>
+            <div class="examples-grid">
+              <div
+                v-for="(item, eIdx) in displayExamples"
+                :key="eIdx"
+                class="example-card"
+                :class="{ 'is-wide': isLongExample(item) }"
+              >
+                <div class="example-card-header">示例 {{ eIdx + 1 }}</div>
+                <div class="example-card-row">
+                  <span class="row-label">输入</span>
+                  <pre class="row-code">{{ item.input }}</pre>
+                </div>
+                <div class="example-card-row">
+                  <span class="row-label">输出</span>
+                  <pre class="row-code">{{ item.output }}</pre>
+                </div>
+                <div class="example-card-row" v-if="item.explain">
+                  <span class="row-label">解释</span>
+                  <span class="row-explain">{{ item.explain }}</span>
+                </div>
+              </div>
             </div>
-          </template>
+          </div>
 
-          <el-empty v-else description="暂未获取到题目信息" />
+          <!-- 3. 提示与约束 -->
+          <div class="problem-section-block" v-if="displayHints.length > 0">
+            <h3 class="section-title">提示</h3>
+            <ul class="hints-list">
+              <li v-for="(hint, hIdx) in displayHints" :key="hIdx">{{ hint }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 赛中倒计时栏（固定在题目卡片底部，赛后练习不显示） -->
+        <div v-if="isContestMode" class="exam-countdown-footer">
+          <span class="exam-name" :title="examInfo.title">{{ examInfo.title }}</span>
+          <span class="countdown-label">距结束</span>
+          <span class="countdown-value">{{ countdownText }}</span>
         </div>
       </section>
 
-      <!-- 右栏：代码编辑器与执行结果控制台 -->
-      <section class="panel-right">
-        <!-- 上半部分：代码编辑区 -->
-        <div class="editor-section">
-          <CodeEditor
-            v-model="userCode"
-            v-model:language="currentLanguage"
-            title="代码"
-            height="100%"
-            theme="vs"
-          >
-            <template #extra-actions>
-              <el-tooltip content="重置为题目初始默认模板" placement="top">
-                <el-button size="small" class="header-btn" text @click="handleResetCode">
-                  重置模板
-                </el-button>
-              </el-tooltip>
-            </template>
-          </CodeEditor>
-        </div>
+      <!-- 右侧：代码编辑与控制台 -->
+      <section class="workbench-right-col">
+        <!-- 上半部分：代码编辑器卡片 -->
+        <div class="editor-card" :class="{ 'is-fullscreen': isEditorFullscreen }">
+          <!-- 编辑器顶部工具栏 -->
+          <div class="editor-header-bar">
+            <div class="header-left-tools">
+              <span class="lang-label">Java</span>
 
-        <!-- 下半部分：控制台（测试用例 与 执行结果 并列子卡片选项卡） -->
-        <div class="result-section">
-          <div class="result-header">
-            <div class="console-tabs">
-              <div
-                class="console-tab-item"
-                :class="{ active: activeConsoleTab === 'case' }"
-                @click="activeConsoleTab = 'case'"
-              >
-                <el-icon><Document /></el-icon>
-                <span>测试用例</span>
-              </div>
-              <div
-                class="console-tab-item"
-                :class="{ active: activeConsoleTab === 'result' }"
-                @click="activeConsoleTab = 'result'"
-              >
-                <el-icon><Monitor /></el-icon>
-                <span>执行结果</span>
-              </div>
+              <el-tooltip content="重置代码" placement="top">
+                <button type="button" class="btn-tool-icon" @click="handleResetCode">
+                  <el-icon><RefreshLeft /></el-icon>
+                </button>
+              </el-tooltip>
+
+              <el-tooltip content="格式化" placement="top">
+                <button type="button" class="btn-tool-icon" @click="handleFormatCode">
+                  <el-icon><MagicStick /></el-icon>
+                </button>
+              </el-tooltip>
+
+              <el-tooltip :content="editorTheme === 'vs' ? '深色主题' : '浅色主题'" placement="top">
+                <button type="button" class="btn-tool-icon" @click="toggleEditorTheme">
+                  <el-icon><Sunny v-if="editorTheme === 'vs-dark'" /><Moon v-else /></el-icon>
+                </button>
+              </el-tooltip>
+
+              <el-tooltip :content="isEditorFullscreen ? '退出全屏' : '全屏'" placement="top">
+                <button type="button" class="btn-tool-icon" @click="toggleEditorFullscreen">
+                  <el-icon><FullScreen /></el-icon>
+                </button>
+              </el-tooltip>
             </div>
 
-            <div class="result-actions" v-if="activeConsoleTab === 'result' && submitResult">
-              <el-tag :type="submitResult.pass === 1 ? 'success' : (submitResult.pass === 2 ? 'warning' : 'danger')" size="small">
-                {{ submitResult.pass === 1 ? '运行通过 (Accepted)' : (submitResult.pass === 2 ? '沙箱评测中 (Judging)' : '未通过 (Wrong Answer)') }}
-              </el-tag>
-              <span class="score-text">得分: {{ submitResult.score }}</span>
+            <div class="header-right-actions">
+              <!-- 运行按钮（次要行动点） -->
+              <button type="button" class="btn-run-code" :disabled="runningCase || submitting" @click="handleRun">
+                <el-icon class="btn-icon" :class="{ 'is-loading': runningCase }">
+                  <Loading v-if="runningCase" /><CaretRight v-else />
+                </el-icon>
+                <span>运行</span>
+              </button>
+
+              <!-- 提交按钮（主行动点，深墨绿） -->
+              <button type="button" class="btn-submit-code" :disabled="submitting" @click="handleSubmit">
+                <el-icon class="btn-icon" :class="{ 'is-loading': submitting }">
+                  <Loading v-if="submitting" /><Upload v-else />
+                </el-icon>
+                <span>提交</span>
+              </button>
             </div>
           </div>
 
-          <div class="result-body">
-            <!-- 测试用例面板 -->
-            <div class="case-panel" v-if="activeConsoleTab === 'case'">
-              <template v-if="parsedTestCases.length > 0">
-                <!-- 用例选择胶囊按钮组 -->
-                <div class="case-nav">
+          <!-- Monaco 编辑器挂载容器 -->
+          <div class="editor-monaco-wrapper">
+            <CodeEditor
+              ref="codeEditorRef"
+              v-model="userCode"
+              language="java"
+              height="100%"
+              :theme="editorTheme"
+              :show-header="false"
+            />
+          </div>
+        </div>
+
+        <!-- 下半部分：测试用例与执行结果卡片 -->
+        <div
+          class="console-card"
+          :class="{ 'is-pass': activeConsoleTab === 'result' && !runningCase && !submitting && verdictClass === 'pass' }"
+        >
+          <div class="console-header-bar">
+            <div class="console-tabs">
+              <button
+                type="button"
+                class="btn-console-tab"
+                :class="{ active: activeConsoleTab === 'case' }"
+                @click="toggleConsoleTab('case')"
+              >
+                测试用例
+              </button>
+              <button
+                type="button"
+                class="btn-console-tab"
+                :class="{ active: activeConsoleTab === 'result' }"
+                @click="toggleConsoleTab('result')"
+              >
+                <span
+                  v-if="resultData"
+                  class="status-indicator-dot"
+                  :class="'is-' + verdictClass"
+                ></span>
+                <span>执行结果</span>
+              </button>
+              <button
+                v-if="hasSubmitted"
+                type="button"
+                class="btn-console-tab"
+                :class="{ active: activeConsoleTab === 'history' }"
+                @click="toggleConsoleTab('history')"
+              >
+                提交记录
+              </button>
+            </div>
+          </div>
+
+          <!-- 全部通过时的庆祝插画（透明背景，置于内容下层） -->
+          <img
+            v-if="activeConsoleTab === 'result' && !runningCase && !submitting && verdictClass === 'pass'"
+            :src="submitSuccessImage"
+            class="success-illustration"
+            alt=""
+          />
+
+          <!-- 控制台主体内容 -->
+          <div class="console-body-wrapper">
+            <!-- 1. 测试用例视图 -->
+            <div class="case-view-container" v-if="activeConsoleTab === 'case'">
+              <div v-if="!parsedTestCases.length" class="result-state-box">
+                <span>暂无用例</span>
+              </div>
+
+              <template v-else>
+                <div class="case-tabs-list">
                   <button
                     v-for="(c, idx) in parsedTestCases"
                     :key="idx"
                     type="button"
-                    class="case-pill-btn"
+                    class="case-tag-btn"
                     :class="{ active: activeCaseIndex === idx }"
                     @click="activeCaseIndex = idx"
                   >
-                    Case {{ c.index }}
+                    用例 {{ c.index }}
                   </button>
                 </div>
 
-                <!-- 当前选中用例详情 -->
-                <div class="case-content" v-if="currentCase">
-                  <div class="case-field-group">
-                    <span class="field-title">输入</span>
-                    <pre class="field-value">{{ currentCase.input }}</pre>
+                <div class="case-io-stack">
+                  <div class="io-box">
+                    <div class="io-box-label">输入</div>
+                    <pre class="io-code-block">{{ currentCase?.input }}</pre>
                   </div>
-                  <div class="case-field-group" v-if="currentCase.output">
-                    <span class="field-title">预期输出</span>
-                    <pre class="field-value">{{ currentCase.output }}</pre>
+                  <div class="io-box">
+                    <div class="io-box-label">预期输出</div>
+                    <pre class="io-code-block">{{ currentCase?.output }}</pre>
                   </div>
                 </div>
               </template>
-              <div class="result-placeholder" v-else>
-                <span>暂无测试用例数据</span>
+            </div>
+
+            <!-- 2. 执行结果视图 -->
+            <div class="result-view-container" v-else-if="activeConsoleTab === 'result'">
+              <div v-if="submitting || runningCase" class="result-state-box">
+                <el-icon class="is-loading state-icon"><Loading /></el-icon>
+                <span>评测中</span>
+              </div>
+
+              <div v-else-if="!resultData" class="result-state-box">
+                <span>暂无结果</span>
+              </div>
+
+              <div v-else class="result-feedback-detail">
+                <!-- 结论与统计 -->
+                <div class="feedback-top-summary">
+                  <span class="result-verdict-text" :class="verdictClass">{{ verdictText }}</span>
+                  <span class="meta-stat" v-if="resultData.totalCount">
+                    {{ resultData.passCount || 0 }} / {{ resultData.totalCount }}
+                  </span>
+                  <span class="meta-stat" v-if="resultData.timeCost">{{ resultData.timeCost }} ms</span>
+                  <span class="meta-stat" v-if="lastResult.mode === 'submit' && !isJudging">
+                    {{ resultData.score ?? 0 }} 分
+                  </span>
+
+                  <!-- 提交：逐用例进度格（靠右） -->
+                  <div class="case-progress" v-if="caseCells.length">
+                    <span
+                      v-for="(cell, idx) in caseCells"
+                      :key="idx"
+                      class="progress-cell"
+                      :class="'is-' + cell"
+                    ></span>
+                  </div>
+                </div>
+
+                <!-- 编译错误、运行异常等原始输出 -->
+                <pre class="feedback-exe-message" v-if="resultData.exeMessage">{{ resultData.exeMessage }}</pre>
+
+                <!-- 运行：逐用例结果 -->
+                <template v-if="runCaseResults.length">
+                  <div class="case-tabs-list">
+                    <button
+                      v-for="(c, idx) in runCaseResults"
+                      :key="idx"
+                      type="button"
+                      class="case-tag-btn result-tag"
+                      :class="{ active: activeResultCaseIndex === idx, 'is-fail': !c.pass }"
+                      @click="activeResultCaseIndex = idx"
+                    >
+                      <span class="case-dot"></span>
+                      用例 {{ idx + 1 }}
+                    </button>
+                  </div>
+                  <div class="case-io-stack" v-if="activeRunCase">
+                    <div class="io-box">
+                      <div class="io-box-label">输入</div>
+                      <pre class="io-code-block">{{ activeRunCase.input }}</pre>
+                    </div>
+                    <div class="io-box">
+                      <div class="io-box-label">输出</div>
+                      <pre class="io-code-block" :class="{ 'is-wrong': !activeRunCase.pass }">{{ activeRunCase.actualOutput ?? '' }}</pre>
+                    </div>
+                    <div class="io-box">
+                      <div class="io-box-label">预期结果</div>
+                      <pre class="io-code-block">{{ activeRunCase.expectedOutput }}</pre>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- 提交：首个未通过用例 -->
+                <div class="case-io-stack" v-if="lastResult.mode === 'submit' && resultData.failCase">
+                  <div class="io-box">
+                    <div class="io-box-label">输入</div>
+                    <pre class="io-code-block">{{ resultData.failCase.input }}</pre>
+                  </div>
+                  <div class="io-box" v-if="resultData.failCase.actualOutput !== null && resultData.failCase.actualOutput !== undefined">
+                    <div class="io-box-label">输出</div>
+                    <pre class="io-code-block is-wrong">{{ resultData.failCase.actualOutput }}</pre>
+                  </div>
+                  <div class="io-box">
+                    <div class="io-box-label">预期结果</div>
+                    <pre class="io-code-block">{{ resultData.failCase.expectedOutput }}</pre>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- 执行结果面板 -->
-            <div class="result-panel" v-else>
-              <!-- 提交中 loading 状态 -->
-              <div class="result-loading-box" v-if="submitting">
-                <el-icon class="is-loading"><Loading /></el-icon>
-                <span>评测运行中，请稍候...</span>
+            <!-- 3. 提交记录视图（翻页器固定在底部） -->
+            <div class="history-view-container" v-else>
+              <div v-if="!isLogin" class="result-state-box">
+                <span>登录后查看提交记录</span>
               </div>
 
-              <!-- 初始未提交状态 -->
-              <div class="result-placeholder" v-else-if="!submitResult">
-                <span>请先提交代码</span>
+              <div v-else-if="historyLoading && !historyList.length" class="result-state-box">
+                <el-icon class="is-loading state-icon"><Loading /></el-icon>
               </div>
 
-              <!-- 提交结果回显 -->
-              <div class="result-feedback" v-else :class="{ 'is-passed': submitResult.pass === 1 }">
-                <div class="feedback-status-row">
-                  <span class="status-badge" :class="submitResult.pass === 1 ? 'pass' : (submitResult.pass === 2 ? 'judging' : 'fail')">
-                    {{ submitResult.pass === 1 ? 'Accepted' : (submitResult.pass === 2 ? 'Judging...' : 'Wrong Answer') }}
-                  </span>
-                  <span class="submit-id-info">提交记录ID: {{ submitResult.submitId }}</span>
-                  <span class="submit-time-info">{{ submitResult.createTime }}</span>
+              <div v-else-if="historyError" class="result-state-box">
+                <span>加载失败</span>
+                <button type="button" class="btn-retry" @click="loadHistory(historyPage)">重试</button>
+              </div>
+
+              <div v-else-if="!historyList.length" class="result-state-box">
+                <span>暂无提交</span>
+              </div>
+
+              <template v-else>
+                <div class="history-list">
+                  <button
+                    v-for="item in historyList"
+                    :key="item.submitId"
+                    type="button"
+                    class="history-row"
+                    :class="{ 'is-current': item.submitId === resultData?.submitId }"
+                    @click="handleLoadHistoryCode(item)"
+                  >
+                    <span class="history-verdict" :class="historyVerdict(item).cls">{{ historyVerdict(item).text }}</span>
+                    <span class="history-meta">{{ item.passCount || 0 }} / {{ item.totalCount || 0 }}</span>
+                    <span class="history-meta">{{ item.timeCost ? item.timeCost + ' ms' : '—' }}</span>
+                    <span class="history-time">{{ formatHistoryTime(item.createTime) }}</span>
+                    <span class="history-action">载入代码</span>
+                  </button>
                 </div>
 
-                <div class="feedback-detail-box">
-                  <pre class="exe-message">{{ submitResult.exeMessage }}</pre>
+                <div class="history-pager">
+                  <el-pagination
+                    :current-page="historyPage"
+                    :page-size="historyPageSize"
+                    :total="historyTotal"
+                    layout="prev, pager, next"
+                    size="small"
+                    background
+                    @current-change="handleHistoryPage"
+                  />
                 </div>
-              </div>
+              </template>
             </div>
           </div>
         </div>
       </section>
     </main>
+
+    <!-- 通用确认弹窗 -->
+    <oj-dialog
+      v-model="confirmDialog.visible"
+      :title="confirmDialog.title"
+      width="420px"
+      :confirm-text="confirmDialog.confirmText"
+      @confirm="handleConfirmDialog"
+    >
+      <p class="confirm-dialog-text">{{ confirmDialog.content }}</p>
+    </oj-dialog>
   </div>
 </template>
 

@@ -1,73 +1,67 @@
-// C端题目列表与检索业务逻辑实现
+// C端题目列表与检索业务交互逻辑
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { getQuestionListApi, getQuestionDetailApi, syncQuestionsApi } from '@/api/question'
-import { getUnreadCountApi } from '@/api/message'
+import { getQuestionListApi, getQuestionDetailApi } from '@/api/question'
 import { useUserStore } from '@/store/user'
-import Pagination from '@/components/Pagination'
-import defaultAvatar from '@/assets/images/default-avatar.svg'
+import OjDialog from '@/components/OjDialog'
+import defaultAvatar from '@/assets/images/c_user_avatar.png'
 import {
   UserFilled,
-  User,
-  Trophy,
-  SwitchButton,
-  ArrowDown,
   Search,
-  Refresh,
-  Bell
+  RefreshRight,
+  Timer,
+  Cpu
 } from '@element-plus/icons-vue'
 
 export default defineComponent({
   name: 'QuestionList',
   components: {
-    Pagination,
+    OjDialog,
     UserFilled,
-    User,
-    Trophy,
-    SwitchButton,
-    ArrowDown,
     Search,
-    Refresh,
-    Bell
+    RefreshRight,
+    Timer,
+    Cpu
   },
   setup() {
     const router = useRouter()
     const { token, nickName, headImage, resetUserAction } = useUserStore()
 
-    // 是否已登录状态
+    // 登录态判定
     const isLogin = computed(() => Boolean(token.value))
 
-    // 未读消息数量
-    const unreadCount = ref(0)
-
-    // 列表查询加载状态
+    // 数据加载状态
     const loading = ref(false)
 
-    // 手动同步加载状态
-    const syncLoading = ref(false)
-
-    // 题目列表数据
+    // 题目清单与总数
     const questionList = ref([])
-
-    // 题目总条数
     const total = ref(0)
 
-    // 题目详情弹窗可见性
-    const detailVisible = ref(false)
+    // 题目状态统计（攻克、尝试中、未尝试）
+    const solvedCount = computed(() => {
+      return questionList.value.filter(q => q.userStatus === 1 || q.passStatus === 1).length
+    })
+    const progressCount = computed(() => {
+      return questionList.value.filter(q => q.userStatus === 2 || q.passStatus === 2).length
+    })
+    const untouchedCount = computed(() => {
+      return questionList.value.filter(q => !q.userStatus && !q.passStatus).length
+    })
 
-    // 当前选中的题目详情对象
+    // 题目详情弹窗
+    const detailVisible = ref(false)
     const currentQuestion = ref(null)
 
     // 难度筛选选项清单
     const difficultyOptions = [
-      { label: '全部', value: null, className: 'pill-all' },
-      { label: '简单', value: 1, className: 'pill-easy' },
-      { label: '中等', value: 2, className: 'pill-medium' },
-      { label: '困难', value: 3, className: 'pill-hard' }
+      { label: '全部', value: null },
+      { label: '简单', value: 1 },
+      { label: '中等', value: 2 },
+      { label: '困难', value: 3 }
     ]
 
-    // 查询与分页过滤参数
+    // 查询过滤与分页（固定一页 10 道题目）
     const queryParams = reactive({
       pageNum: 1,
       pageSize: 10,
@@ -75,7 +69,7 @@ export default defineComponent({
       difficulty: null
     })
 
-    // 请求题目列表数据
+    // 请求题目列表
     const fetchQuestionList = async () => {
       loading.value = true
       try {
@@ -97,19 +91,25 @@ export default defineComponent({
           total.value = 0
         }
       } catch (err) {
-        ElMessage.error(err.message || '获取题目列表失败')
+        ElMessage.error(err?.message || '获取题目列表失败')
       } finally {
         loading.value = false
       }
     }
 
-    // 执行搜索
+    // 搜索
     const handleSearch = () => {
       queryParams.pageNum = 1
       fetchQuestionList()
     }
 
-    // 重置检索条件
+    // 清空搜索词
+    const clearKeyword = () => {
+      queryParams.keyword = ''
+      handleSearch()
+    }
+
+    // 重置全部条件
     const handleReset = () => {
       queryParams.keyword = ''
       queryParams.difficulty = null
@@ -117,70 +117,82 @@ export default defineComponent({
       fetchQuestionList()
     }
 
-    // 切换难度筛选标签
+    // 切换难度
     const selectDifficulty = (val) => {
-      if (queryParams.difficulty === val) {
-        queryParams.difficulty = null
-      } else {
-        queryParams.difficulty = val
-      }
+      queryParams.difficulty = queryParams.difficulty === val ? null : val
       queryParams.pageNum = 1
       fetchQuestionList()
     }
 
-    // 打开题目详情弹窗
+    // 分页切页（一页固定 10 题）
+    const handlePageChange = (page) => {
+      queryParams.pageNum = page
+      fetchQuestionList()
+    }
+
+    // 难度矿物色样式类
+    const getDifficultyClass = (difficulty) => {
+      switch (Number(difficulty)) {
+        case 1:
+          return 'diff-easy'
+        case 2:
+          return 'diff-medium'
+        case 3:
+          return 'diff-hard'
+        default:
+          return 'diff-default'
+      }
+    }
+
+    // 难度文案映射
+    const getDifficultyText = (difficulty) => {
+      switch (Number(difficulty)) {
+        case 1:
+          return '简单'
+        case 2:
+          return '中等'
+        case 3:
+          return '困难'
+        default:
+          return '常规'
+      }
+    }
+
+    // 月相状态符号
+    const getStatusSymbol = (row) => {
+      if (row.userStatus === 1 || row.passStatus === 1) return '●'
+      if (row.userStatus === 2 || row.passStatus === 2) return '◐'
+      return '○'
+    }
+
+    // 月相状态文案
+    const getStatusText = (row) => {
+      if (row.userStatus === 1 || row.passStatus === 1) return '已攻克'
+      if (row.userStatus === 2 || row.passStatus === 2) return '尝试中'
+      return '未尝试'
+    }
+
+    // 月相样式类名
+    const getStatusClass = (row) => {
+      if (row.userStatus === 1 || row.passStatus === 1) return 'is-solved'
+      if (row.userStatus === 2 || row.passStatus === 2) return 'is-progress'
+      return 'is-untouched'
+    }
+
+    // 打开题目详情公共弹窗
     const openQuestionDetail = async (row) => {
+      if (!row || !row.questionId) return
       try {
         const res = await getQuestionDetailApi(row.questionId)
-        const data = res && res.data ? res.data : res
-        currentQuestion.value = data || row
-        detailVisible.value = true
+        currentQuestion.value = (res && res.data ? res.data : res) || row
       } catch (err) {
         currentQuestion.value = row
+      } finally {
         detailVisible.value = true
       }
     }
 
-    // 手动同步题目数据至ES
-    const handleManualSync = async () => {
-      syncLoading.value = true
-      try {
-        const res = await syncQuestionsApi()
-        const count = res && res.data !== undefined ? res.data : (res || 0)
-        ElMessage.success(`成功同步 ${count} 道题目至ES索引`)
-        fetchQuestionList()
-      } catch (err) {
-        ElMessage.error(err.message || '同步题目索引失败')
-      } finally {
-        syncLoading.value = false
-      }
-    }
-
-    // 获取难度Tag颜色类别
-    const getDifficultyTagType = (difficulty) => {
-      switch (difficulty) {
-        case 1:
-          return 'success'
-        case 2:
-          return 'warning'
-        case 3:
-          return 'danger'
-        default:
-          return 'info'
-      }
-    }
-
-    // 品牌区域点击回到首页
-    const goToHome = () => {
-      router.push('/question')
-    }
-
-    // 跳转登录页
-    const goToLogin = () => {
-      router.push({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
-    }
-
-    // 跳转至答题工作台
+    // 前往做题工作台
     const goToQuestionDo = (row) => {
       if (!row || !row.questionId) return
       detailVisible.value = false
@@ -190,41 +202,19 @@ export default defineComponent({
       })
     }
 
-    // 跳转至消息中心
-    const goToMessage = () => {
-      router.push('/message')
-    }
+    // 导航跳转
+    const goToHome = () => router.push('/question')
+    const goToLogin = () => router.push({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
 
-    // 获取未读消息数
-    const fetchUnreadCount = async () => {
-      if (!isLogin.value) return
-      try {
-        const res = await getUnreadCountApi()
-        const count = res && res.data !== undefined ? res.data : res
-        unreadCount.value = typeof count === 'number' ? count : 0
-      } catch (err) {
-        unreadCount.value = 0
-      }
-    }
-
-    // 用户下拉菜单指令处理
-    const handleUserCommand = (command) => {
-      if (command === 'profile') {
-        router.push('/user/profile')
-      } else if (command === 'myExam') {
-        router.push('/my-exam')
-      } else if (command === 'message') {
-        goToMessage()
-      } else if (command === 'logout') {
-        resetUserAction()
-        ElMessage.success('已安全退出登录')
-        router.push('/question')
-      }
+    // 直接退出登录
+    const handleLogout = () => {
+      resetUserAction()
+      ElMessage.success('已安全退出')
+      router.push('/question')
     }
 
     onMounted(() => {
       fetchQuestionList()
-      fetchUnreadCount()
     })
 
     return {
@@ -232,28 +222,32 @@ export default defineComponent({
       nickName,
       headImage,
       defaultAvatar,
-      unreadCount,
       loading,
-      syncLoading,
       questionList,
       total,
+      solvedCount,
+      progressCount,
+      untouchedCount,
       detailVisible,
       currentQuestion,
       difficultyOptions,
       queryParams,
       fetchQuestionList,
-      fetchUnreadCount,
       handleSearch,
+      clearKeyword,
       handleReset,
       selectDifficulty,
+      handlePageChange,
+      getDifficultyClass,
+      getDifficultyText,
+      getStatusSymbol,
+      getStatusText,
+      getStatusClass,
       openQuestionDetail,
-      handleManualSync,
-      getDifficultyTagType,
+      goToQuestionDo,
       goToHome,
       goToLogin,
-      goToQuestionDo,
-      goToMessage,
-      handleUserCommand
+      handleLogout
     }
   }
 })

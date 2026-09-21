@@ -1,63 +1,191 @@
-// 沉浸式题目答题工作台业务交互逻辑
-import { ref, computed, onMounted, watch } from 'vue'
+// 沉浸式学者答题工作台业务交互逻辑
+import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import {
   ArrowLeft,
   ArrowRight,
-  Document,
-  Check,
-  Monitor,
-  Loading
+  Loading,
+  Sunny,
+  Moon,
+  FullScreen,
+  RefreshLeft,
+  MagicStick,
+  CaretRight,
+  Upload,
+  Timer,
+  Coin
 } from '@element-plus/icons-vue'
 import CodeEditor from '@/components/CodeEditor'
+import OjDialog from '@/components/OjDialog'
+import defaultAvatar from '@/assets/images/c_user_avatar.png'
+import submitSuccessImage from '@/assets/images/c_submit_success_background.png'
 import { getToken } from '@/utils/auth'
+import { setPageTitle } from '@/utils/title'
+import { useUserStore } from '@/store/user'
 import {
   getQuestionDetailApi,
   getQuestionPreAndNextApi,
   getFirstQuestionApi,
   submitQuestionApi,
-  getSubmitResultApi
+  getSubmitResultApi,
+  runQuestionApi,
+  getSubmitHistoryApi
 } from '@/api/question'
+import { getExamDetailApi } from '@/api/exam'
+
+// 判题状态文案（与后端 JudgeStatusEnum 编码对应）
+const VERDICT_TEXT = {
+  1: '通过',
+  2: '解答错误',
+  3: '超出时间限制',
+  4: '超出内存限制',
+  5: '编译错误',
+  6: '运行错误',
+  8: '系统错误'
+}
+
+// 提交记录每页条数
+const HISTORY_PAGE_SIZE = 6
 
 export default {
   name: 'QuestionDo',
   components: {
     CodeEditor,
+    OjDialog,
     ArrowLeft,
     ArrowRight,
-    Document,
-    Check,
-    Monitor,
-    Loading
+    Loading,
+    Sunny,
+    Moon,
+    FullScreen,
+    RefreshLeft,
+    MagicStick,
+    CaretRight,
+    Upload,
+    Timer,
+    Coin
   },
   setup() {
     const route = useRoute()
     const router = useRouter()
+    const userStore = useUserStore()
+
+    // 全局导航与用户登录态
+    const isLogin = computed(() => Boolean(userStore.token))
+    const nickName = computed(() => userStore.nickName || '学者')
+    const avatarError = ref(false)
+    const userAvatar = computed(() => {
+      if (avatarError.value) return defaultAvatar
+      const raw = userStore.headImage?.value !== undefined ? userStore.headImage.value : userStore.headImage
+      if (raw && typeof raw === 'string' && raw.trim() && raw !== 'null' && raw !== 'undefined') {
+        return raw
+      }
+      return defaultAvatar
+    })
+    const handleAvatarError = () => {
+      avatarError.value = true
+    }
 
     // 页面状态标识
     const pageLoading = ref(false)
     const navLoading = ref(false)
     const submitting = ref(false)
+    const runningCase = ref(false)
 
     // 题目数据与上下题导航ID
     const question = ref(null)
     const preQuestionId = ref(null)
     const nextQuestionId = ref(null)
 
-    // 代码编辑器状态
+    // 代码编辑器状态与浅色学者主题控制
     const userCode = ref('')
-    const currentLanguage = ref('java')
+    const editorTheme = ref('vs')
+    const isEditorFullscreen = ref(false)
+    const codeEditorRef = ref(null)
 
-    // 评测提交结果
-    const submitResult = ref(null)
-
-    // 竞赛元数据
-    const examTitle = ref('')
+    // 最近一次运行或提交的结果（mode: run | submit）
+    const lastResult = ref(null)
+    const activeResultCaseIndex = ref(0)
 
     // 计算属性：是否处于竞赛模式
     const isExamMode = computed(() => !!route.query.examId)
     const currentExamId = computed(() => (route.query.examId ? String(route.query.examId) : null))
+
+    // 竞赛信息（竞赛模式下加载）
+    const examInfo = ref(null)
+    const examNow = ref(Date.now())
+    let examTimer = null
+
+    // 竞赛结束时间戳
+    const examEndTime = computed(() => {
+      const end = examInfo.value?.endTime
+      return end ? new Date(end).getTime() : 0
+    })
+
+    // 是否为赛中模式（进行中且计入排名），否则为赛后练习
+    const isContestMode = computed(() => {
+      if (!isExamMode.value || !examInfo.value) return false
+      return examEndTime.value > 0 && examNow.value <= examEndTime.value
+    })
+
+    // 距竞赛结束的倒计时文本
+    const countdownText = computed(() => {
+      const remain = Math.max(0, Math.floor((examEndTime.value - examNow.value) / 1000))
+      const h = String(Math.floor(remain / 3600)).padStart(2, '0')
+      const m = String(Math.floor((remain % 3600) / 60)).padStart(2, '0')
+      const s = String(remain % 60).padStart(2, '0')
+      return `${h}:${m}:${s}`
+    })
+
+    // 停止倒计时
+    const stopExamTimer = () => {
+      if (examTimer) {
+        clearInterval(examTimer)
+        examTimer = null
+      }
+    }
+
+    // 加载竞赛信息并校验进入资格（未开赛、赛中未报名不可进入）
+    const loadExamInfo = async () => {
+      if (!currentExamId.value) return true
+      try {
+        const data = await getExamDetailApi({ examId: currentExamId.value })
+        if (!data || typeof data !== 'object') {
+          router.replace('/exam')
+          return false
+        }
+        examInfo.value = data
+        const now = Date.now()
+        const start = data.startTime ? new Date(data.startTime).getTime() : 0
+        const end = data.endTime ? new Date(data.endTime).getTime() : 0
+        if (start > 0 && now < start) {
+          ElMessage.warning('竞赛尚未开始')
+          router.replace('/exam')
+          return false
+        }
+        if (end > 0 && now <= end && !data.isEnter) {
+          ElMessage.warning('您未报名该竞赛')
+          router.replace('/exam')
+          return false
+        }
+        examNow.value = now
+        stopExamTimer()
+        if (end > 0 && now <= end) {
+          examTimer = setInterval(() => {
+            examNow.value = Date.now()
+            if (examNow.value > examEndTime.value) {
+              stopExamTimer()
+              ElMessage.info('竞赛已结束，后续提交不再计入排名')
+            }
+          }, 1000)
+        }
+        return true
+      } catch (err) {
+        router.replace('/exam')
+        return false
+      }
+    }
 
     // 控制台当前激活Tab：'case'（测试用例）或 'result'（执行结果）
     const activeConsoleTab = ref('case')
@@ -65,23 +193,65 @@ export default {
     // 当前选中的测试用例索引
     const activeCaseIndex = ref(0)
 
-    // 解析后的测试用例列表
+    // 切换编辑器主题
+    const toggleEditorTheme = () => {
+      editorTheme.value = editorTheme.value === 'vs' ? 'vs-dark' : 'vs'
+    }
+
+    // 切换编辑器全屏
+    const toggleEditorFullscreen = () => {
+      isEditorFullscreen.value = !isEditorFullscreen.value
+    }
+
+    // 通用确认弹窗状态
+    const confirmDialog = reactive({
+      visible: false,
+      title: '',
+      content: '',
+      confirmText: '确定',
+      action: null
+    })
+
+    // 打开确认弹窗
+    const openConfirm = ({ title, content, confirmText = '确定', action }) => {
+      confirmDialog.title = title
+      confirmDialog.content = content
+      confirmDialog.confirmText = confirmText
+      confirmDialog.action = action
+      confirmDialog.visible = true
+    }
+
+    // 确认弹窗主操作
+    const handleConfirmDialog = () => {
+      const action = confirmDialog.action
+      confirmDialog.visible = false
+      if (action) action()
+    }
+
+    // 判断示例是否过长需独占整行
+    const isLongExample = (item) => {
+      const text = `${item.input || ''}${item.output || ''}`
+      return text.length > 48 || text.includes('\n')
+    }
+
+    // 格式化当前代码
+    const handleFormatCode = () => {
+      codeEditorRef.value?.formatCode()
+    }
+
+    // 切换控制台选项卡
+    const toggleConsoleTab = (tab) => {
+      activeConsoleTab.value = tab
+    }
+
+    // 公开示例用例列表（后端只返回公开示例）
     const parsedTestCases = computed(() => {
-      const raw = question.value?.questionCase
-      if (!raw) return []
-      try {
-        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
-        if (Array.isArray(parsed)) {
-          return parsed.map((item, idx) => ({
-            index: idx + 1,
-            input: typeof item === 'object' && item !== null ? (item.input ?? JSON.stringify(item)) : String(item),
-            output: typeof item === 'object' && item !== null ? (item.output ?? '') : ''
-          }))
-        }
-        return [{ index: 1, input: String(raw), output: '' }]
-      } catch (e) {
-        return [{ index: 1, input: String(raw), output: '' }]
-      }
+      const list = question.value?.sampleCases || []
+      return list.map((item, idx) => ({
+        index: idx + 1,
+        input: item.input || '',
+        output: item.output || ''
+      }))
     })
 
     // 当前选中的测试用例项
@@ -90,10 +260,84 @@ export default {
       return parsedTestCases.value[activeCaseIndex.value] || parsedTestCases.value[0]
     })
 
+    // 格式化题目描述排版
+    const formattedDescriptionHtml = computed(() => {
+      const raw = question.value?.content || ''
+      if (!raw) {
+        return ''
+      }
+
+      // 如果后端内容包含“示例”或“提示”，截取其之前的核心题目描述部分
+      let descPart = raw
+      const exampleIdx = raw.search(/示例\s*[1一]|Example\s*1|提示[\s:：]/i)
+      if (exampleIdx > -1) {
+        descPart = raw.slice(0, exampleIdx).trim()
+      }
+
+      // 转换为优美的多段落排版
+      return descPart
+        .replace(/\n\s*\n/g, '<br /><br />')
+        .replace(/\n/g, '<br />')
+    })
+
+    // 结构化提取示例卡片数据（优先从描述中解析，回退使用测试用例）
+    const displayExamples = computed(() => {
+      const raw = question.value?.content || ''
+      const examples = []
+
+      // 正则尝试匹配：示例 1、输入、输出、解释
+      const regex = /示例\s*(\d+)[\s:：]*([\s\S]*?)(?=示例\s*\d+|提示|$)/gi
+      let match
+      while ((match = regex.exec(raw)) !== null) {
+        const block = match[2]
+        const inputMatch = block.match(/输入[\s:：]*([^\n\r]*)/)
+        const outputMatch = block.match(/输出[\s:：]*([^\n\r]*)/)
+        const explainMatch = block.match(/解释[\s:：]*([^\n\r]*)/)
+
+        if (inputMatch || outputMatch) {
+          examples.push({
+            input: inputMatch ? inputMatch[1].trim() : '',
+            output: outputMatch ? outputMatch[1].trim() : '',
+            explain: explainMatch ? explainMatch[1].trim() : ''
+          })
+        }
+      }
+
+      // 若成功解析出示例卡片，直接返回
+      if (examples.length > 0) {
+        return examples.slice(0, 4)
+      }
+
+      // 否则将测试用例适配为示例卡片
+      return parsedTestCases.value.slice(0, 4).map(c => ({
+        input: c.input,
+        output: c.output,
+        explain: ''
+      }))
+    })
+
+    // 提取或预置题目约束与提示信息
+    const displayHints = computed(() => {
+      const raw = question.value?.content || ''
+      const hintIdx = raw.search(/提示[\s:：]/)
+      if (hintIdx > -1) {
+        const hintPart = raw.slice(hintIdx).replace(/提示[\s:：]/, '').trim()
+        const lines = hintPart
+          .split('\n')
+          .map(l => l.replace(/^[•\-\*\d\.]\s*/, '').trim())
+          .filter(Boolean)
+        if (lines.length > 0) {
+          return lines
+        }
+      }
+
+      return []
+    })
+
     // 难度文本映射辅助函数
     const getDiffText = (difficulty) => {
       const map = { 1: '简单', 2: '中等', 3: '困难' }
-      return map[difficulty] || '未知'
+      return map[difficulty] || '简单'
     }
 
     // 加载指定题目详情与代码模板
@@ -105,9 +349,13 @@ export default {
         const data = res && res.data ? res.data : res
         if (data && (data.questionId || data.title)) {
           question.value = data
-          // 首次填充题目的默认代码模板
+          setPageTitle(data.title || '做题')
           userCode.value = data.defaultCode || ''
-          submitResult.value = null
+          lastResult.value = null
+          activeConsoleTab.value = 'case'
+          hasSubmitted.value = false
+          historyList.value = []
+          historyTotal.value = 0
           activeCaseIndex.value = 0
         } else {
           ElMessage.error((res && res.msg) || '获取题目详情失败')
@@ -148,22 +396,18 @@ export default {
     // 切换题目执行逻辑
     const switchQuestion = async (targetQuestionId) => {
       if (!targetQuestionId) return
-      // 更新 URL 参数保持刷新一致性
       const query = { ...route.query, questionId: targetQuestionId }
       await router.replace({ path: '/question/do', query })
-      // 重新拉取题面与导航数据
       await loadQuestionDetail(targetQuestionId)
       await loadPreAndNext(targetQuestionId, currentExamId.value)
     }
 
-    // 上一题点击
     const handlePreQuestion = () => {
       if (preQuestionId.value) {
         switchQuestion(preQuestionId.value)
       }
     }
 
-    // 下一题点击
     const handleNextQuestion = () => {
       if (nextQuestionId.value) {
         switchQuestion(nextQuestionId.value)
@@ -173,102 +417,200 @@ export default {
     // 重置代码为初始默认模板
     const handleResetCode = () => {
       if (!question.value) return
-      ElMessageBox.confirm(
-        '确定要恢复为题目的初始默认代码模板吗？当前编辑的内容将被覆盖。',
-        '重置代码提示',
-        {
-          confirmButtonText: '确定重置',
-          cancelButtonText: '取消',
-          type: 'warning'
+      openConfirm({
+        title: '重置代码',
+        content: '当前编辑的代码将被初始模板覆盖。',
+        confirmText: '重置',
+        action: () => {
+          userCode.value = question.value.defaultCode || ''
         }
-      ).then(() => {
-        userCode.value = question.value.defaultCode || ''
-        ElMessage.success('代码模板已重置')
-      }).catch(() => {})
+      })
     }
 
-    // 提交代码评测（MOCK评测）
-    const handleSubmit = async () => {
+    // 受保护操作前置校验：题目已加载、代码非空、已登录
+    const ensureCanJudge = (actionText) => {
       if (!question.value || !question.value.questionId) {
         ElMessage.warning('题目尚未加载完成')
-        return
+        return false
       }
       if (!userCode.value || !userCode.value.trim()) {
-        ElMessage.warning('请先编写代码再提交！')
-        return
+        ElMessage.warning('请先编写代码')
+        return false
       }
-
-      // 受保护操作：UI前置检查登录态
       if (!getToken()) {
-        ElMessageBox.confirm(
-          '提交代码评测需要登录账号，是否立即前往登录？',
-          '提示',
-          {
-            confirmButtonText: '前往登录',
-            cancelButtonText: '稍后再说',
-            type: 'warning'
-          }
-        ).then(() => {
-          router.push(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
-        }).catch(() => {})
-        return
+        openConfirm({
+          title: '需要登录',
+          content: `登录后才能${actionText}代码。`,
+          confirmText: '去登录',
+          action: goToLogin
+        })
+        return false
       }
+      return true
+    }
+
+    // 运行公开示例用例
+    const handleRun = async () => {
+      if (!ensureCanJudge('运行')) return
+
+      runningCase.value = true
+      activeConsoleTab.value = 'result'
+      try {
+        const data = await runQuestionApi({
+          questionId: question.value.questionId,
+          userCode: userCode.value
+        })
+        lastResult.value = { mode: 'run', data }
+        const firstFail = (data.caseResults || []).findIndex(c => !c.pass)
+        activeResultCaseIndex.value = firstFail > -1 ? firstFail : 0
+      } catch (err) {
+        // 错误提示已由请求拦截器统一处理
+      } finally {
+        runningCase.value = false
+      }
+    }
+
+    // 提交代码进行全部用例评测
+    const handleSubmit = async () => {
+      if (!ensureCanJudge('提交')) return
 
       submitting.value = true
       activeConsoleTab.value = 'result'
       try {
-        // 语言类型枚举：0: java, 1: cpp
-        const progType = currentLanguage.value === 'cpp' || currentLanguage.value === 'c' ? 1 : 0
-        const payload = {
+        let data = await submitQuestionApi({
           questionId: question.value.questionId,
-          examId: currentExamId.value || null,
-          programType: progType,
+          examId: isContestMode.value ? currentExamId.value : null,
+          programType: 0,
           userCode: userCode.value
-        }
+        })
 
-        const res = await submitQuestionApi(payload)
-        const resultData = res && res.data ? res.data : res
-        if (resultData && (resultData.submitId || resultData.pass !== undefined)) {
-          submitResult.value = resultData
-
-          // 若后端处于评测中 (pass === 2)，启动智能微轮询获取最终结果（最长15秒，每400ms轮询一次）
-          if (resultData.pass === 2 && resultData.submitId) {
-            let maxRetries = 35
-            while (maxRetries-- > 0 && submitResult.value.pass === 2) {
-              await new Promise(resolve => setTimeout(resolve, 400))
-              try {
-                const pollRes = await getSubmitResultApi(resultData.submitId)
-                const pollData = pollRes && pollRes.data ? pollRes.data : pollRes
-                if (pollData && pollData.pass !== undefined) {
-                  submitResult.value = pollData
-                  if (pollData.pass !== 2) {
-                    break
-                  }
-                }
-              } catch (pollErr) {
-                // 网络偶发抖动继续重试
-              }
-            }
+        // 评测中 (pass === 2) 时轮询结果
+        let maxRetries = 40
+        while (data && data.pass === 2 && data.submitId && maxRetries-- > 0) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          try {
+            data = await getSubmitResultApi(data.submitId)
+          } catch (pollErr) {
+            // 忽略偶发抖动，继续轮询
           }
-
-          if (submitResult.value.pass === 1) {
-            ElMessage.success('恭喜，评测通过！')
-          } else if (submitResult.value.pass === 0) {
-            ElMessage.warning('评测未通过，请检查代码逻辑')
-          } else {
-            ElMessage.info('代码评测仍在后台容器队列中执行，可稍后刷新查看')
-          }
-        } else {
-          ElMessage.error((res && res.msg) || '提交评测失败')
         }
+        lastResult.value = { mode: 'submit', data }
+        hasSubmitted.value = true
+        loadHistory(1)
       } catch (err) {
-        ElMessage.error(err.message || '代码提交失败，请检查是否已登录')
+        // 错误提示已由请求拦截器统一处理
       } finally {
         submitting.value = false
       }
     }
 
-    // 返回导航
+    // 当前结果数据
+    const resultData = computed(() => lastResult.value?.data || null)
+
+    // 当前结果是否仍在评测中
+    const isJudging = computed(() => resultData.value?.pass === 2 && !resultData.value?.status)
+
+    // 判题结论文案
+    const verdictText = computed(() => {
+      if (!resultData.value) return ''
+      if (isJudging.value) return '评测中'
+      return VERDICT_TEXT[resultData.value.status] || (resultData.value.pass === 1 ? '通过' : '未通过')
+    })
+
+    // 判题结论样式
+    const verdictClass = computed(() => {
+      if (!resultData.value) return ''
+      if (isJudging.value) return 'judging'
+      return resultData.value.status === 1 ? 'pass' : 'fail'
+    })
+
+    // 运行结果中可展示的逐用例列表（编译错误等无输出时为空）
+    const runCaseResults = computed(() => {
+      if (lastResult.value?.mode !== 'run') return []
+      const list = resultData.value?.caseResults || []
+      const hasOutput = list.some(c => c.actualOutput !== null && c.actualOutput !== undefined)
+      return hasOutput || resultData.value?.status === 2 ? list : []
+    })
+
+    // 本题提交记录（后端分页）
+    const historyList = ref([])
+    const historyTotal = ref(0)
+    const historyPage = ref(1)
+    const historyLoading = ref(false)
+    const historyError = ref(false)
+
+    // 本题是否已在当前页面提交过（提交后才展示提交记录页签）
+    const hasSubmitted = ref(false)
+
+    // 分页加载本人本题提交记录（未登录不请求）
+    const loadHistory = async (page = historyPage.value) => {
+      historyPage.value = page
+      if (!getToken() || !question.value?.questionId) {
+        historyList.value = []
+        historyTotal.value = 0
+        return
+      }
+      historyLoading.value = true
+      historyError.value = false
+      try {
+        const data = await getSubmitHistoryApi({
+          questionId: question.value.questionId,
+          pageNum: page,
+          pageSize: HISTORY_PAGE_SIZE
+        })
+        historyList.value = data?.rows || []
+        historyTotal.value = data?.total || 0
+      } catch (err) {
+        historyError.value = true
+        historyList.value = []
+        historyTotal.value = 0
+      } finally {
+        historyLoading.value = false
+      }
+    }
+
+    // 翻页
+    const handleHistoryPage = (page) => {
+      loadHistory(page)
+    }
+
+    // 提交记录的结论文案与样式
+    const historyVerdict = (item) => {
+      if (item.pass === 2 && !item.status) return { text: '评测中', cls: 'judging' }
+      const passed = item.status ? item.status === 1 : item.pass === 1
+      return {
+        text: VERDICT_TEXT[item.status] || (passed ? '通过' : '未通过'),
+        cls: passed ? 'pass' : 'fail'
+      }
+    }
+
+    // 提交时间简写为 月-日 时:分
+    const formatHistoryTime = (time) => (time ? String(time).slice(5, 16) : '')
+
+    // 将历史提交的代码载回编辑器
+    const handleLoadHistoryCode = (item) => {
+      if (!item.userCode) return
+      openConfirm({
+        title: '载入代码',
+        content: '当前编辑的代码将被这次提交的代码覆盖。',
+        confirmText: '载入',
+        action: () => {
+          userCode.value = item.userCode
+        }
+      })
+    }
+
+    // 提交结果的逐用例进度格（1: 通过 0: 未通过 -: 未执行）
+    const caseCells = computed(() => {
+      if (lastResult.value?.mode !== 'submit' || isJudging.value) return []
+      const states = resultData.value?.caseStates || ''
+      const cls = { 1: 'pass', 0: 'fail', '-': 'skip' }
+      return states.split('').map(c => cls[c] || 'skip')
+    })
+
+    // 当前选中的运行结果用例
+    const activeRunCase = computed(() => runCaseResults.value[activeResultCaseIndex.value] || null)
+
     const handleBack = () => {
       if (isExamMode.value) {
         router.push('/exam')
@@ -277,11 +619,30 @@ export default {
       }
     }
 
+    const goToHome = () => {
+      router.push('/question')
+    }
+
+    const goToLogin = () => {
+      router.push(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
+    }
+
+    const handleLogout = () => {
+      openConfirm({
+        title: '退出登录',
+        content: '确定退出当前账号吗？',
+        confirmText: '退出',
+        action: () => {
+          userStore.resetUserAction()
+          router.push('/login')
+        }
+      })
+    }
+
     // 页面初始化入口
     const initPage = async () => {
       let targetQId = route.query.questionId
 
-      // 若处于竞赛模式且未指定 questionId，通过首题接口获取第一题
       if (!targetQId && currentExamId.value) {
         pageLoading.value = true
         try {
@@ -289,14 +650,13 @@ export default {
           const firstData = firstRes && firstRes.data !== undefined ? firstRes.data : firstRes
           if (firstData) {
             targetQId = String(firstData)
-            // 写入 URL
             await router.replace({
               path: '/question/do',
               query: { ...route.query, questionId: targetQId }
             })
           }
         } catch (e) {
-          // 忽略容错
+          // 忽略
         } finally {
           pageLoading.value = false
         }
@@ -305,16 +665,25 @@ export default {
       if (targetQId) {
         await loadQuestionDetail(targetQId)
         await loadPreAndNext(targetQId, currentExamId.value)
+      } else if (isExamMode.value) {
+        // 竞赛未绑定题目时回到竞赛列表
+        ElMessage.warning('该竞赛暂无题目')
+        router.replace('/exam')
       } else {
-        ElMessage.warning('缺少题目ID参数')
+        // 缺少题目ID时回到题库
+        router.replace('/question')
       }
     }
 
-    onMounted(() => {
+    onMounted(async () => {
+      if (!(await loadExamInfo())) return
       initPage()
     })
 
-    // 监听路由参数变动（处理浏览器前进后退）
+    onBeforeUnmount(() => {
+      stopExamTimer()
+    })
+
     watch(
       () => route.query.questionId,
       (newId, oldId) => {
@@ -326,16 +695,53 @@ export default {
     )
 
     return {
+      isLogin,
+      nickName,
+      userAvatar,
+      handleAvatarError,
       pageLoading,
       navLoading,
       submitting,
+      runningCase,
       question,
       preQuestionId,
       nextQuestionId,
       userCode,
-      currentLanguage,
-      submitResult,
-      examTitle,
+      confirmDialog,
+      handleConfirmDialog,
+      isLongExample,
+      editorTheme,
+      isEditorFullscreen,
+      toggleEditorTheme,
+      toggleEditorFullscreen,
+      codeEditorRef,
+      handleFormatCode,
+      toggleConsoleTab,
+      lastResult,
+      resultData,
+      isJudging,
+      verdictText,
+      verdictClass,
+      runCaseResults,
+      activeRunCase,
+      activeResultCaseIndex,
+      historyList,
+      historyTotal,
+      historyPage,
+      historyLoading,
+      historyError,
+      historyPageSize: HISTORY_PAGE_SIZE,
+      handleHistoryPage,
+      hasSubmitted,
+      submitSuccessImage,
+      loadHistory,
+      historyVerdict,
+      formatHistoryTime,
+      handleLoadHistoryCode,
+      caseCells,
+      examInfo,
+      isContestMode,
+      countdownText,
       isExamMode,
       getDiffText,
       handlePreQuestion,
@@ -345,8 +751,15 @@ export default {
       activeCaseIndex,
       parsedTestCases,
       currentCase,
+      formattedDescriptionHtml,
+      displayExamples,
+      displayHints,
+      handleRun,
       handleSubmit,
-      handleBack
+      handleBack,
+      goToHome,
+      goToLogin,
+      handleLogout
     }
   }
 }

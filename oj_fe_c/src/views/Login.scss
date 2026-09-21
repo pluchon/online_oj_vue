@@ -1,252 +1,432 @@
-// C端登录页面样式（精美毛玻璃极光风）
-$primary-color: #32c5ff;
-$primary-gradient: linear-gradient(135deg, #3dd2ff 0%, #1595ff 100%);
-$primary-hover-gradient: linear-gradient(135deg, #51d7ff 0%, #29a3ff 100%);
-$text-main: #1d2129;
-$text-sub: #86909c;
-$bg-input: #f7f8fa;
-$border-color: #e5e6eb;
-$danger-color: #fd4c40;
-
+// C端登录页面样式（墨衡 · 真实插画比例与典雅风骨）
 .login-page {
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f4f7fb;
+  overflow: hidden;
+  background-color: #faf7f2;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.88) 100%);
-    backdrop-filter: blur(60px);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .aurora-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(45px);
-
-    &.orange {
-      width: 520px;
-      height: 520px;
-      background: radial-gradient(circle, rgba(240, 113, 74, 0.75) 0%, rgba(240, 113, 74, 0) 70%);
-      left: 12%;
-      top: 38%;
-      animation: auraFloatOrange 14s ease-in-out infinite alternate;
-    }
-
-    &.blue {
-      width: 380px;
-      height: 380px;
-      background: radial-gradient(circle, rgba(50, 197, 255, 0.8) 0%, rgba(50, 197, 255, 0) 70%);
-      top: 14%;
-      left: 75%;
-      animation: auraFloatBlue 12s ease-in-out infinite alternate;
-
-      &.small {
-        width: 220px;
-        height: 220px;
-        top: 6%;
-        left: 36%;
-        animation-duration: 10s;
-      }
-    }
-  }
-
-  .login-box {
+  // 左侧：全幅横屏博物学铜版插画区域（更舒展的横屏视野）
+  .left-section {
     position: relative;
-    z-index: 10;
-    width: 440px;
-    padding: 44px 40px 36px;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(24px) saturate(180%);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 20px 40px rgba(0, 32, 64, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background-image: url('@/assets/images/c_login_left.png');
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-color: #faf7f2;
+    border-right: 1px solid rgba(195, 182, 164, 0.45);
+    z-index: 1;
 
-    .logo-box {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 32px;
+    // 位于画面正上方留白晴空区的品牌与典雅誓词
+    .left-brand-block {
+      position: absolute;
+      top: 32%;
+      left: 52%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
 
-      .logo-img {
-        width: 50px;
-        height: 50px;
-        object-fit: contain;
+      .brand-title {
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+        font-size: 54px;
+        font-weight: 700;
+        color: #1f1d1a;
+        letter-spacing: 14px;
+        text-indent: 14px;
+        margin: 0 0 16px 0;
+        line-height: 1.1;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
       }
 
-      .title-right {
-        .sys-name {
-          font-size: 20px;
-          font-weight: 700;
-          color: $text-main;
-          letter-spacing: 0.5px;
-        }
+      .brand-slogan-wrap {
+        margin-bottom: 8px;
 
-        .sys-sub-name {
-          margin-top: 4px;
-          font-size: 13px;
-          color: $text-sub;
+        .brand-slogan {
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+          font-size: 16.5px;
+          font-weight: 500;
+          color: #2e2a25;
+          letter-spacing: 6px;
+          text-indent: 6px;
+          margin: 6px 0;
+          line-height: 1.5;
         }
+      }
+
+      .brand-divider {
+        width: 32px;
+        height: 1px;
+        background-color: #8e7f6f;
+        margin: 14px auto 12px;
+        opacity: 0.8;
+      }
+
+      .brand-latin {
+        font-family: 'Georgia', 'Times New Roman', 'Songti SC', serif;
+        font-style: italic;
+        font-size: 12.5px;
+        color: #7d7060;
+        letter-spacing: 2px;
+        display: block;
       }
     }
+  }
 
-    .form-box {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+  // 右侧：竖屏修长典雅表单区域（星轨花卉暗纹底图）
+  .right-section {
+    position: relative;
+    width: 37.5%;
+    min-width: 420px;
+    max-width: 580px;
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 48px;
+    box-sizing: border-box;
+    background-image: url('@/assets/images/c_login_right.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #faf7f2;
+    z-index: 1;
 
-      .form-item {
-        position: relative;
-        display: flex;
-        align-items: center;
-        background: $bg-input;
-        border: 1px solid $border-color;
-        border-radius: 10px;
-        padding: 0 14px;
-        transition: all 0.25s ease;
+    // 表单容器视觉稳居中心
+    .form-container {
+      width: 360px;
+      max-width: 100%;
+      box-sizing: border-box;
 
-        &:focus-within {
-          background: #fff;
-          border-color: $primary-color;
-          box-shadow: 0 0 0 3px rgba(50, 197, 255, 0.15);
+      .brand-header {
+        text-align: center;
+        margin-bottom: 34px;
+
+        .form-title {
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+          font-size: 26px;
+          font-weight: 600;
+          color: #221f1c;
+          letter-spacing: 4px;
+          text-indent: 4px;
+          margin: 0;
         }
+      }
 
-        .input-icon {
-          width: 20px;
-          height: 20px;
-          margin-right: 10px;
-          opacity: 0.6;
-        }
+      .form-body {
+        .form-item {
+          display: flex;
+          align-items: center;
+          height: 52px;
+          padding: 0 16px;
+          margin-bottom: 20px;
+          background-color: rgba(255, 255, 255, 0.45);
+          border: 1px solid rgba(186, 172, 154, 0.65);
+          border-radius: 8px;
+          transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
 
-        :deep(.el-input) {
-          --el-input-border-color: transparent;
-          --el-input-hover-border-color: transparent;
-          --el-input-focus-border-color: transparent;
-          --el-input-bg-color: transparent;
-          box-shadow: none;
-          height: 48px;
+          &:hover {
+            border-color: rgba(136, 120, 102, 0.85);
+            background-color: rgba(255, 255, 255, 0.65);
+          }
 
-          .el-input__wrapper {
-            padding: 0;
-            background: transparent;
-            box-shadow: none !important;
+          &:focus-within {
+            border-color: #354435;
+            background-color: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 0 0 1px #354435 inset, 0 3px 12px rgba(45, 55, 45, 0.08);
+          }
 
-            input {
-              font-size: 15px;
-              color: $text-main;
+          .input-icon {
+            color: #7d6f5e;
+            font-size: 19px;
+            margin-right: 12px;
+            flex-shrink: 0;
+          }
+
+          :deep(.el-input) {
+            flex: 1;
+            height: 100%;
+            background: transparent !important;
+
+            .el-input__wrapper {
+              background: transparent !important;
+              box-shadow: none !important;
+              padding: 0 !important;
+              height: 100%;
+            }
+
+            .el-input__inner {
+              color: #24201c !important;
+              font-size: 14.5px;
+              letter-spacing: 0.5px;
+              background: transparent !important;
 
               &::placeholder {
-                color: #b7bdc6;
+                color: #9e917f;
+              }
+
+              // 彻底消除浏览器自动填充导致的高亮背景块与遮罩
+              &:-webkit-autofill,
+              &:-webkit-autofill:hover,
+              &:-webkit-autofill:focus,
+              &:-webkit-autofill:active {
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: #24201c !important;
+                box-shadow: none !important;
+                transition: background-color 50000s ease-in-out 0s;
+              }
+            }
+
+            .el-input__suffix {
+              color: #9e917f;
+
+              .el-input__clear {
+                color: #9e917f;
+                font-size: 15px;
+                transition: color 0.2s ease;
+
+                &:hover {
+                  color: #4a4239;
+                }
               }
             }
           }
         }
 
-        &.code-item {
-          padding: 0;
-          border: none;
-          background: transparent;
+        // 短信验证码行独立组合
+        .code-row {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 16px;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0;
+          margin-bottom: 20px;
 
-          &:focus-within {
-            box-shadow: none;
-            border-color: transparent;
-          }
-
-          .code-input-wrap {
+          .code-input-wrapper {
             flex: 1;
             display: flex;
             align-items: center;
-            background: $bg-input;
-            border: 1px solid $border-color;
-            border-radius: 10px;
-            padding: 0 14px;
-            transition: all 0.25s ease;
+            height: 52px;
+            padding: 0 16px;
+            background-color: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(186, 172, 154, 0.65);
+            border-radius: 8px;
+            transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+
+            &:hover {
+              border-color: rgba(136, 120, 102, 0.85);
+              background-color: rgba(255, 255, 255, 0.65);
+            }
 
             &:focus-within {
-              background: #fff;
-              border-color: $primary-color;
-              box-shadow: 0 0 0 3px rgba(50, 197, 255, 0.15);
+              border-color: #354435;
+              background-color: rgba(255, 255, 255, 0.75);
+              box-shadow: 0 0 0 1px #354435 inset, 0 3px 12px rgba(45, 55, 45, 0.08);
+            }
+
+            .input-icon {
+              color: #7d6f5e;
+              font-size: 19px;
+              margin-right: 12px;
+              flex-shrink: 0;
+            }
+
+            :deep(.el-input) {
+              flex: 1;
+              height: 100%;
+              background: transparent !important;
+
+              .el-input__wrapper {
+                background: transparent !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                height: 100%;
+              }
+
+              .el-input__inner {
+                color: #24201c !important;
+                font-size: 14.5px;
+                letter-spacing: 0.5px;
+                background: transparent !important;
+
+                &::placeholder {
+                  color: #9e917f;
+                }
+
+                &:-webkit-autofill,
+                &:-webkit-autofill:hover,
+                &:-webkit-autofill:focus,
+                &:-webkit-autofill:active {
+                  -webkit-background-clip: text !important;
+                  -webkit-text-fill-color: #24201c !important;
+                  box-shadow: none !important;
+                  transition: background-color 50000s ease-in-out 0s;
+                }
+              }
+
+              .el-input__suffix {
+                color: #9e917f;
+
+                .el-input__clear {
+                  color: #9e917f;
+                  font-size: 15px;
+                  transition: color 0.2s ease;
+
+                  &:hover {
+                    color: #4a4239;
+                  }
+                }
+              }
             }
           }
 
           .send-code-btn {
-            height: 50px;
-            min-width: 120px;
-            border-radius: 10px;
-            font-size: 14px;
+            height: 52px;
+            padding: 0 16px;
+            min-width: 116px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(53, 68, 53, 0.45);
+            color: #354435;
+            font-size: 13.5px;
             font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+            &:hover:not(.disabled) {
+              background-color: rgba(53, 68, 53, 0.08);
+              border-color: #354435;
+            }
+
+            &.disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+              border-color: rgba(186, 172, 154, 0.5);
+              color: #9e917f;
+              background-color: rgba(246, 241, 233, 0.3);
+            }
           }
         }
-      }
 
-      .form-error-text {
-        font-size: 13px;
-        color: $danger-color;
-        line-height: 1.4;
-      }
+        .form-meta-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: 4px 2px 24px;
+          font-size: 13px;
 
-      .submit-box {
-        margin-top: 8px;
-        height: 48px;
-        background: $primary-gradient;
-        color: #fff;
-        font-size: 16px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        user-select: none;
-        box-shadow: 0 8px 16px rgba(21, 149, 255, 0.25);
-        transition: all 0.25s ease;
+          .custom-checkbox {
+            :deep(.el-checkbox__label) {
+              color: #665b4e;
+              font-size: 13px;
+            }
 
-        &:hover:not(.disabled) {
-          background: $primary-hover-gradient;
-          transform: translateY(-1px);
-          box-shadow: 0 10px 20px rgba(21, 149, 255, 0.35);
+            :deep(.el-checkbox__inner) {
+              border-color: #a39583;
+              background-color: transparent;
+            }
+
+            &.is-checked :deep(.el-checkbox__inner) {
+              background-color: #354435;
+              border-color: #354435;
+            }
+          }
+
+          .help-link {
+            color: #685c4e;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+
+            &:hover {
+              color: #1f1d1a;
+              text-decoration: underline;
+            }
+          }
         }
 
-        &:active:not(.disabled) {
-          transform: translateY(1px);
-          box-shadow: 0 4px 10px rgba(21, 149, 255, 0.2);
+        .form-error-text {
+          color: #ba3838;
+          font-size: 12.5px;
+          margin-bottom: 16px;
+          margin-left: 2px;
         }
 
-        &.disabled {
-          opacity: 0.65;
-          cursor: not-allowed;
-        }
-      }
+        .submit-button {
+          width: 100%;
+          height: 50px;
+          border: none;
+          border-radius: 8px;
+          background-color: #354435;
+          color: #faf7f2;
+          font-size: 15.5px;
+          font-weight: 500;
+          letter-spacing: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 6px 20px -4px rgba(45, 55, 45, 0.35);
+          transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
 
-      .form-tip {
-        text-align: center;
-        font-size: 12px;
-        color: #a8abb2;
-        margin-top: 4px;
+          .arrow-svg {
+            width: 17px;
+            height: 17px;
+            margin-left: 10px;
+            transition: transform 0.2s ease;
+          }
+
+          &:hover:not(.disabled) {
+            background-color: #273527;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px -4px rgba(35, 48, 35, 0.45);
+
+            .arrow-svg {
+              transform: translateX(4px);
+            }
+          }
+
+          &:active:not(.disabled) {
+            transform: translateY(0);
+          }
+
+          &.disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+          }
+        }
       }
     }
   }
 }
 
-@keyframes auraFloatOrange {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(60px, -40px) scale(1.15); }
-}
+// 窄屏自适应
+@media screen and (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
 
-@keyframes auraFloatBlue {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-50px, 30px) scale(1.1); }
+    .left-section {
+      display: none;
+    }
+
+    .right-section {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      height: 100%;
+      padding: 32px 24px;
+    }
+  }
 }

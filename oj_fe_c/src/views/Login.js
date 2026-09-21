@@ -1,31 +1,39 @@
 // C端用户短信登录与注册逻辑实现
-import { defineComponent, reactive, ref, onUnmounted } from 'vue'
+import { defineComponent, reactive, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Iphone, ChatDotSquare } from '@element-plus/icons-vue'
 import { sendCodeApi, loginApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
 
+const STORAGE_PHONE_KEY = 'moheng_c_phone'
+
 export default defineComponent({
   name: 'Login',
+  components: {
+    Iphone,
+    ChatDotSquare
+  },
   setup() {
     const router = useRouter()
     const route = useRoute()
     const { setTokenAction } = useUserStore()
 
-    // 表单输入绑定
+    // 表单数据
     const loginForm = reactive({
       phone: '',
       code: ''
     })
 
-    // 状态定义
+    // 交互状态
+    const rememberMe = ref(true)
     const loading = ref(false)
     const codeLoading = ref(false)
     const countdown = ref(0)
     const errorMsg = ref('')
     let timer = null
 
-    // 清除倒计时定时器
+    // 清理倒计时定时器
     const clearTimer = () => {
       if (timer) {
         clearInterval(timer)
@@ -33,14 +41,21 @@ export default defineComponent({
       }
     }
 
+    // 初始化读取已记住的手机号
+    onMounted(() => {
+      const savedPhone = localStorage.getItem(STORAGE_PHONE_KEY)
+      if (savedPhone) {
+        loginForm.phone = savedPhone
+        rememberMe.value = true
+      }
+    })
+
     // 组件卸载时释放定时器
     onUnmounted(() => {
       clearTimer()
     })
 
-    /**
-     * 发送短信验证码处理
-     */
+    // 发送短信验证码
     const handleSendCode = async () => {
       const phone = loginForm.phone?.trim()
       if (!phone) {
@@ -49,8 +64,8 @@ export default defineComponent({
         return
       }
       if (!/^1[3-9]\d{9}$/.test(phone)) {
-        errorMsg.value = '请输入正确的11位大陆手机号'
-        ElMessage.warning('请输入正确的11位大陆手机号')
+        errorMsg.value = '请输入正确的11位手机号'
+        ElMessage.warning('请输入正确的11位手机号')
         return
       }
 
@@ -59,9 +74,9 @@ export default defineComponent({
 
       try {
         await sendCodeApi({ phone })
-        ElMessage.success('验证码已发送，请注意查收短信')
+        ElMessage.success('验证码已发送')
 
-        // 启动 60 秒冷却倒计时
+        // 启动60秒冷却
         countdown.value = 60
         clearTimer()
         timer = setInterval(() => {
@@ -79,9 +94,7 @@ export default defineComponent({
       }
     }
 
-    /**
-     * 统一登录/注册提交处理
-     */
+    // 登录与进入系统
     const handleLogin = async () => {
       if (loading.value) {
         return
@@ -96,13 +109,13 @@ export default defineComponent({
         return
       }
       if (!/^1[3-9]\d{9}$/.test(phone)) {
-        errorMsg.value = '请输入正确的11位大陆手机号'
-        ElMessage.warning('请输入正确的11位大陆手机号')
+        errorMsg.value = '请输入正确的11位手机号'
+        ElMessage.warning('请输入正确的11位手机号')
         return
       }
       if (!code) {
-        errorMsg.value = '请输入短信验证码'
-        ElMessage.warning('请输入短信验证码')
+        errorMsg.value = '请输入验证码'
+        ElMessage.warning('请输入验证码')
         return
       }
 
@@ -110,20 +123,24 @@ export default defineComponent({
       loading.value = true
 
       try {
-        // 调用统一登录/注册接口：POST /friend/user/login
-        // 成功时返回脱壳后的 JWT Token 字符串
         const token = await loginApi({ phone, code })
 
         if (token) {
           setTokenAction(token)
         }
 
-        ElMessage.success('登录成功，欢迎来到比特OJ！')
+        // 记住我持久化处理
+        if (rememberMe.value) {
+          localStorage.setItem(STORAGE_PHONE_KEY, phone)
+        } else {
+          localStorage.removeItem(STORAGE_PHONE_KEY)
+        }
 
-        // 跳转至重定向页或首页
+        ElMessage.success('欢迎进入墨衡')
+
         const redirect = (route.query?.redirect && route.query.redirect !== '/login')
           ? route.query.redirect
-          : '/home'
+          : '/question'
         router.push(redirect)
       } catch (err) {
         errorMsg.value = err?.message || '登录失败，请核对验证码'
@@ -134,6 +151,7 @@ export default defineComponent({
 
     return {
       loginForm,
+      rememberMe,
       loading,
       codeLoading,
       countdown,

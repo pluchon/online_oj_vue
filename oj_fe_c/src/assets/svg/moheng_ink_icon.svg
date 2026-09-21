@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- 墨衡 · 浏览器标签页专属印记：羊皮纸底色徽章 + 松烟深墨水滴 + 朱砂写意飞白 -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#FBF8F2" stroke="#C8B8A2" stroke-width="1.8"/>
+  <path
+    d="M32 8
+       C29 13 22 20 18 27
+       C14 34 16 42 22 47
+       C28 52 37 53 44 48
+       C51 43 53 35 49 28
+       C46 22 37 14 32 8Z"
+    fill="#272F26"/>
+  <path
+    d="M13 43
+       C21 40 31 39 39 40
+       C46 41 51 44 56 48"
+    stroke="#A3382D"
+    stroke-width="2.8"
+    stroke-linecap="round"/>
+  <circle cx="12" cy="40" r="1.6" fill="#272F26" opacity="0.65"/>
+  <circle cx="53" cy="52" r="1.5" fill="#A3382D" opacity="0.8"/>
+</svg>

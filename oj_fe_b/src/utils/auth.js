@@ -1,7 +1,8 @@
 // Token 凭据管理（基于 js-cookie）
 import Cookies from 'js-cookie'
 
-const TOKEN_KEY = 'token'
+// 与 C 端区分：Cookie 不区分端口，同一 localhost 下共用同名 Cookie 会互相覆盖令牌
+const TOKEN_KEY = 'oj_b_token'
 
 /**
  * 从 Cookie 获取 Token

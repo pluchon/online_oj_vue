@@ -52,6 +52,11 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    // 是否显示内置顶部控制栏
+    showHeader: {
+      type: Boolean,
+      default: true
+    },
     // Monaco 原生自定义配置项覆盖
     options: {
       type: Object,
@@ -59,7 +64,7 @@ export default defineComponent({
     }
   },
   emits: ['update:modelValue', 'update:language', 'change'],
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     // 编辑器实例引用与 monaco 全局对象引用
     const editorRef = shallowRef(null)
     const monacoRef = shallowRef(null)
@@ -151,6 +156,9 @@ export default defineComponent({
         }
       }
     )
+
+    // 供外部工具栏调用格式化
+    expose({ formatCode: handleFormatCode })
 
     return {
       currentLanguage,

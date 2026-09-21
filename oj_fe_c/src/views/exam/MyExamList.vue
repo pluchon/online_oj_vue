@@ -1,219 +1,251 @@
 <template>
   <div class="my-exam-page">
-    <!-- 顶部全局导航栏 -->
+    <!-- 顶部全局典雅导航栏 -->
     <header class="global-navbar">
       <div class="nav-inner">
+        <!-- 品牌标识（仅纯粹的墨衡二字） -->
         <div class="brand-area" @click="goToHome">
-          <img src="@/assets/images/logo.png" alt="Logo" class="brand-logo" />
-          <span class="brand-title">比特OJ 在线代码评测平台</span>
+          <span class="brand-title">墨衡</span>
         </div>
-        <div class="nav-links">
+
+        <!-- 核心导航栏：题库中心、竞赛中心、我的竞赛、消息中心、个人中心 -->
+        <nav class="nav-links">
           <router-link to="/question" class="nav-link">题库中心</router-link>
           <router-link to="/exam" class="nav-link">竞赛中心</router-link>
-          <router-link to="/my-exam" class="nav-link active">我的竞赛</router-link>
-          <router-link to="/message" class="nav-link">消息中心</router-link>
-        </div>
+          <router-link v-if="isLogin" to="/my-exam" class="nav-link active">我的竞赛</router-link>
+          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
+          <router-link v-if="isLogin" to="/user/profile" class="nav-link">个人中心</router-link>
+        </nav>
+
+        <!-- 用户行为区（直连展示昵称与退出登录） -->
         <div class="user-action-area">
           <template v-if="isLogin">
-            <div class="msg-bell-trigger" title="消息中心" @click="goToMessage">
-              <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0" class="badge-item">
-                <el-icon class="bell-icon"><Bell /></el-icon>
-              </el-badge>
+            <div class="user-direct-info">
+              <el-avatar :size="30" :src="headImage || defaultAvatar" class="user-avatar">
+                <el-icon><UserFilled /></el-icon>
+              </el-avatar>
+              <span class="user-name">{{ nickName || '学员' }}</span>
+              <button type="button" class="direct-logout-btn" @click="handleLogout">
+                退出登录
+              </button>
             </div>
-            <el-dropdown trigger="hover" class="user-dropdown" @command="handleUserCommand">
-              <div class="user-info-trigger">
-                <el-avatar
-                  :size="34"
-                  :src="headImage || defaultAvatar"
-                  class="user-avatar"
-                >
-                  <el-icon><UserFilled /></el-icon>
-                </el-avatar>
-                <span class="user-name">{{ nickName }}</span>
-                <el-icon class="arrow-icon"><ArrowDown /></el-icon>
-              </div>
-              <template #dropdown>
-                <el-dropdown-menu class="user-menu-list">
-                  <el-dropdown-item command="profile">
-                    <el-icon><User /></el-icon>
-                    <span>个人中心</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item command="myExam">
-                    <el-icon><Trophy /></el-icon>
-                    <span>我的竞赛管理</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item command="message">
-                    <el-icon><Bell /></el-icon>
-                    <span>消息中心</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item divided command="logout">
-                    <el-icon><SwitchButton /></el-icon>
-                    <span>退出登录</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
           </template>
           <template v-else>
-            <el-button type="primary" size="small" @click="handleLogin">
+            <button type="button" class="nav-login-btn" @click="handleLogin">
               登录 / 注册
-            </el-button>
+            </button>
           </template>
         </div>
       </div>
     </header>
 
-    <!-- 顶部竞赛主题横幅 (Banner) -->
-    <div class="exam-banner-section">
-      <div class="banner-inner">
-        <div class="banner-text">
-          <h1 class="banner-headline">我的竞赛日程与战报</h1>
-          <p class="banner-subline">查看您已报名的全部竞赛，掌握开赛时间与赛后官方得分排名</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 顶部分类 Tab 栏 -->
-    <div class="category-tabs-wrap">
-      <div class="tabs-inner">
-        <div
-          v-for="tab in filterTabs"
-          :key="tab.value"
-          class="tab-item"
-          :class="{ active: currentTab === tab.value }"
-          @click="handleTabChange(tab.value)"
-        >
-          {{ tab.label }}
-        </div>
-      </div>
-    </div>
-
-    <!-- 主体内容区域 -->
-    <main class="content-container">
-      <div class="section-title">
-        <span>已报名的竞赛</span>
-      </div>
-
-      <!-- 竞赛卡片列表展示区 -->
-      <div v-loading="loading" class="exam-grid-container">
-        <!-- 卡片网格 -->
-        <div v-if="filteredList && filteredList.length > 0" class="exam-card-grid">
-          <div
-            v-for="item in filteredList"
-            :key="item.examId"
-            class="exam-card"
-          >
-            <!-- 左侧竞赛封面图与状态角标 -->
-            <div class="card-cover">
-              <img src="@/assets/images/exam-cover.svg" alt="竞赛封面" class="cover-img" />
-              <span
-                class="status-badge"
-                :class="getStatusBadgeClass(item.contestStatus)"
+    <!-- 主体内容区域（加宽至大气格局，一页8场，一行4场） -->
+    <main class="main-container">
+      <div class="my-exam-canvas-card">
+        <!-- 友好轻量筛选栏（最左侧左右滑块时间筛选，搜索框左侧完赛情况筛选下拉框） -->
+        <section class="filter-header-bar">
+          <!-- 左侧：左右滑块切换时间筛选（丝滑动画，选择全部/本日/本周/本月/近半年） -->
+          <div class="filter-left-group">
+            <div class="slider-segment-control" ref="sliderContainerRef">
+              <div class="slider-indicator" :style="sliderIndicatorStyle"></div>
+              <button
+                v-for="(item, index) in timeFilterOptions"
+                :key="item.value"
+                :ref="el => setTabRef(el, index)"
+                type="button"
+                class="slider-btn"
+                :class="{ active: currentTimeFilter === item.value }"
+                @click="selectTimeFilter(item.value, index)"
               >
-                {{ item.contestStatusDesc || getStatusText(item.contestStatus) }}
-              </span>
+                {{ item.label }}
+              </button>
             </div>
+          </div>
 
-            <!-- 右侧竞赛信息与操作 -->
-            <div class="card-body">
-              <div class="exam-title" :title="item.title">
-                {{ item.title }}
+          <!-- 右侧：完赛状态下拉框 + 标题搜索 + 搜索按钮 + 重置按钮 -->
+          <div class="search-action-group">
+            <!-- 完赛状态下拉框（全部、未完赛、历史竞赛） -->
+            <el-select
+              v-model="currentCategory"
+              class="status-select"
+              popper-class="oj-select-popper"
+              placeholder="完赛情况"
+              @change="handleCategoryChange"
+            >
+              <el-option
+                v-for="opt in contestCategoryOptions"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              />
+            </el-select>
+
+            <!-- 搜索框 -->
+            <div class="search-box">
+              <el-icon class="search-icon"><Search /></el-icon>
+              <input
+                v-model="queryParams.title"
+                type="text"
+                placeholder="搜索竞赛名称..."
+                class="search-input"
+                @keyup.enter="handleSearch"
+              />
+              <span v-if="queryParams.title" class="clear-btn" @click="clearKeyword">✕</span>
+            </div>
+            <button type="button" class="btn-search" @click="handleSearch">
+              <el-icon class="btn-icon"><Search /></el-icon>
+              <span>搜索</span>
+            </button>
+            <button type="button" class="btn-reset" @click="handleReset">
+              <el-icon class="btn-icon"><RefreshRight /></el-icon>
+              <span>重置</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 竞赛卡片列表展示区（一行4个，一页8个） -->
+        <section v-loading="loading" class="exam-stream-section">
+          <div v-if="myExamList && myExamList.length > 0" class="exam-card-grid">
+            <div
+              v-for="item in myExamList"
+              :key="item.examId"
+              class="exam-card"
+            >
+              <!-- 封面图（使用官方规范默认竞赛图） -->
+              <div class="card-cover">
+                <img src="../../assets/images/c_competition_picture.jpg" alt="竞赛" class="cover-img" />
               </div>
 
-              <div class="exam-time-info">
-                <div class="time-row">
-                  <span class="time-label">开赛时间:</span>
-                  <span class="time-val">{{ item.startTime || '--' }}</span>
+              <!-- 竞赛信息与行动 -->
+              <div class="card-body">
+                <!-- 标题与最右侧开赛状态角标 -->
+                <div class="exam-title-row">
+                  <span class="exam-title" :title="item.title">{{ item.title }}</span>
+                  <span class="status-badge" :class="getStatusInfo(item).badgeClass">
+                    {{ getStatusInfo(item).text }}
+                  </span>
                 </div>
-                <div class="time-row">
-                  <span class="time-label">结束时间:</span>
-                  <span class="time-val">{{ item.endTime || '--' }}</span>
+
+                <!-- 时间图标 + 开始时间 - 结束时间 -->
+                <div class="meta-row time-row">
+                  <el-icon class="meta-icon"><Clock /></el-icon>
+                  <span class="time-range">{{ item.startTime || '--' }} 至 {{ item.endTime || '--' }}</span>
                 </div>
-                <div class="time-row">
-                  <span class="time-label">报名时间:</span>
-                  <span class="time-val">{{ item.createTime || '--' }}</span>
+
+                <!-- 参赛人数与题目数量（移除两项之间的“·”） -->
+                <div class="meta-row stats-row">
+                  <span class="stat-item">
+                    <el-icon class="stat-icon"><User /></el-icon>
+                    <span>{{ item.enterCount ?? item.isEnterCount ?? 0 }} 人参赛</span>
+                  </span>
+                  <span class="stat-item">
+                    <el-icon class="stat-icon"><Document /></el-icon>
+                    <span>{{ item.questionCount ?? 0 }} 道题目</span>
+                  </span>
                 </div>
-              </div>
 
-              <!-- 成绩与排名展示（仅完赛状态有效） -->
-              <div v-if="item.contestStatus === 2" class="exam-result-info">
-                <span class="result-badge score">
-                  得分: {{ item.score !== null && item.score !== undefined ? item.score + '分' : '待公布' }}
-                </span>
-                <span class="result-badge rank">
-                  排名: {{ item.examRank ? '第' + item.examRank + '名' : '待公布' }}
-                </span>
-              </div>
+                <!-- 底部行动按钮 -->
+                <div class="card-action">
+                  <!-- 已完赛状态：双按钮（竞赛练习 + 查看排名） -->
+                  <template v-if="getStatusInfo(item).phase === 'ended'">
+                    <button
+                      type="button"
+                      class="btn-exam-outline"
+                      @click="handlePractice(item)"
+                    >
+                      竞赛练习
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-exam-primary"
+                      @click="handleRank(item)"
+                    >
+                      查看排名
+                    </button>
+                  </template>
 
-              <div class="card-action">
-                <!-- 未开赛状态 -->
-                <template v-if="item.contestStatus === 0">
-                  <el-button
-                    type="success"
-                    plain
-                    disabled
-                    size="default"
-                    class="action-btn"
-                  >
-                    已报名 (等待开赛)
-                  </el-button>
-                </template>
-
-                <!-- 进行中状态 -->
-                <template v-else-if="item.contestStatus === 1">
-                  <el-button
-                    type="primary"
-                    size="default"
-                    class="action-btn"
-                    @click="handleStartExam(item)"
-                  >
-                    开始答题
-                  </el-button>
-                </template>
-
-                <!-- 已完赛状态 -->
-                <template v-else-if="item.contestStatus === 2">
-                  <el-button
-                    type="primary"
-                    plain
-                    size="default"
-                    class="action-btn"
-                    @click="handlePractice(item)"
-                  >
-                    竞赛练习
-                  </el-button>
-                  <el-button
-                    type="default"
-                    size="default"
-                    class="action-btn"
-                    @click="handleRank(item)"
-                  >
-                    查看排名
-                  </el-button>
-                </template>
+                  <!-- 未完赛状态：已开赛进行中 (开始答题) / 未开赛 (已报名) -->
+                  <template v-else>
+                    <button
+                      type="button"
+                      class="btn-exam-primary"
+                      :class="{ disabled: getStatusInfo(item).disabled }"
+                      :disabled="getStatusInfo(item).disabled"
+                      @click="handleActionClick(item)"
+                    >
+                      {{ getStatusInfo(item).btnText }}
+                    </button>
+                  </template>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- 缺省空状态 -->
-        <div v-else-if="!loading" class="empty-wrap">
-          <el-empty description="暂无符合条件的已报名竞赛" :image-size="120">
-            <el-button type="primary" size="small" @click="goToExamList">
-              前往竞赛中心报名
-            </el-button>
-          </el-empty>
-        </div>
+          <!-- 缺省空态（水平垂直居中展示小蒙插画与说明） -->
+          <div v-else-if="!loading" class="empty-card">
+            <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂无竞赛数据" class="empty-img" />
+            <span class="empty-text">暂无符合条件的竞赛数据</span>
+          </div>
+
+          <!-- 底部分页控制栏（左下角展示进行中、未开赛、已完赛全量状态徽章及分割线） -->
+          <div class="pagination-footer">
+            <div class="footer-stats-tags">
+              <div class="stat-badge total-badge">
+                <span class="badge-dot"></span>
+                <span class="badge-label">共</span>
+                <strong class="badge-num">{{ total }}</strong>
+                <span class="badge-unit">场已报竞赛</span>
+              </div>
+              <span class="stat-divider">|</span>
+              <div class="stat-badge ongoing-badge">
+                <span class="badge-dot"></span>
+                <span class="badge-label">进行中</span>
+                <strong class="badge-num">{{ ongoingCount }}</strong>
+                <span class="badge-unit">场</span>
+              </div>
+              <div class="stat-badge upcoming-badge">
+                <span class="badge-dot"></span>
+                <span class="badge-label">未开赛</span>
+                <strong class="badge-num">{{ upcomingCount }}</strong>
+                <span class="badge-unit">场</span>
+              </div>
+              <div class="stat-badge ended-badge">
+                <span class="badge-dot"></span>
+                <span class="badge-label">已完赛</span>
+                <strong class="badge-num">{{ endedCount }}</strong>
+                <span class="badge-unit">场</span>
+              </div>
+            </div>
+            <el-pagination
+              v-model:current-page="queryParams.pageNum"
+              :page-size="8"
+              :total="total"
+              layout="prev, pager, next"
+              background
+              @current-change="loadMyExamList"
+            />
+          </div>
+        </section>
       </div>
-
-      <!-- 底部分页器 -->
-      <pagination
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        :total="total"
-        @pagination="loadMyExamList"
-      />
     </main>
+
+    <!-- 竞赛排名弹窗 -->
+    <exam-rank-dialog
+      v-model="rankDialog.visible"
+      :exam-id="rankDialog.examId"
+      :exam-title="rankDialog.title"
+    />
+
+    <!-- 通用确认弹窗 -->
+    <oj-dialog
+      v-model="confirmDialog.visible"
+      :title="confirmDialog.title"
+      width="420px"
+      :confirm-text="confirmDialog.confirmText"
+      @confirm="handleConfirmDialog"
+    >
+      <p class="confirm-dialog-text">{{ confirmDialog.content }}</p>
+    </oj-dialog>
   </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="code-editor-container" :class="{ 'is-disabled': disabled, 'is-dark': currentTheme === 'vs-dark' }">
     <!-- 顶部控制栏：支持标题展示、编程语言切换、主题切换、格式化 -->
-    <div class="code-editor-header">
+    <div v-if="showHeader" class="code-editor-header">
       <div class="header-left">
         <span v-if="title" class="editor-title">{{ title }}</span>
         <!-- 编程语言选择器 -->

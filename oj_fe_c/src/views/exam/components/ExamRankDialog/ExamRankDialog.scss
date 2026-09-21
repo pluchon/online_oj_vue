@@ -1,0 +1,140 @@
+// 竞赛排名弹窗样式
+.rank-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  // 榜单：固定高度，翻页器位置不随条数变化
+  .rank-list {
+    height: 368px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(195, 182, 164, 0.55);
+      border-radius: 2px;
+    }
+
+    .rank-state {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #a89b88;
+      font-size: 13px;
+      font-family: 'Songti SC', 'SimSun', serif;
+
+      .btn-retry {
+        border: none;
+        background: transparent;
+        color: #354435;
+        font-family: inherit;
+        font-size: 13px;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      height: 46px;
+      padding: 0 12px;
+      border-bottom: 1px dashed rgba(195, 182, 164, 0.45);
+
+      &.is-me {
+        background: rgba(53, 68, 53, 0.05);
+        border-radius: 4px;
+      }
+
+      .rank-no {
+        justify-self: center;
+        min-width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        font-family: 'Fira Code', Consolas, monospace;
+        font-size: 13px;
+        font-weight: 600;
+        color: #8a7b68;
+
+        &.is-top {
+          color: #354435;
+          font-weight: 700;
+        }
+      }
+
+      .rank-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 14px;
+        color: #221f1c;
+
+        .me-tag {
+          margin-left: 6px;
+          padding: 0 6px;
+          border-radius: 3px;
+          font-style: normal;
+          font-size: 11px;
+          color: #faf7f2;
+          background-color: #354435;
+        }
+      }
+
+      .rank-score {
+        text-align: right;
+        font-family: 'Fira Code', Consolas, monospace;
+        font-size: 14px;
+        font-weight: 600;
+        color: #221f1c;
+      }
+    }
+  }
+
+  // 翻页器：墨绿主题
+  .rank-pager {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(195, 182, 164, 0.35);
+
+    :deep(.el-pagination) {
+      .btn-prev,
+      .btn-next,
+      .el-pager li {
+        min-width: 26px;
+        height: 26px;
+        background-color: rgba(255, 255, 255, 0.6) !important;
+        border: 1px solid rgba(195, 182, 164, 0.55);
+        border-radius: 5px;
+        color: #5a4f42;
+        font-family: 'Fira Code', Consolas, monospace;
+
+        &.is-active {
+          background-color: #354435 !important;
+          border-color: #354435;
+          color: #faf7f2 !important;
+        }
+
+        &:hover:not(.is-active):not(:disabled) {
+          color: #221f1c;
+          border-color: #354435;
+        }
+
+        &:disabled {
+          color: #c3b6a4;
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
+}

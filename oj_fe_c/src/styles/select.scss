@@ -1,0 +1,76 @@
+// Claude 学者风骨 · Element Plus 下拉菜单定制规范
+.el-select__popper.el-popper,
+.oj-select-popper {
+  --el-color-primary: #354435 !important;
+  --el-color-primary-light-3: #557c55 !important;
+  --el-color-primary-light-5: #8faa8f !important;
+  --el-color-primary-light-7: #bdd2bd !important;
+  --el-color-primary-light-8: #dbe6db !important;
+  --el-color-primary-light-9: #eef3ee !important;
+  --el-color-primary-dark-2: #273427 !important;
+  background: #fcfaf6 !important;
+  border: 1px solid rgba(195, 180, 160, 0.75) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 28px -4px rgba(45, 38, 30, 0.14), 0 2px 8px rgba(45, 38, 30, 0.05) !important;
+  min-width: 116px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+
+  // 彻底移除尖角与外层间隙
+  .el-popper__arrow {
+    display: none !important;
+  }
+
+  // 核心清空：清除 Element Plus 内部 dropdown 的自带边框和阴影，杜绝内外双层卡片边框重叠
+  .el-select-dropdown {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    .el-scrollbar {
+      background: transparent !important;
+    }
+
+    .el-select-dropdown__wrap {
+      background: transparent !important;
+    }
+
+    .el-select-dropdown__list {
+      padding: 6px !important;
+      margin: 0 !important;
+      background: transparent !important;
+    }
+
+    .el-select-dropdown__item {
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif !important;
+      font-size: 13px !important;
+      color: #4a4035 !important;
+      border-radius: 6px !important;
+      margin: 2px 0 !important;
+      padding: 0 12px !important;
+      height: 32px !important;
+      line-height: 32px !important;
+      text-align: center !important;
+      transition: all 0.18s ease !important;
+      letter-spacing: 0.5px !important;
+
+      &:hover,
+      &.is-hovering {
+        background-color: rgba(240, 234, 222, 0.85) !important;
+        color: #221f1c !important;
+      }
+
+      &.is-selected {
+        background-color: rgba(53, 68, 53, 0.12) !important;
+        color: #354435 !important;
+        font-weight: 600 !important;
+
+        &::after {
+          display: none !important;
+        }
+      }
+    }
+  }
+}

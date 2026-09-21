@@ -1,15 +1,17 @@
 # 墨衡在线 OJ · 前端工程仓库 (online_oj_vue)
 
-> 本仓库包含“墨衡 OJ”系统的多端前端工程。当前阶段重点交付 **B 端后台管理系统 (`oj_fe_b`)**，C 端竞赛学员前台 (`oj_fe_c`) 将在后续阶段完善。
+> 本仓库包含“墨衡 OJ”系统的多端前端工程：**B 端后台管理系统 (`oj_fe_b`)** 与 **C 端学员前台 (`oj_fe_c`)**。后端微服务位于独立仓库，本文只描述前端。
 
 ```mermaid
 graph TD
     Repo["online_oj_vue 根仓库"]
-    Repo --> B_End["oj_fe_b: 管理端前端 (当前已完成)"]
-    Repo --> C_End["oj_fe_c: 学员端前台 (后续规划)"]
-    
+    Repo --> B_End["oj_fe_b: 管理端前端"]
+    Repo --> C_End["oj_fe_c: 学员端前台"]
+
     B_End --> Design["墨衡古籍画卷 / Claude Editorial 视觉系统"]
+    C_End --> Design
     B_End --> Modules["用户管理 / 题目管理 / 竞赛管理 / 登录画卷"]
+    C_End --> CModules["题库 / 做题工作台 / 竞赛与排名 / 消息 / 个人中心"]
 ```
 
 ---
@@ -48,7 +50,7 @@ flowchart TD
 
 ---
 
-## 二、 界面展示与视觉空间 (Screenshots)
+## 二、 管理端界面展示与视觉空间
 
 ### 1. 登录页与算法画卷瀑布流
 
@@ -78,7 +80,7 @@ flowchart TD
 
 ---
 
-## 三、 核心业务流转闭环
+## 三、 管理端核心业务流转闭环
 
 ### 1. 竞赛与题目关联闭环
 
@@ -120,19 +122,255 @@ flowchart LR
 
 ---
 
-## 四、 本地运行指南
+## 四、 学员端 (oj_fe_c) 架构与路由流转
+
+### 1. 路由与页面
+
+```mermaid
+flowchart TD
+    App["App.vue 根挂载点"] --> Router["Vue Router 路由控制"]
+    Router --> Guard{"Token 路由守卫"}
+    Router --> Title["afterEach：同步标签页标题<br/>「页面名 · 墨衡 OJ」"]
+
+    Guard --"白名单（免登录）"--> Public
+    Guard --"需登录"--> Private
+    Guard --"未登录访问受保护页"--> Login["/login 登录"]
+
+    subgraph Public["免登录可访问"]
+        QList["/question 题库"]
+        QDo["/question/do 做题工作台"]
+        EList["/exam 竞赛"]
+    end
+
+    subgraph Private["登录后可访问"]
+        MyExam["/my-exam 我的竞赛"]
+        Msg["/message 消息"]
+        Profile["/user/profile 个人中心"]
+    end
+
+    Login --> LoginForm["左：手机号 + 验证码表单"]
+    Login --> LoginArt["右：博物学插画"]
+    QList --"开始做题"--> QDo
+    EList --"开始答题（计入排名） / 竞赛练习（赛后）"--> QDo
+    MyExam --"开始答题 / 竞赛练习"--> QDo
+    EList --> ERank["ExamRankDialog 排名弹窗"]
+    MyExam --> ERank
+```
+
+### 2. 工程分层
+
+```mermaid
+flowchart LR
+    subgraph View["views（.vue / .js / .scss 三文件分离）"]
+        Pages["页面组件"]
+    end
+    subgraph Comp["components"]
+        CodeEditor["CodeEditor<br/>Monaco 编辑器封装"]
+        OjDialog["OjDialog<br/>统一确认/详情弹窗"]
+        RankDialog["ExamRankDialog<br/>赛后排名弹窗（基于 OjDialog）"]
+        Pagination["Pagination<br/>统一分页器"]
+    end
+    subgraph Data["数据层"]
+        Store["store/user<br/>登录态与用户信息"]
+        Api["api/*<br/>question / exam / message / user"]
+        Request["utils/request<br/>Token 注入 · 统一错误提示 · 响应脱壳"]
+    end
+
+    Pages --> Comp
+    Pages --"Actions"--> Store
+    Pages --> Api
+    Api --> Request
+    Request --"Vite 代理 /friend/**"--> Gateway["网关 :19090"]
+```
+
+### 3. 做题工作台布局
+
+```mermaid
+flowchart LR
+    subgraph Left["左侧：题目卡片"]
+        Nav["返回 / 上一题 / 下一题"]
+        Desc["标题 · 难度 · 时空限制<br/>题目描述"]
+        Samples["公开示例卡片（长内容自动独占整行）"]
+    end
+    subgraph Right["右侧工作区"]
+        Editor["编辑器卡片<br/>Java · 重置 · 格式化 · 主题 · 全屏 · 运行 · 提交"]
+        subgraph Console["控制台卡片"]
+            TabCase["测试用例"]
+            TabResult["执行结果<br/>通过时绿色描边 + 庆祝插画"]
+            TabHistory["提交记录（提交后出现，后端分页）"]
+        end
+    end
+    Editor --> Console
+```
+
+---
+
+## 五、 学员端界面展示与视觉空间
+
+### 1. 登录页
+
+![image-20260921153901581](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921153901740.png)
+
+### 2. 题库
+
+![image-20260921153940274](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921153940372.png)
+
+### 3. 做题工作台
+
+![image-20260921154025760](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154025892.png)
+
+### 4. 运行结果（逐用例对比）
+
+![image-20260921154039274](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154039368.png)
+
+![image-20260921154113865](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154113951.png)
+
+### 5. 提交结果与全部通过
+
+![image-20260921154140270](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154140372.png)
+
+### 6. 提交记录
+
+![image-20260921154153203](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154153285.png)
+
+### 7. 竞赛列表
+
+![image-20260921154219321](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154219404.png)
+
+### 8. 竞赛排名弹窗
+
+![image-20260921171620332](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171620451.png)
+
+### 9. 我的竞赛
+
+![image-20260921171628869](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171628938.png)
+
+### 10. 消息
+
+![image-20260921171638616](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171638674.png)
+
+### 11. 个人中心
+
+![image-20260921171648586](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171648637.png)
+
+---
+
+## 六、 学员端核心业务流转闭环
+
+### 1. 手机号验证码登录
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as 学员
+    participant Login as 登录页
+    participant Store as 用户 Store
+    participant API as 网关 /friend
+
+    U->>Login: 输入手机号，点击获取验证码
+    Login->>API: POST /user/send-code
+    API-->>Login: 发送成功，按钮进入倒计时
+    U->>Login: 输入验证码并登录
+    Login->>API: POST /user/login（未注册手机号自动建号）
+    API-->>Login: 返回 Token
+    Login->>Store: 保存 Token 与用户信息
+    Login-->>U: 跳回 redirect 页面，默认进入题库
+```
+
+### 2. 运行与提交
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as 学员
+    participant Do as 做题工作台
+    participant API as 网关 /friend
+
+    U->>Do: 点击 运行 / 提交
+    Do->>Do: 前置校验：题目已加载、代码非空、已登录（未登录弹 OjDialog）
+
+    alt 运行（仅公开示例，不计分）
+        Do->>API: POST /question/run
+        API-->>Do: 结论 + 逐用例 输入 / 输出 / 预期
+        Do-->>U: 执行结果页：用例标签圆点标记通过与否，错误输出标红
+    else 提交（全部用例）
+        Do->>API: POST /question/submit
+        API-->>Do: submitId（评测中）
+        loop 每 500ms 轮询，直到出结论
+            Do->>API: GET /question/submit/result
+        end
+        API-->>Do: 结论 · 通过数 · 得分 · 逐用例状态 · 首个未通过用例
+        Do-->>U: 结论行右侧用例色块，下方展示首个未通过用例
+        Do->>API: GET /question/submit/history（第 1 页）
+        Do-->>U: 出现「提交记录」页签
+    end
+```
+
+### 3. 执行结果状态
+
+```mermaid
+stateDiagram-v2
+    [*] --> 暂无结果
+    暂无结果 --> 评测中: 运行 / 提交
+    评测中 --> 通过: 全部用例通过
+    评测中 --> 未通过: 解答错误 / 超时 / 超内存 / 运行错误
+    评测中 --> 编译错误
+    评测中 --> 系统错误
+    通过 --> 评测中: 再次运行 / 提交
+    未通过 --> 评测中
+    编译错误 --> 评测中
+    系统错误 --> 评测中
+
+    note right of 通过: 控制台绿色描边 + 居中庆祝插画
+    note right of 未通过: 用例色块红格定位 + 首个未通过用例对比
+```
+
+### 4. 提交记录与载回代码
+
+```mermaid
+flowchart LR
+    Tab["提交记录页签"] --> Load["GET /question/submit/history<br/>pageNum · pageSize=6"]
+    Load --> List["列表区可滚动<br/>结论 · 通过数 · 耗时 · 时间"]
+    Load --> Pager["翻页器固定在卡片底部"]
+    Pager --"翻页"--> Load
+    List --"点击某条"--> Confirm{"OjDialog 确认覆盖当前代码"}
+    Confirm --"载入"--> Editor["代码写回编辑器"]
+```
+
+### 5. 竞赛报名、参赛与赛后练习
+
+```mermaid
+flowchart TD
+    List["竞赛列表 / 我的竞赛"] --> Phase{"竞赛阶段"}
+
+    Phase --"未开赛"--> Enroll{"报名"}
+    Enroll --"未登录"--> Login["OjDialog 引导登录"]
+    Enroll --"已登录"--> Confirm["OjDialog 确认报名"] --> Enrolled["已报名"]
+
+    Phase --"进行中且已报名"--> Contest["做题工作台 · 赛中模式<br/>题目卡片底部：竞赛名 + 倒计时（赛中不公布排名）<br/>提交携带竞赛 ID，计入排名"]
+    Phase --"已结束"--> Practice["做题工作台 · 练习模式<br/>与普通做题界面一致<br/>提交不带竞赛 ID，不影响排名"]
+    Phase --"已结束"--> Rank["ExamRankDialog<br/>名次 · 昵称 · 得分，分页榜单"]
+
+    Contest --"倒计时归零"--> Practice
+```
+
+---
+
+## 七、 本地运行指南
 
 ```bash
-# 1. 进入 B 端管理端工程
+# 管理端（默认端口 5173）
 cd oj_fe_b
-
-# 2. 安装依赖
 npm install
-
-# 3. 启动开发服务
 npm run dev
 
-# 4. 生产环境打包
+# 学员端（默认端口 5174，/friend 请求代理到网关 127.0.0.1:19090）
+cd oj_fe_c
+npm install
+npm run dev
+
+# 生产环境打包（两端相同）
 npm run build
 ```
-服务启动后访问：`http://localhost:5173`。
+
+服务启动后访问：管理端 `http://localhost:5173`，学员端 `http://localhost:5174`。

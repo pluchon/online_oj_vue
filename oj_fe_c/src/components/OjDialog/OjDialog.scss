@@ -1,0 +1,141 @@
+// C端通用古典弹窗样式（墨衡 · 典雅羊皮纸质感规范）
+:deep(.el-dialog) {
+  background-color: #fbf8f2 !important;
+  border: 1px solid rgba(195, 180, 160, 0.75) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 60px -15px rgba(45, 38, 28, 0.28) !important;
+  padding: 24px 30px !important;
+  position: relative;
+
+  .el-dialog__header {
+    padding: 0 !important;
+    margin-right: 0 !important;
+    border-bottom: none !important;
+  }
+
+  .el-dialog__body {
+    padding: 18px 0 0 !important;
+    color: #24201c;
+  }
+
+  .el-dialog__footer {
+    padding: 20px 0 0 !important;
+    border-top: none !important;
+  }
+}
+
+.oj-dialog-header {
+  position: relative;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(195, 180, 160, 0.45);
+  text-align: center;
+
+  .oj-dialog-title {
+    margin: 0;
+    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+    font-size: 19px;
+    font-weight: 700; // 标题加粗居中
+    color: #221f1c;
+    letter-spacing: 2px;
+    line-height: 1.4;
+  }
+
+  .btn-dialog-close {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #7d6f5e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background-color: rgba(53, 68, 53, 0.08);
+      color: #221f1c;
+    }
+  }
+}
+
+.oj-dialog-body {
+  position: relative;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.oj-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(195, 180, 160, 0.35);
+
+  .btn-dialog-cancel {
+    height: 36px;
+    min-width: 96px;
+    padding: 0 20px;
+    background-color: rgba(245, 239, 230, 0.7);
+    border: 1px solid rgba(195, 180, 160, 0.85);
+    color: #635749;
+    border-radius: 6px;
+    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba(235, 227, 215, 0.9);
+      border-color: #7b6f60;
+      color: #221f1c;
+    }
+  }
+
+  .btn-dialog-action {
+    height: 36px;
+    min-width: 110px;
+    padding: 0 22px;
+    background-color: #354435;
+    border: 1px solid #354435;
+    color: #faf7f2;
+    border-radius: 6px;
+    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover:not(.disabled) {
+      background-color: #253325;
+      border-color: #253325;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(53, 68, 53, 0.25);
+    }
+
+    &.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

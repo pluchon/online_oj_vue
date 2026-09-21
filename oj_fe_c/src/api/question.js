@@ -54,6 +54,25 @@ export function submitQuestionApi(data) {
   })
 }
 
+// 运行公开示例用例（同步返回逐用例结果，编译与排队耗时较长）
+export function runQuestionApi(data) {
+  return request({
+    url: '/friend/question/run',
+    method: 'post',
+    data,
+    timeout: 20000
+  })
+}
+
+// 分页查询本人本题提交记录
+export function getSubmitHistoryApi(params) {
+  return request({
+    url: '/friend/question/submit/history',
+    method: 'get',
+    params
+  })
+}
+
 // 查询判题最新结果
 export function getSubmitResultApi(submitId) {
   return request({

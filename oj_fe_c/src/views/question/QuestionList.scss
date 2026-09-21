@@ -1,435 +1,769 @@
-// C端题目列表视觉样式
+// C端题库中心样式（墨衡 · 独立画卷白卡容器与沉浸学者风骨）
 .question-list-page {
+  position: relative;
   min-height: 100vh;
-  background-color: #f6f8fb;
-  padding: 0 0 40px;
+  background-color: #faf7f2;
+  background-image: url('@/assets/images/c_question_background.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #221f1c;
 
-  // 顶部全局导航栏
+  // 顶部全局典雅导航栏（加宽至大气格局）
   .global-navbar {
-    background-color: #ffffff;
-    border-bottom: 1px solid #ebeef5;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     position: sticky;
     top: 0;
     z-index: 100;
+    height: 60px;
+    background-color: rgba(250, 247, 242, 0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(195, 182, 164, 0.45);
+    box-shadow: 0 2px 12px rgba(45, 38, 30, 0.04);
 
     .nav-inner {
-      max-width: 1400px;
+      max-width: 1360px;
+      width: 92%;
+      height: 100%;
       margin: 0 auto;
-      padding: 0 32px;
-      height: 60px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
 
+      // 纯粹墨衡二字，无任何多余英文
       .brand-area {
-        display: flex;
-        align-items: center;
-        gap: 12px;
         cursor: pointer;
 
-        .brand-logo {
-          height: 36px;
-          object-fit: contain;
-        }
-
         .brand-title {
-          font-size: 18px;
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+          font-size: 24px;
           font-weight: 700;
-          color: #1a1a1a;
-          letter-spacing: 0.5px;
+          color: #221f1c;
+          letter-spacing: 6px;
+          line-height: 1;
         }
       }
 
       .nav-links {
         display: flex;
         align-items: center;
-        gap: 28px;
-        margin-left: 36px;
-        flex: 1;
+        gap: 32px;
 
         .nav-link {
-          font-size: 15px;
-          font-weight: 500;
-          color: #4e5969;
-          text-decoration: none;
-          transition: all 0.2s ease;
           position: relative;
-          padding: 8px 0;
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+          font-size: 14.5px;
+          font-weight: 500;
+          color: #635749;
+          text-decoration: none;
+          letter-spacing: 1px;
+          padding: 18px 0;
+          transition: color 0.2s ease;
 
           &:hover {
-            color: #165dff;
+            color: #221f1c;
           }
 
           &.active {
-            color: #165dff;
+            color: #221f1c;
             font-weight: 600;
 
             &::after {
               content: '';
               position: absolute;
               bottom: 0;
-              left: 0;
-              right: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 20px;
               height: 2px;
-              background-color: #165dff;
+              background-color: #354435;
               border-radius: 1px;
             }
           }
         }
       }
 
+      // 用户直连信息区（头像 + 昵称 + 退出登录）
       .user-action-area {
         display: flex;
         align-items: center;
-        gap: 16px;
 
-        .msg-bell-trigger {
-          cursor: pointer;
+        .user-direct-info {
           display: flex;
           align-items: center;
-          padding: 6px;
-          border-radius: 50%;
-          transition: background-color 0.2s;
+          gap: 12px;
 
-          &:hover {
-            background-color: #f2f3f5;
-            .bell-icon {
-              color: #165dff;
-            }
+          .user-avatar {
+            border: 1px solid rgba(195, 182, 164, 0.6);
+            background-color: #eee9df;
           }
 
-          .bell-icon {
-            font-size: 20px;
-            color: #4e5969;
+          .user-name {
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #221f1c;
+            letter-spacing: 0.5px;
           }
 
-          .badge-item {
-            display: flex;
-            align-items: center;
-          }
-        }
-
-        .login-btn {
-          font-weight: 500;
-          border-radius: 6px;
-          padding: 8px 18px;
-        }
-
-        .user-dropdown {
-          cursor: pointer;
-
-          .user-info-trigger {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+          .direct-logout-btn {
+            background: transparent;
+            border: 1px solid rgba(195, 182, 164, 0.6);
+            color: #7d6f5e;
             padding: 4px 10px;
-            border-radius: 20px;
-            transition: background 0.2s;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
 
             &:hover {
-              background: #f2f3f5;
+              background-color: rgba(220, 206, 188, 0.35);
+              color: #221f1c;
+              border-color: #7d6f5e;
             }
+          }
+        }
 
-            .user-avatar {
-              background-color: #165dff;
-            }
+        .nav-login-btn {
+          background-color: #354435;
+          color: #faf7f2;
+          border: 1px solid #354435;
+          padding: 6px 18px;
+          border-radius: 4px;
+          font-size: 13.5px;
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+          cursor: pointer;
+          transition: all 0.2s ease;
 
-            .user-name {
-              font-size: 14px;
-              color: #1d2129;
-              font-weight: 500;
-            }
-
-            .arrow-icon {
-              font-size: 12px;
-              color: #86909c;
-            }
+          &:hover {
+            background-color: #253325;
           }
         }
       }
     }
   }
 
-  // 主体内容容器
+  // 主体大卡片容器
   .main-container {
-    max-width: 1400px;
-    margin: 24px auto 0;
-    padding: 0 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    max-width: 1360px;
+    width: 92%;
+    margin: 28px auto 48px;
+    position: relative;
+    z-index: 2;
 
-    // 工具栏卡片
-    .toolbar-card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 20px 24px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-      border: 1px solid #edf0f5;
+    // 独立羊皮纸长卷白卡容器（固定底高，不随行数塌陷，翻页器与统计固定底部）
+    .catalog-canvas-card {
+      background-color: rgba(252, 250, 246, 0.96);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(200, 188, 172, 0.65);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px -8px rgba(45, 38, 30, 0.08);
+      padding: 26px 32px 22px;
+      min-height: 820px;
+      display: flex;
+      flex-direction: column;
 
-      .toolbar-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
+      // 典雅一体化筛选工具栏
+      .filter-panel {
+        margin-bottom: 18px;
 
-        .search-input-box {
+        .filter-top-bar {
           display: flex;
           align-items: center;
-          gap: 12px;
-          flex: 1;
-          max-width: 540px;
+          justify-content: space-between;
+          gap: 20px;
 
-          .keyword-input {
-            width: 100%;
+          // 搜索与重置操作组合区（输入框在左带放大镜，搜索按钮在其右侧，重置按钮在搜索右侧）
+          .search-action-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
 
-            :deep(.el-input__wrapper) {
-              border-radius: 8px;
-              padding-left: 12px;
+            // 胶囊搜索框（内部最左侧有放大镜图标）
+            .search-box {
+              width: 320px;
+              display: flex;
+              align-items: center;
+              height: 38px;
+              padding: 0 14px;
+              background-color: rgba(255, 255, 255, 0.75);
+              border: 1px solid rgba(186, 172, 154, 0.65);
+              border-radius: 19px;
+              transition: all 0.2s ease;
+
+              &:focus-within {
+                border-color: #354435;
+                background-color: #ffffff;
+                box-shadow: 0 0 0 1px #354435 inset, 0 2px 8px rgba(53, 68, 53, 0.06);
+              }
+
+              .search-icon {
+                font-size: 15px;
+                color: #7d6f5e;
+                margin-right: 8px;
+                flex-shrink: 0;
+              }
+
+              .search-input {
+                flex: 1;
+                height: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-size: 13.5px;
+                color: #221f1c;
+                font-family: inherit;
+
+                &::placeholder {
+                  color: #9e917f;
+                }
+              }
+
+              .clear-btn {
+                cursor: pointer;
+                color: #9e917f;
+                font-size: 11px;
+                padding: 2px 4px;
+
+                &:hover {
+                  color: #4a4239;
+                }
+              }
+            }
+
+            // 搜索按钮（位于输入框右侧）
+            .btn-search {
+              height: 38px;
+              padding: 0 18px;
+              border-radius: 19px;
+              background-color: #354435;
+              color: #faf7f2;
+              border: 1px solid #354435;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              cursor: pointer;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-size: 13.5px;
+              font-weight: 500;
+              letter-spacing: 1px;
+              transition: all 0.2s ease;
+
+              .btn-icon {
+                font-size: 14px;
+              }
+
+              &:hover {
+                background-color: #253325;
+                border-color: #253325;
+                transform: translateY(-1px);
+                box-shadow: 0 3px 8px rgba(53, 68, 53, 0.2);
+              }
+            }
+
+            // 重置按钮（位于搜索按钮右侧）
+            .btn-reset {
+              height: 38px;
+              padding: 0 16px;
+              border-radius: 19px;
+              background-color: rgba(243, 237, 227, 0.85);
+              color: #635749;
+              border: 1px solid rgba(195, 180, 160, 0.75);
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              cursor: pointer;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-size: 13.5px;
+              font-weight: 500;
+              letter-spacing: 1px;
+              transition: all 0.2s ease;
+
+              .btn-icon {
+                font-size: 14px;
+              }
+
+              &:hover {
+                background-color: rgba(230, 222, 209, 0.95);
+                border-color: #7b6f60;
+                color: #221f1c;
+              }
             }
           }
 
-          .search-btn,
-          .reset-btn {
-            border-radius: 8px;
-            padding: 8px 18px;
-          }
-        }
-
-        .filter-group {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-
-          .filter-label {
-            font-size: 14px;
-            color: #4e5969;
-            font-weight: 500;
-          }
-
-          .difficulty-pills {
+          // 右侧：难度分段控制器
+          .difficulty-segment {
             display: flex;
             align-items: center;
-            gap: 8px;
+            background-color: rgba(243, 237, 227, 0.75);
+            border: 1px solid rgba(195, 182, 164, 0.6);
+            border-radius: 18px;
+            padding: 2px;
 
-            .diff-pill {
+            .segment-btn {
+              height: 28px;
+              padding: 0 14px;
+              border-radius: 14px;
+              border: none;
+              background: transparent;
+              color: #635749;
               font-size: 13px;
-              padding: 5px 14px;
-              border-radius: 16px;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
               cursor: pointer;
-              background: #f2f3f5;
-              color: #4e5969;
-              font-weight: 500;
               transition: all 0.2s ease;
-              border: 1px solid transparent;
 
               &:hover {
-                background: #e5e6eb;
+                color: #221f1c;
               }
 
               &.active {
-                background: #165dff;
-                color: #ffffff;
-                box-shadow: 0 2px 6px rgba(22, 93, 255, 0.3);
+                background-color: #354435;
+                color: #faf7f2;
+                font-weight: 600;
+                box-shadow: 0 2px 6px rgba(53, 68, 53, 0.2);
+              }
+            }
+          }
+        }
+      }
+
+      // 题目长卷列表（支持固定高度，不足10条自动留白，无数据居中铺满）
+      .question-stream {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .card-list {
+          flex: 1;
+          min-height: 660px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .question-card {
+          height: 58px;
+          box-sizing: border-box;
+          background-color: #ffffff;
+          border: 1px solid rgba(210, 198, 182, 0.65);
+          border-radius: 8px;
+          padding: 0 20px;
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          cursor: pointer;
+          transition: background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+
+          &:hover {
+            // 移除垂直 translateY 避免整行跳动导致右侧按钮列错位
+            border-color: rgba(145, 130, 112, 0.85);
+            background-color: #ffffff;
+            box-shadow: 0 4px 16px -2px rgba(45, 38, 30, 0.08);
+
+            .card-right .arrow-circle-btn {
+              background-color: #354435;
+              border-color: #354435;
+              color: #faf7f2;
+              box-shadow: 0 2px 8px rgba(53, 68, 53, 0.25);
+
+              .arrow-svg {
+                transform: translateX(4px);
+              }
+            }
+          }
+
+          .card-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+
+            .question-title {
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+              font-size: 16px;
+              font-weight: 600;
+              color: #221f1c;
+              letter-spacing: 0.5px;
+            }
+          }
+
+          // 中间：难度标签（在攻克状态左侧） + 月相天文状态 + 时空限制
+          .card-center {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin: 0 24px;
+
+            // 矿物色难度标（置于是否攻克左侧）
+            .difficulty-tag {
+              font-size: 11.5px;
+              padding: 2px 8px;
+              border-radius: 4px;
+              font-weight: 500;
+              line-height: 1.3;
+
+              &.diff-easy {
+                color: #2f7255;
+                background-color: rgba(47, 114, 85, 0.1);
+                border: 1px solid rgba(47, 114, 85, 0.25);
               }
 
-              &.pill-easy.active {
-                background: #00b42a;
-                box-shadow: 0 2px 6px rgba(0, 180, 42, 0.3);
+              &.diff-medium {
+                color: #a66b24;
+                background-color: rgba(166, 107, 36, 0.1);
+                border: 1px solid rgba(166, 107, 36, 0.25);
               }
 
-              &.pill-medium.active {
-                background: #ff7d00;
-                box-shadow: 0 2px 6px rgba(255, 125, 0, 0.3);
+              &.diff-hard {
+                color: #9c3838;
+                background-color: rgba(156, 56, 56, 0.1);
+                border: 1px solid rgba(156, 56, 56, 0.25);
               }
 
-              &.pill-hard.active {
-                background: #f53f3f;
-                box-shadow: 0 2px 6px rgba(245, 63, 63, 0.3);
+              &.diff-default {
+                color: #7d7060;
+                background-color: rgba(125, 112, 96, 0.1);
+              }
+            }
+
+            // 月相天文隐喻
+            .status-lunar {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-size: 13px;
+              min-width: 68px;
+
+              .lunar-symbol {
+                font-size: 13px;
+              }
+
+              &.is-solved {
+                color: #2f7255;
+              }
+
+              &.is-progress {
+                color: #a66b24;
+              }
+
+              &.is-untouched {
+                color: #9e917f;
+              }
+            }
+
+            .limits-group {
+              display: flex;
+              align-items: center;
+              gap: 14px;
+              font-size: 12.5px;
+              color: #8a7d6e;
+
+              .limit-item {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+
+                .limit-icon {
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+
+          // 右侧：行动按钮（固定尺寸居中，杜绝任何位移错位）
+          .card-right {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            .arrow-circle-btn {
+              width: 34px;
+              height: 34px;
+              border-radius: 50%;
+              border: 1px solid rgba(186, 172, 154, 0.6);
+              background-color: rgba(255, 255, 255, 0.6);
+              color: #354435;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              flex-shrink: 0;
+              box-sizing: border-box;
+              padding: 0;
+              margin: 0;
+              outline: none;
+              overflow: hidden;
+              transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+
+              .arrow-svg {
+                width: 15px;
+                height: 15px;
+                display: block;
+                transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+              }
+
+              &:hover {
+                background-color: #354435;
+                border-color: #354435;
+                color: #faf7f2;
+                box-shadow: 0 2px 8px rgba(53, 68, 53, 0.25);
+
+                .arrow-svg {
+                  transform: translateX(4px);
+                }
+              }
+            }
+          }
+        }
+
+        // 空态（铺满列表区域，水平垂直居中展示小蒙插画与说明）
+        .empty-card {
+          flex: 1;
+          min-height: 580px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background-color: transparent;
+          border: none;
+          padding: 40px 0;
+
+          .empty-img {
+            width: 220px;
+            max-height: 200px;
+            object-fit: contain;
+            margin-bottom: 16px;
+            opacity: 0.95;
+          }
+
+          .empty-text {
+            color: #7d7060;
+            font-size: 15px;
+            letter-spacing: 2px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-weight: 500;
+          }
+        }
+
+        // 分页栏（固定在卡片底部）
+        .pagination-footer {
+          margin-top: auto;
+          padding-top: 16px;
+          border-top: 1px solid rgba(195, 182, 164, 0.35);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          // 底部统计全量状态徽章设计
+          .footer-stats-tags {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+
+            .stat-divider {
+              color: rgba(186, 172, 154, 0.75);
+              font-size: 13px;
+              margin: 0 2px;
+              user-select: none;
+            }
+
+            .stat-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 5px;
+              padding: 4px 12px;
+              border-radius: 14px;
+              font-size: 12.5px;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              letter-spacing: 0.5px;
+
+              .badge-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+              }
+
+              .badge-label {
+                font-weight: 500;
+              }
+
+              .badge-num {
+                font-weight: 600;
+                margin: 0 1px;
+              }
+
+              .badge-unit {
+                font-weight: 400;
+                font-size: 12px;
+              }
+
+              // 总题数标签
+              &.total-badge {
+                background-color: rgba(240, 234, 222, 0.85);
+                border: 1px solid rgba(195, 182, 164, 0.75);
+                color: #635749;
+
+                .badge-dot {
+                  background-color: #8a7b68;
+                }
+
+                .badge-num {
+                  color: #221f1c;
+                }
+              }
+
+              // 已攻克标签
+              &.solved-badge {
+                background-color: rgba(47, 114, 85, 0.1);
+                border: 1px solid rgba(47, 114, 85, 0.3);
+                color: #2f7255;
+
+                .badge-dot {
+                  background-color: #2f7255;
+                }
+
+                .badge-num {
+                  color: #205c42;
+                }
+              }
+
+              // 尝试中标签
+              &.progress-badge {
+                background-color: rgba(166, 107, 36, 0.1);
+                border: 1px solid rgba(166, 107, 36, 0.3);
+                color: #a66b24;
+
+                .badge-dot {
+                  background-color: #a66b24;
+                }
+
+                .badge-num {
+                  color: #8e5818;
+                }
+              }
+
+              // 未尝试标签
+              &.untouched-badge {
+                background-color: rgba(125, 112, 96, 0.1);
+                border: 1px solid rgba(125, 112, 96, 0.25);
+                color: #7d6f60;
+
+                .badge-dot {
+                  background-color: #9e917f;
+                }
+
+                .badge-num {
+                  color: #5a4f42;
+                }
+              }
+            }
+          }
+
+          :deep(.el-pagination) {
+            .btn-prev,
+            .btn-next,
+            .el-pager li {
+              background-color: rgba(255, 255, 255, 0.7) !important;
+              border: 1px solid rgba(195, 182, 164, 0.55);
+              color: #5a4f42;
+              border-radius: 6px;
+              font-weight: 500;
+
+              &.is-active {
+                background-color: #354435 !important;
+                border-color: #354435;
+                color: #faf7f2 !important;
+              }
+
+              &:hover:not(.is-active) {
+                color: #221f1c;
+                border-color: #354435;
               }
             }
           }
         }
       }
     }
+  }
+}
 
-    // 表格卡片
-    .table-card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-      border: 1px solid #edf0f5;
+// 弹窗内部详情样式
+.detail-body {
+  .dialog-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
 
-      .table-header-info {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 18px;
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+      letter-spacing: 0.5px;
 
-        .info-left {
-          display: flex;
-          align-items: center;
-          gap: 10px;
+      .tag-icon {
+        font-size: 13px;
+      }
 
-          .info-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #1d2129;
-          }
+      &.diff-tag {
+        font-weight: 600;
 
-          .info-badge {
-            font-size: 12px;
-            background: #f2f3f5;
-            color: #86909c;
-            padding: 2px 10px;
-            border-radius: 12px;
-          }
+        &.diff-easy {
+          color: #2f7255;
+          background-color: rgba(47, 114, 85, 0.1);
+          border: 1px solid rgba(47, 114, 85, 0.25);
         }
 
-        .info-right {
-          .sync-btn {
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-          }
+        &.diff-medium {
+          color: #a66b24;
+          background-color: rgba(166, 107, 36, 0.1);
+          border: 1px solid rgba(166, 107, 36, 0.25);
+        }
+
+        &.diff-hard {
+          color: #9c3838;
+          background-color: rgba(156, 56, 56, 0.1);
+          border: 1px solid rgba(156, 56, 56, 0.25);
+        }
+
+        &.diff-default {
+          color: #7d7060;
+          background-color: rgba(125, 112, 96, 0.1);
         }
       }
 
-      .question-table {
-        width: 100%;
-
-        :deep(.el-table__header-wrapper th) {
-          background-color: #f7f8fa;
-          color: #4e5969;
-          font-weight: 600;
-        }
-
-        .question-id-text {
-          font-family: 'JetBrains Mono', Consolas, monospace;
-          color: #86909c;
-          font-size: 13px;
-        }
-
-        .title-cell {
-          cursor: pointer;
-
-          .question-title-link {
-            font-size: 14px;
-            font-weight: 500;
-            color: #1d2129;
-            transition: color 0.2s;
-
-            &:hover {
-              color: #165dff;
-              text-decoration: underline;
-            }
-          }
-        }
-
-        .diff-tag {
-          font-weight: 500;
-          padding: 0 12px;
-        }
-
-        .limit-text {
-          font-size: 13px;
-          color: #4e5969;
-          font-family: 'JetBrains Mono', Consolas, monospace;
-        }
-
-        .action-btn {
-          border-radius: 6px;
-        }
-      }
-
-      .pagination-wrapper {
-        margin-top: 24px;
-        display: flex;
-        justify-content: flex-end;
+      // 时空限制徽章
+      &.limit-tag {
+        color: #635749;
+        background-color: rgba(240, 234, 222, 0.85);
+        border: 1px solid rgba(195, 180, 160, 0.75);
       }
     }
   }
 
-  // 题目详情弹窗
-  :deep(.question-detail-dialog) {
-    border-radius: 12px;
+  .dialog-content-box {
+    background-color: rgba(247, 243, 235, 0.6);
+    border: 1px solid rgba(210, 198, 182, 0.6);
+    border-radius: 8px;
+    padding: 16px 20px;
 
-    .el-dialog__header {
-      padding: 18px 24px;
-      border-bottom: 1px solid #ebeef5;
-      margin-right: 0;
-
-      .el-dialog__title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1d2129;
-      }
-    }
-
-    .el-dialog__body {
-      padding: 24px;
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-
-    .detail-body {
-      .detail-header {
-        margin-bottom: 20px;
-
-        .detail-title {
-          font-size: 20px;
-          font-weight: 700;
-          color: #1d2129;
-          margin: 0 0 12px;
-        }
-
-        .detail-tags {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          font-size: 13px;
-          color: #86909c;
-
-          .tag-divider {
-            color: #e5e6eb;
-          }
-
-          .tag-limit {
-            font-family: 'JetBrains Mono', Consolas, monospace;
-          }
-        }
-      }
-
-      .detail-section {
-        .section-title {
-          font-size: 15px;
-          font-weight: 600;
-          color: #1d2129;
-          margin: 0 0 10px;
-          padding-left: 8px;
-          border-left: 3px solid #165dff;
-        }
-
-        .section-content {
-          font-size: 14px;
-          line-height: 1.7;
-          color: #333333;
-          background: #f7f8fa;
-          padding: 16px;
-          border-radius: 8px;
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
-      }
-    }
-
-    .dialog-footer {
-      display: flex;
-      justify-content: flex-end;
+    .content-text {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      color: #2a2521;
+      font-size: 14px;
     }
   }
 }

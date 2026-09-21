@@ -1,73 +1,84 @@
-// 消息中心页面样式
+// C端消息中心样式（墨衡 · 手稿编年史学者风骨）
 .message-center-page {
+  position: relative;
   min-height: 100vh;
-  background-color: #f5f7fa;
-  display: flex;
-  flex-direction: column;
+  background-color: #faf7f2;
+  background-image: url('@/assets/images/c_question_background.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #221f1c;
 
-  // 顶部全局导航栏
+  // 顶部全局典雅导航栏
   .global-navbar {
-    height: 60px;
-    background: #ffffff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 0;
     z-index: 100;
+    height: 60px;
+    background-color: rgba(250, 247, 242, 0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(195, 182, 164, 0.45);
+    box-shadow: 0 2px 12px rgba(45, 38, 30, 0.04);
 
     .nav-inner {
-      max-width: 1200px;
+      max-width: 1360px;
+      width: 92%;
       height: 100%;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
 
       .brand-area {
-        display: flex;
-        align-items: center;
         cursor: pointer;
 
-        .brand-logo {
-          height: 32px;
-          margin-right: 12px;
-        }
-
         .brand-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #1f2d3d;
-          letter-spacing: 0.5px;
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+          font-size: 24px;
+          font-weight: 700;
+          color: #221f1c;
+          letter-spacing: 6px;
+          line-height: 1;
         }
       }
 
       .nav-links {
         display: flex;
-        gap: 28px;
+        align-items: center;
+        gap: 32px;
 
         .nav-link {
-          font-size: 15px;
-          color: #4b5563;
-          text-decoration: none;
-          transition: color 0.2s ease;
-          padding: 8px 4px;
           position: relative;
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+          font-size: 14.5px;
+          font-weight: 500;
+          color: #635749;
+          text-decoration: none;
+          letter-spacing: 1px;
+          padding: 18px 0;
+          transition: color 0.2s ease;
 
-          &:hover,
-          &.active {
-            color: #3b82f6;
-            font-weight: 500;
+          &:hover {
+            color: #221f1c;
           }
 
-          &.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #3b82f6;
-            border-radius: 2px;
+          &.active {
+            color: #221f1c;
+            font-weight: 600;
+
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 20px;
+              height: 2px;
+              background-color: #354435;
+              border-radius: 1px;
+            }
           }
         }
       }
@@ -75,267 +86,884 @@
       .user-action-area {
         display: flex;
         align-items: center;
-        gap: 20px;
 
-        .msg-bell-trigger {
-          cursor: pointer;
+        .user-direct-info {
           display: flex;
           align-items: center;
-          padding: 6px;
-          border-radius: 50%;
-          transition: background-color 0.2s;
+          gap: 12px;
 
-          &:hover,
-          &.active-bell {
-            background-color: #eff6ff;
-            .bell-icon {
-              color: #3b82f6;
+          .user-avatar-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1px solid rgba(195, 182, 164, 0.7);
+            background-color: #eee9df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            .user-avatar-img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              display: block;
             }
           }
 
-          .bell-icon {
-            font-size: 20px;
-            color: #64748b;
+          .user-name {
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #221f1c;
+            letter-spacing: 0.5px;
+          }
+
+          .direct-logout-btn {
+            background: transparent;
+            border: 1px solid rgba(195, 182, 164, 0.6);
+            color: #7d6f5e;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background-color: rgba(220, 206, 188, 0.35);
+              color: #221f1c;
+              border-color: #7d6f5e;
+            }
           }
         }
 
-        .user-info-trigger {
-          display: flex;
-          align-items: center;
+        .nav-login-btn {
+          background-color: #354435;
+          color: #faf7f2;
+          border: 1px solid #354435;
+          padding: 6px 18px;
+          border-radius: 4px;
+          font-size: 13.5px;
+          font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
           cursor: pointer;
-          padding: 4px 8px;
-          border-radius: 20px;
-          transition: background-color 0.2s ease;
+          transition: all 0.2s ease;
 
           &:hover {
-            background-color: #f1f5f9;
-          }
-
-          .user-name {
-            margin: 0 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #334155;
-          }
-
-          .arrow-icon {
-            font-size: 12px;
-            color: #94a3b8;
+            background-color: #253325;
           }
         }
       }
     }
   }
 
-  // 主体区域
+  // 主体卡片容器（1360px 大气格局）
   .main-container {
-    flex: 1;
-    max-width: 1200px;
-    width: 100%;
-    margin: 24px auto;
-    padding: 0 20px 40px;
-    box-sizing: border-box;
+    max-width: 1360px;
+    width: 92%;
+    margin: 28px auto 48px;
+    position: relative;
+    z-index: 2;
 
-    // 头部控制卡片
-    .message-header-card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 20px 24px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    .message-canvas-card {
+      background-color: rgba(252, 250, 246, 0.96);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(200, 188, 172, 0.65);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px -8px rgba(45, 38, 30, 0.08);
+      padding: 28px 36px 24px;
+      min-height: 800px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      flex-direction: column;
 
-      .header-left {
+      // 顶部操作工具条（左侧下拉筛选与一键已读，右侧搜索与重置）
+      .message-action-toolbar {
         display: flex;
         align-items: center;
-        gap: 20px;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(195, 182, 164, 0.35);
 
-        .title-with-icon {
+        .toolbar-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .category-select {
+            width: 124px;
+
+            :deep(.el-select__wrapper) {
+              height: 36px;
+              border-radius: 18px;
+              background-color: rgba(255, 255, 255, 0.75);
+              box-shadow: 0 0 0 1px rgba(186, 172, 154, 0.65) inset;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-size: 13px;
+              color: #221f1c;
+              transition: all 0.2s ease;
+
+              &:hover {
+                box-shadow: 0 0 0 1px #7b6f60 inset;
+              }
+
+              &.is-focused {
+                box-shadow: 0 0 0 1px #354435 inset, 0 2px 8px rgba(53, 68, 53, 0.08);
+                background-color: #ffffff;
+              }
+
+              .el-select__placeholder {
+                color: #4a4035;
+                font-weight: 500;
+              }
+            }
+          }
+
+          .btn-mark-all {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 18px;
+            border: 1px solid rgba(195, 180, 160, 0.75);
+            background-color: rgba(243, 237, 227, 0.85);
+            color: #635749;
+            font-size: 12.5px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+
+            .btn-icon {
+              font-size: 13px;
+            }
+
+            &:hover:not(.disabled) {
+              background-color: rgba(53, 68, 53, 0.08);
+              color: #354435;
+              border-color: #354435;
+            }
+
+            &.disabled {
+              opacity: 0.45;
+              cursor: not-allowed;
+            }
+          }
+        }
+
+        .toolbar-right {
           display: flex;
           align-items: center;
           gap: 10px;
 
-          .page-title-icon {
-            font-size: 24px;
-            color: #3b82f6;
-          }
-
-          .page-title {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-          }
-        }
-
-        .header-meta {
-          font-size: 14px;
-          color: #64748b;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-
-          .meta-divider {
-            color: #cbd5e1;
-          }
-
-          .highlight-num {
-            color: #334155;
-            font-weight: 600;
-          }
-
-          .unread-num {
-            color: #ef4444;
-            font-weight: 600;
-          }
-        }
-      }
-
-      .header-right {
-        display: flex;
-        gap: 12px;
-      }
-    }
-
-    // 消息列表部分
-    .message-list-section {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-
-      .message-card {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 20px 24px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        display: flex;
-        align-items: flex-start;
-        gap: 18px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid #f1f5f9;
-
-        &:hover {
-          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-          transform: translateY(-1px);
-        }
-
-        &.is-unread {
-          border-left: 4px solid #3b82f6;
-          background: #fcfdff;
-        }
-
-        // 图标包装
-        .card-icon-wrap {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: #f1f5f9;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          position: relative;
-
-          .card-bell-icon {
-            font-size: 20px;
-            color: #94a3b8;
-          }
-
-          &.icon-unread {
-            background: #e0f2fe;
-            .card-bell-icon {
-              color: #0284c7;
-            }
-
-            .unread-dot {
-              position: absolute;
-              top: 2px;
-              right: 2px;
-              width: 8px;
-              height: 8px;
-              background-color: #ef4444;
-              border-radius: 50%;
-              border: 2px solid #ffffff;
-            }
-          }
-        }
-
-        // 中间主体
-        .card-content-wrap {
-          flex: 1;
-
-          .content-header-row {
+          .search-box {
+            width: 280px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            height: 36px;
+            padding: 0 12px;
+            background-color: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(186, 172, 154, 0.65);
+            border-radius: 18px;
+            transition: all 0.2s ease;
+
+            &:focus-within {
+              border-color: #354435;
+              background-color: #ffffff;
+              box-shadow: 0 0 0 1px #354435 inset;
+            }
+
+            .search-icon {
+              font-size: 14px;
+              color: #7d6f5e;
+              margin-right: 6px;
+              flex-shrink: 0;
+            }
+
+            .search-input {
+              flex: 1;
+              height: 100%;
+              border: none;
+              outline: none;
+              background: transparent;
+              font-size: 13px;
+              color: #221f1c;
+              font-family: inherit;
+
+              &::placeholder {
+                color: #9e917f;
+              }
+            }
+
+            .clear-btn {
+              cursor: pointer;
+              color: #9e917f;
+              font-size: 11px;
+              padding: 2px 4px;
+
+              &:hover {
+                color: #4a4239;
+              }
+            }
+          }
+
+          .btn-search {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 18px;
+            background-color: #354435;
+            color: #faf7f2;
+            border: 1px solid #354435;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+
+            .btn-icon {
+              font-size: 14px;
+            }
+
+            &:hover {
+              background-color: #253325;
+              border-color: #253325;
+              box-shadow: 0 3px 8px rgba(53, 68, 53, 0.2);
+            }
+          }
+
+          .btn-reset {
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 18px;
+            background-color: rgba(243, 237, 227, 0.85);
+            color: #635749;
+            border: 1px solid rgba(195, 180, 160, 0.75);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+
+            .btn-icon {
+              font-size: 14px;
+            }
+
+            &:hover {
+              background-color: rgba(230, 222, 209, 0.95);
+              border-color: #7b6f60;
+              color: #221f1c;
+            }
+          }
+        }
+      }
+
+      // 编年史时间轴消息流
+      .timeline-message-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .chronicle-feed {
+          position: relative;
+          padding: 6px 0 20px;
+
+          // 纵向时间轴贯穿线条
+          &::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            bottom: 20px;
+            left: 75px;
+            width: 1px;
+            background-color: rgba(195, 182, 164, 0.45);
+          }
+
+          .timeline-year-group {
+            position: relative;
             margin-bottom: 8px;
 
-            .title-area {
+            // 时间线上方的年份节点标记（下方贯穿该年份消息流）
+            .year-milestone-marker {
               display: flex;
               align-items: center;
-              gap: 10px;
+              margin: 14px 0 14px;
+              position: relative;
 
-              .card-title {
-                font-size: 16px;
-                font-weight: 600;
-                color: #1e293b;
+              &:first-child {
+                margin-top: 0;
               }
 
-              .unread-tag {
-                font-weight: 500;
+              .marker-axis {
+                width: 76px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                position: relative;
+                padding-right: 18px;
+
+                .year-capsule {
+                  font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+                  font-size: 12px;
+                  font-weight: 700;
+                  color: #faf7f2;
+                  background-color: #354435;
+                  padding: 2px 8px;
+                  border-radius: 10px;
+                  letter-spacing: 0.5px;
+                  box-shadow: 0 2px 6px rgba(53, 68, 53, 0.2);
+                  z-index: 2;
+                }
+
+                .milestone-dot {
+                  position: absolute;
+                  right: -4px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  width: 9px;
+                  height: 9px;
+                  border-radius: 50%;
+                  background-color: #354435;
+                  border: 2px solid #fcfaf6;
+                  z-index: 2;
+                }
+              }
+
+              .milestone-line {
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(90deg, rgba(195, 182, 164, 0.45) 0%, rgba(195, 182, 164, 0.04) 80%);
+                margin-left: 12px;
               }
             }
 
-            .card-time {
-              font-size: 13px;
-              color: #94a3b8;
-            }
-          }
+            .chronicle-entry {
+              display: flex;
+              align-items: center;
+              gap: 20px;
+              margin-bottom: 10px;
+              position: relative;
 
-          .card-body-text {
-            margin: 0;
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.6;
-            word-break: break-word;
+              // 左侧时间轴节点（仅月.日）
+              .entry-timeline-axis {
+                width: 76px;
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                padding-right: 20px;
+                position: relative;
+
+                .timeline-date {
+                  font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+                  font-size: 13.5px;
+                  font-weight: 700;
+                  color: #4a4035;
+                  line-height: 1;
+                }
+
+                .timeline-node {
+                  position: absolute;
+                  right: -6px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  width: 11px;
+                  height: 11px;
+                  border-radius: 50%;
+                  background-color: #fcfaf6;
+                  border: 2px solid rgba(186, 172, 154, 0.75);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  transition: all 0.2s ease;
+                  z-index: 1;
+
+                  .node-dot {
+                    width: 3px;
+                    height: 3px;
+                    border-radius: 50%;
+                    background-color: transparent;
+                  }
+
+                  &.unread {
+                    border-color: #354435;
+                    background-color: #fcfaf6;
+
+                    .node-dot {
+                      background-color: #354435;
+                    }
+                  }
+                }
+              }
+
+              // 右侧学者消息卡片（紧凑对称、高质感）
+              .entry-message-card {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 14px 20px;
+                min-height: 72px;
+                box-sizing: border-box;
+                border-radius: 8px;
+                background-color: rgba(255, 255, 255, 0.82);
+                border: 1px solid rgba(210, 198, 184, 0.65);
+                box-shadow: 0 2px 10px rgba(45, 38, 30, 0.03);
+                transition: background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+                cursor: pointer;
+
+                &:hover {
+                  border-color: rgba(145, 130, 112, 0.85);
+                  background-color: #ffffff;
+                  box-shadow: 0 4px 16px rgba(45, 38, 30, 0.08);
+
+                  .card-action-side .detail-action-link {
+                    color: #354435;
+
+                    .arrow-svg {
+                      transform: translateX(3px);
+                    }
+                  }
+                }
+
+                &.card-unread {
+                  border-left: 3.5px solid #354435;
+                  background-color: rgba(255, 255, 255, 0.95);
+                }
+
+                // 分类圆形图标底座（缩减内部图标尺寸，保持精细秀美）
+                .card-avatar-box {
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+
+                  .type-icon {
+                    font-size: 14px;
+                    width: 14px;
+                    height: 14px;
+                  }
+
+                  &.system {
+                    background-color: rgba(53, 68, 53, 0.08);
+                    color: #354435;
+                  }
+
+                  &.exam {
+                    background-color: rgba(166, 107, 36, 0.1);
+                    color: #a66b24;
+                  }
+
+                  &.judge {
+                    background-color: rgba(47, 114, 85, 0.08);
+                    color: #2f7255;
+                  }
+
+                  &.station {
+                    background-color: rgba(125, 112, 96, 0.1);
+                    color: #635749;
+                  }
+                }
+
+                // 主体内容
+                .card-content-wrap {
+                  flex: 1;
+                  min-width: 0;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  gap: 4px;
+
+                  .card-title-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .message-title {
+                      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+                      font-size: 15px;
+                      font-weight: 600;
+                      color: #221f1c;
+                      margin: 0;
+                      letter-spacing: 0.3px;
+                    }
+
+                    .type-badge {
+                      font-size: 11px;
+                      padding: 1px 7px;
+                      border-radius: 3px;
+                      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+                      font-weight: 500;
+
+                      &.system {
+                        background-color: rgba(53, 68, 53, 0.08);
+                        color: #354435;
+                        border: 1px solid rgba(53, 68, 53, 0.25);
+                      }
+
+                      &.exam {
+                        background-color: rgba(166, 107, 36, 0.1);
+                        color: #a66b24;
+                        border: 1px solid rgba(166, 107, 36, 0.3);
+                      }
+
+                      &.judge {
+                        background-color: rgba(47, 114, 85, 0.08);
+                        color: #2f7255;
+                        border: 1px solid rgba(47, 114, 85, 0.3);
+                      }
+
+                      &.station {
+                        background-color: rgba(125, 112, 96, 0.1);
+                        color: #635749;
+                        border: 1px solid rgba(125, 112, 96, 0.25);
+                      }
+                    }
+
+                    .read-state-badge {
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 4px;
+                      font-size: 11px;
+                      padding: 1px 6px;
+                      border-radius: 3px;
+                      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+
+                      .badge-dot {
+                        width: 4px;
+                        height: 4px;
+                        border-radius: 50%;
+                      }
+
+                      &.badge-unread {
+                        background-color: rgba(53, 68, 53, 0.1);
+                        color: #354435;
+                        font-weight: 600;
+
+                        .badge-dot {
+                          background-color: #354435;
+                        }
+                      }
+
+                      &.badge-read {
+                        background-color: rgba(220, 212, 200, 0.45);
+                        color: #8a7d6e;
+
+                        .badge-dot {
+                          background-color: #9e917f;
+                        }
+                      }
+                    }
+                  }
+
+                  .message-summary {
+                    font-size: 12.5px;
+                    color: #6d6152;
+                    margin: 0;
+                    line-height: 1.5;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 96%;
+                  }
+                }
+
+                // 右侧操作与时间
+                .card-action-side {
+                  flex-shrink: 0;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-end;
+                  justify-content: center;
+                  gap: 6px;
+                  min-width: 140px;
+
+                  .message-time {
+                    font-size: 12px;
+                    color: #9e917f;
+                    letter-spacing: 0.2px;
+                  }
+
+                  .detail-action-link {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+                    font-size: 12px;
+                    color: #7d6f5e;
+                    transition: all 0.2s ease;
+
+                    .arrow-svg {
+                      width: 12px;
+                      height: 12px;
+                      transition: transform 0.2s ease;
+                    }
+                  }
+                }
+              }
+            }
           }
         }
 
-        // 右侧操作
-        .card-action-wrap {
-          flex-shrink: 0;
+        // 缺省空态
+        .empty-card {
+          flex: 1;
+          min-height: 520px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 0;
+
+          .empty-img {
+            width: 200px;
+            max-height: 180px;
+            object-fit: contain;
+            margin-bottom: 14px;
+            opacity: 0.95;
+          }
+
+          .empty-text {
+            color: #7d7060;
+            font-size: 14.5px;
+            letter-spacing: 2px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-weight: 500;
+          }
+        }
+
+        // 分页栏
+        .pagination-footer {
+          margin-top: auto;
+          padding-top: 16px;
+          border-top: 1px solid rgba(195, 182, 164, 0.35);
           display: flex;
           align-items: center;
-          padding-top: 4px;
+          justify-content: space-between;
 
-          .read-status-label {
-            font-size: 13px;
-            color: #94a3b8;
+          .footer-stats-tags {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+
+            .stat-divider {
+              color: rgba(186, 172, 154, 0.75);
+              font-size: 13px;
+              margin: 0 2px;
+              user-select: none;
+            }
+
+            .stat-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 5px;
+              padding: 4px 10px;
+              border-radius: 14px;
+              font-size: 12px;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              letter-spacing: 0.5px;
+
+              .badge-dot {
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+              }
+
+              .badge-num {
+                font-weight: 600;
+                margin: 0 1px;
+              }
+
+              &.total-badge {
+                background-color: rgba(240, 234, 222, 0.85);
+                border: 1px solid rgba(195, 182, 164, 0.75);
+                color: #635749;
+                .badge-dot { background-color: #8a7b68; }
+                .badge-num { color: #221f1c; }
+              }
+
+              &.unread-badge {
+                background-color: rgba(53, 68, 53, 0.1);
+                border: 1px solid rgba(53, 68, 53, 0.3);
+                color: #354435;
+                .badge-dot { background-color: #354435; }
+                .badge-num { color: #221f1c; }
+              }
+
+              &.read-badge {
+                background-color: rgba(240, 234, 222, 0.6);
+                border: 1px solid rgba(195, 182, 164, 0.6);
+                color: #7d6f5e;
+                .badge-dot { background-color: #8a7b68; }
+                .badge-num { color: #4a4035; }
+              }
+            }
+          }
+
+          :deep(.el-pagination) {
+            .el-pager li {
+              background-color: rgba(243, 237, 227, 0.6);
+              color: #635749;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              border-radius: 4px;
+              font-size: 13px;
+
+              &.is-active {
+                background-color: #354435 !important;
+                color: #faf7f2 !important;
+                font-weight: 600;
+              }
+
+              &:hover:not(.is-active) {
+                color: #221f1c;
+                background-color: rgba(230, 222, 209, 0.8);
+              }
+            }
+
+            .btn-prev,
+            .btn-next {
+              background-color: rgba(243, 237, 227, 0.6);
+              color: #635749;
+              border-radius: 4px;
+
+              &:hover:not(:disabled) {
+                color: #221f1c;
+                background-color: rgba(230, 222, 209, 0.8);
+              }
+            }
           }
         }
       }
+    }
+  }
+}
 
-      // 分页条
-      .pagination-bar {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 16px 24px;
-        display: flex;
-        justify-content: flex-end;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        margin-top: 10px;
+// 消息详情弹窗样式（全局/顶层定义，确保 append-to-body 正常生效）
+.message-dialog-body {
+  .dialog-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 26px;
+      line-height: 24px;
+      padding: 0 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      box-sizing: border-box;
+
+      .tag-icon {
+        font-size: 13px;
+        width: 13px;
+        height: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
 
-      // 空状态
-      .empty-message-wrap {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 60px 0;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      &.type-tag {
+        font-weight: 600;
+
+        &.system {
+          color: #354435;
+          background-color: rgba(53, 68, 53, 0.1);
+          border: 1px solid rgba(53, 68, 53, 0.25);
+        }
+
+        &.exam {
+          color: #a66b24;
+          background-color: rgba(166, 107, 36, 0.1);
+          border: 1px solid rgba(166, 107, 36, 0.25);
+        }
+
+        &.judge {
+          color: #2f7255;
+          background-color: rgba(47, 114, 85, 0.1);
+          border: 1px solid rgba(47, 114, 85, 0.25);
+        }
+
+        &.station {
+          color: #635749;
+          background-color: rgba(125, 112, 96, 0.1);
+          border: 1px solid rgba(125, 112, 96, 0.25);
+        }
       }
+
+      &.time-tag {
+        color: #635749;
+        background-color: rgba(240, 234, 222, 0.85);
+        border: 1px solid rgba(195, 180, 160, 0.75);
+      }
+
+      &.status-tag {
+        .status-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+        }
+
+        &.unread {
+          background-color: rgba(53, 68, 53, 0.12);
+          color: #354435;
+          border: 1px solid rgba(53, 68, 53, 0.25);
+          font-weight: 600;
+
+          .status-dot {
+            background-color: #354435;
+          }
+        }
+
+        &.read {
+          background-color: rgba(235, 229, 219, 0.6);
+          color: #8a7d6e;
+          border: 1px solid rgba(200, 188, 172, 0.6);
+
+          .status-dot {
+            background-color: #9e917f;
+          }
+        }
+      }
+    }
+  }
+
+  .dialog-content-box {
+    background-color: rgba(247, 243, 235, 0.6);
+    border: 1px solid rgba(210, 198, 182, 0.6);
+    border-radius: 8px;
+    padding: 18px 22px;
+
+    .content-text {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: #2a2521;
+      font-size: 14px;
+      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
     }
   }
 }

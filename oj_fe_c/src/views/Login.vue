@@ -1,76 +1,90 @@
 <template>
   <div class="login-page">
-    <!-- 极光光斑背景 -->
-    <div class="aurora-glow orange"></div>
-    <div class="aurora-glow blue"></div>
-    <div class="aurora-glow blue small"></div>
-
-    <!-- 登录注册卡片 -->
-    <div class="login-box">
-      <!-- 品牌 Logo 与标题区域 -->
-      <div class="logo-box">
-        <img class="logo-img" src="@/assets/images/logo.png" alt="比特OJ Logo" />
-        <div class="title-right">
-          <div class="sys-name">比特OJ 在线代码评测</div>
-          <div class="sys-sub-name">算法能力成长与在线答题平台</div>
+    <!-- 左侧：全幅博物学铜版插画区域（横屏大图比例，画面留白区展示品牌与核心意象） -->
+    <div class="left-section">
+      <div class="left-brand-block">
+        <h1 class="brand-title">墨衡</h1>
+        <div class="brand-slogan-wrap">
+          <p class="brand-slogan">以算法丈量世界</p>
+          <p class="brand-slogan">用代码寻找答案</p>
         </div>
+        <div class="brand-divider"></div>
+        <span class="brand-latin">Ad Algorithmum Per Aspera</span>
       </div>
+    </div>
 
-      <!-- 表单输入区域 -->
-      <div class="form-box">
-        <!-- 手机号输入 -->
-        <div class="form-item">
-          <img class="input-icon" src="@/assets/images/shouji.png" alt="手机号" />
-          <el-input
-            v-model="loginForm.phone"
-            placeholder="请输入手机号"
-            maxlength="11"
-            clearable
-            @keyup.enter="handleLogin"
-          />
+    <!-- 右侧：典雅表单区域（竖屏修长比例，暗纹背景底图） -->
+    <div class="right-section">
+      <!-- 居中表单容器 -->
+      <div class="form-container">
+        <!-- 标题区域：纯粹精炼的“欢迎回来” -->
+        <div class="brand-header">
+          <h2 class="form-title">欢迎回来</h2>
         </div>
 
-        <!-- 验证码输入与获取按钮 -->
-        <div class="form-item code-item">
-          <div class="code-input-wrap">
-            <img class="input-icon" src="@/assets/images/yanzhengma.png" alt="验证码" />
+        <!-- 登录表单 -->
+        <div class="form-body">
+          <!-- 手机号输入 -->
+          <div class="form-item">
+            <el-icon class="input-icon"><Iphone /></el-icon>
             <el-input
-              v-model="loginForm.code"
-              placeholder="请输入6位验证码"
-              maxlength="6"
+              v-model="loginForm.phone"
+              placeholder="请输入手机号"
+              maxlength="11"
               clearable
+              autocomplete="tel"
               @keyup.enter="handleLogin"
             />
           </div>
-          <el-button
-            class="send-code-btn"
-            type="primary"
-            plain
-            :disabled="countdown > 0 || codeLoading"
-            :loading="codeLoading"
-            @click="handleSendCode"
+
+          <!-- 短信验证码输入与获取按钮 -->
+          <div class="code-row">
+            <div class="code-input-wrapper">
+              <el-icon class="input-icon"><ChatDotSquare /></el-icon>
+              <el-input
+                v-model="loginForm.code"
+                placeholder="请输入验证码"
+                maxlength="6"
+                clearable
+                autocomplete="one-time-code"
+                @keyup.enter="handleLogin"
+              />
+            </div>
+            <button
+              type="button"
+              class="send-code-btn"
+              :class="{ disabled: countdown > 0 || codeLoading }"
+              :disabled="countdown > 0 || codeLoading"
+              @click="handleSendCode"
+            >
+              {{ countdown > 0 ? `${countdown}s` : '获取验证码' }}
+            </button>
+          </div>
+
+          <!-- 辅助选项行：记住我 + 手机号无法使用？ -->
+          <div class="form-meta-row">
+            <el-checkbox v-model="rememberMe" class="custom-checkbox">记住我</el-checkbox>
+            <span class="help-link">手机号无法使用？</span>
+          </div>
+
+          <!-- 行内错误提示 -->
+          <div v-if="errorMsg" class="form-error-text">
+            {{ errorMsg }}
+          </div>
+
+          <!-- 登录主按钮（典雅深墨绿） -->
+          <button
+            type="button"
+            class="submit-button"
+            :class="{ disabled: loading }"
+            :disabled="loading"
+            @click="handleLogin"
           >
-            {{ countdown > 0 ? `${countdown}s 后重新获取` : '获取验证码' }}
-          </el-button>
-        </div>
-
-        <!-- 错误提示文本（行内展示） -->
-        <div v-if="errorMsg" class="form-error-text">
-          {{ errorMsg }}
-        </div>
-
-        <!-- 登录 / 注册统一大按钮 -->
-        <div
-          class="submit-box"
-          :class="{ disabled: loading }"
-          @click="handleLogin"
-        >
-          <span v-if="!loading">登录 / 注册</span>
-          <span v-else>处理中...</span>
-        </div>
-
-        <div class="form-tip">
-          <span>未注册手机号验证通过后将自动创建账号并登录</span>
+            <span>{{ loading ? '处理中...' : '登录' }}</span>
+            <svg class="arrow-svg" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
