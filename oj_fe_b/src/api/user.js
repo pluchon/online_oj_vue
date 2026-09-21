@@ -17,12 +17,12 @@ export function loginApi(userAccount, password) {
 }
 
 /**
- * 获取当前登录管理员用户详情（通过请求头Token获取）
+ * 获取当前登录管理员信息（通过请求头Token识别）
  * @returns {Promise} 包含 nickName 的管理员视图对象
  */
 export function getUserDetailApi() {
   return request({
-    url: '/system/sysUser/detail',
+    url: '/system/sysUser/me',
     method: 'get'
   })
 }
@@ -33,7 +33,7 @@ export function getUserDetailApi() {
  */
 export function addUserApi(data) {
   return request({
-    url: '/system/sysUser/add',
+    url: '/system/sysUser',
     method: 'post',
     data
   })
@@ -66,7 +66,7 @@ export function logoutApi() {
 // 分页查询普通用户列表（支持用户ID精确匹配与昵称模糊过滤）
 export function getUserListApi(params = {}) {
   return request({
-    url: '/system/user/list',
+    url: '/system/user',
     method: 'get',
     params
   })
@@ -75,27 +75,17 @@ export function getUserListApi(params = {}) {
 // 修改普通用户状态（拉黑 / 解禁）
 export function updateUserStatusApi(data) {
   return request({
-    url: '/system/user/updateStatus',
+    url: `/system/user/${data.userId}/status`,
     method: 'put',
-    data
+    data: { status: data.status }
   })
 }
 
-// 管理员编辑普通用户信息
+// 管理员编辑普通用户信息（后端接口待确认是否开放）
 export function updateUserInfoApi(data) {
   return request({
-    url: '/system/user/edit',
+    url: `/system/user/${data.userId}`,
     method: 'put',
     data
-  })
-}
-
-// 发送短信验证码接口（C端用户）
-export function sendCodeApi(data) {
-  const payload = typeof data === 'string' ? { phone: data } : data
-  return request({
-    url: '/friend/user/send-code',
-    method: 'post',
-    data: payload
   })
 }

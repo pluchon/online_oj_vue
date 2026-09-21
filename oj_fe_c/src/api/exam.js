@@ -2,39 +2,13 @@
 import request from '@/utils/request'
 
 /**
- * 分页查询竞赛列表（通用）
+ * 分页查询竞赛列表（type 为 0 未完赛、1 历史竞赛，不传为全部）
  * @param {Object} params - { pageNum, pageSize, type, title, startTime, endTime }
  * @returns {Promise} { rows: Array, total: Number }
  */
 export function getExamListApi(params) {
   return request({
-    url: '/friend/exam/list',
-    method: 'get',
-    params
-  })
-}
-
-/**
- * 分页查询未完赛竞赛列表
- * @param {Object} params - { pageNum, pageSize, title, startTime, endTime }
- * @returns {Promise} { rows: Array, total: Number }
- */
-export function getUnfinishExamListApi(params) {
-  return request({
-    url: '/friend/exam/unfinish/list',
-    method: 'get',
-    params
-  })
-}
-
-/**
- * 分页查询历史竞赛列表
- * @param {Object} params - { pageNum, pageSize, title, startTime, endTime }
- * @returns {Promise} { rows: Array, total: Number }
- */
-export function getHistoryExamListApi(params) {
-  return request({
-    url: '/friend/exam/history/list',
+    url: '/friend/exam',
     method: 'get',
     params
   })
@@ -47,9 +21,8 @@ export function getHistoryExamListApi(params) {
  */
 export function enrollExamApi(data) {
   return request({
-    url: '/friend/exam/enroll',
-    method: 'post',
-    data
+    url: `/friend/exam/${data.examId}/enrollment`,
+    method: 'post'
   })
 }
 
@@ -60,7 +33,7 @@ export function enrollExamApi(data) {
  */
 export function getMyExamListApi(params) {
   return request({
-    url: '/friend/exam/my/list',
+    url: '/friend/exam/mine',
     method: 'get',
     params
   })
@@ -73,22 +46,21 @@ export function getMyExamListApi(params) {
  */
 export function getExamDetailApi(params) {
   return request({
-    url: '/friend/exam/detail',
-    method: 'get',
-    params
+    url: `/friend/exam/${params.examId}`,
+    method: 'get'
   })
 }
 
 /**
- * 分页查询指定竞赛的选手排名榜单
+ * 分页查询指定竞赛的选手排名榜单（竞赛结束后公布）
  * @param {Object} params - { examId, pageNum, pageSize }
  * @returns {Promise} { rows: Array, total: Number }
  */
 export function getExamRankListApi(params) {
+  const { examId, ...pageParams } = params
   return request({
-    url: '/friend/exam/rank/list',
+    url: `/friend/exam/${examId}/rank`,
     method: 'get',
-    params
+    params: pageParams
   })
 }
-

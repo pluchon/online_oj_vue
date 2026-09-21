@@ -4,7 +4,7 @@ import request from '@/utils/request'
 // 分页检索题目列表（支持关键字、难度与分页）
 export function getQuestionListApi(params) {
   return request({
-    url: '/friend/question/list',
+    url: '/friend/question',
     method: 'get',
     params
   })
@@ -13,18 +13,18 @@ export function getQuestionListApi(params) {
 // 查询题目详情
 export function getQuestionDetailApi(questionId) {
   return request({
-    url: '/friend/question/detail',
-    method: 'get',
-    params: { questionId }
+    url: `/friend/question/${questionId}`,
+    method: 'get'
   })
 }
 
-// 获取上一题与下一题导航
+// 获取上一题与下一题导航（examId 可选，传入时按竞赛题目顺序）
 export function getQuestionPreAndNextApi(params) {
+  const { questionId, ...rest } = params
   return request({
-    url: '/friend/question/preAndNext',
+    url: `/friend/question/${questionId}/neighbors`,
     method: 'get',
-    params
+    params: rest
   })
 }
 
@@ -39,39 +39,39 @@ export function getFirstQuestionApi(params) {
 
 // 提交代码进行评测（异步消息队列判题）
 export function submitQuestionApi(data) {
+  const { questionId, ...body } = data
   return request({
-    url: '/friend/question/submit',
+    url: `/friend/question/${questionId}/submissions`,
     method: 'post',
-    data
+    data: body
   })
 }
 
 // 运行公开示例用例（同步返回逐用例结果，编译与排队耗时较长）
 export function runQuestionApi(data) {
+  const { questionId, ...body } = data
   return request({
-    url: '/friend/question/run',
+    url: `/friend/question/${questionId}/run`,
     method: 'post',
-    data,
+    data: body,
     timeout: 20000
   })
 }
 
 // 分页查询本人本题提交记录
 export function getSubmitHistoryApi(params) {
+  const { questionId, ...pageParams } = params
   return request({
-    url: '/friend/question/submit/history',
+    url: `/friend/question/${questionId}/submissions`,
     method: 'get',
-    params
+    params: pageParams
   })
 }
 
 // 查询判题最新结果
 export function getSubmitResultApi(submitId) {
   return request({
-    url: '/friend/question/submit/result',
-    method: 'get',
-    params: { submitId }
+    url: `/friend/question/submissions/${submitId}`,
+    method: 'get'
   })
 }
-
-

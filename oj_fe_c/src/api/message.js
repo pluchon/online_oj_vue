@@ -4,7 +4,7 @@ import request from '@/utils/request'
 // 分页查询当前登录用户的站内消息列表
 export function getMessageListApi(params) {
   return request({
-    url: '/friend/message/list',
+    url: '/friend/message',
     method: 'get',
     params
   })
@@ -21,9 +21,8 @@ export function getUnreadCountApi() {
 // 标记指定消息为已读状态
 export function readMessageApi(messageId) {
   return request({
-    url: '/friend/message/read',
-    method: 'put',
-    params: { messageId }
+    url: `/friend/message/${messageId}/read`,
+    method: 'put'
   })
 }
 

@@ -272,7 +272,7 @@
 
                   <!-- 能力覆盖多边形 -->
                   <polygon
-                    points="120,47.6 165.6,87.1 153.0,147.5 96.5,134.1 84.5,90.9"
+                    :points="radarPoints"
                     class="radar-data-area"
                   />
 

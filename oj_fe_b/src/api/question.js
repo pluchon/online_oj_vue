@@ -4,7 +4,7 @@ import request from '@/utils/request'
 // 分页查询题目列表（支持难度与标题搜索过滤）
 export function getQuestionListApi(params = {}) {
   return request({
-    url: '/system/question/list',
+    url: '/system/question',
     method: 'get',
     params
   })
@@ -13,7 +13,7 @@ export function getQuestionListApi(params = {}) {
 // 新增题目接口
 export function addQuestionApi(data) {
   return request({
-    url: '/system/question/add',
+    url: '/system/question',
     method: 'post',
     data
   })
@@ -22,16 +22,15 @@ export function addQuestionApi(data) {
 // 获取题目详情接口
 export function getQuestionDetailApi(questionId) {
   return request({
-    url: '/system/question/detail',
-    method: 'get',
-    params: { questionId }
+    url: `/system/question/${questionId}`,
+    method: 'get'
   })
 }
 
 // 编辑题目接口
 export function editQuestionApi(data) {
   return request({
-    url: '/system/question/edit',
+    url: `/system/question/${data.questionId}`,
     method: 'put',
     data
   })

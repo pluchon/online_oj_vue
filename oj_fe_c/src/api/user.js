@@ -68,3 +68,21 @@ export function uploadAvatarApi(formData) {
   })
 }
 
+
+// 获取当前用户做题统计与能力雷达（timeRange：all / year / month / week）
+export function getUserOverviewApi(timeRange) {
+  return request({
+    url: '/friend/user/profile/overview',
+    method: 'get',
+    params: { timeRange }
+  })
+}
+
+// 获取当前用户指定年份的每日提交次数
+export function getUserCalendarApi(year) {
+  return request({
+    url: '/friend/user/profile/calendar',
+    method: 'get',
+    params: { year }
+  })
+}

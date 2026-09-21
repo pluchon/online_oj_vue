@@ -22,8 +22,22 @@ import {
 } from '@element-plus/icons-vue'
 import defaultAvatar from '@/assets/images/c_user_avatar.png'
 import OjDialog from '@/components/OjDialog'
-import { getUserProfileApi, updateUserProfileApi, uploadAvatarApi } from '@/api/user'
+import { getUserProfileApi, updateUserProfileApi, uploadAvatarApi, getUserOverviewApi, getUserCalendarApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
+
+// 雷达图维度顺序（与模板中五个维度文字的位置一致，从顶部顺时针）
+const RADAR_AXES = ['dataStructure', 'algorithm', 'implementation', 'math', 'competition']
+// 雷达图空数据
+const RADAR_EMPTY = { dataStructure: 0, algorithm: 0, implementation: 0, math: 0, competition: 0 }
+// 雷达图中心与最外圈半径（与模板中网格坐标一致）
+const RADAR_CENTER_X = 120
+const RADAR_CENTER_Y = 102
+const RADAR_RADIUS = 64
+// 热力图分档阈值：提交次数达到对应值即进入该档
+const HEAT_LEVEL_THRESHOLDS = [1, 3, 6, 10]
+
+// 将当日提交次数映射为热力图色阶（0~4）
+const toHeatLevel = (count) => HEAT_LEVEL_THRESHOLDS.filter(t => count >= t).length
 
 export default defineComponent({
   name: 'UserProfile',
@@ -150,42 +164,54 @@ export default defineComponent({
       editDialogVisible.value = false
     }
 
-    // 数据总览筛选与统计
+    // 数据总览筛选与统计（数据来自后端个人总览接口）
     const overviewTimeRange = ref('all')
     const statsData = reactive({
-      solvedCount: 42,
-      tryingCount: 17,
-      submitCount: 128,
-      passRate: '83%'
+      solvedCount: 0,
+      tryingCount: 0,
+      submitCount: 0,
+      passRate: '0%'
+    })
+    const radarScores = reactive({
+      dataStructure: 0,
+      algorithm: 0,
+      implementation: 0,
+      math: 0,
+      competition: 0
     })
 
-    // 时间范围筛选变更逻辑
-    const handleTimeRangeChange = (val) => {
-      if (val === 'week') {
-        statsData.solvedCount = 8
-        statsData.tryingCount = 3
-        statsData.submitCount = 19
-        statsData.passRate = '89%'
-      } else if (val === 'month') {
-        statsData.solvedCount = 22
-        statsData.tryingCount = 9
-        statsData.submitCount = 65
-        statsData.passRate = '85%'
-      } else if (val === 'year') {
-        statsData.solvedCount = 38
-        statsData.tryingCount = 14
-        statsData.submitCount = 112
-        statsData.passRate = '84%'
-      } else {
-        statsData.solvedCount = 42
-        statsData.tryingCount = 17
-        statsData.submitCount = 128
-        statsData.passRate = '83%'
+    // 加载指定时间范围的做题统计与能力雷达
+    const loadOverview = async (timeRange) => {
+      try {
+        const data = await getUserOverviewApi(timeRange)
+        statsData.solvedCount = data?.solvedCount ?? 0
+        statsData.tryingCount = data?.tryingCount ?? 0
+        statsData.submitCount = data?.submitCount ?? 0
+        statsData.passRate = data?.passRate || '0%'
+        Object.assign(radarScores, RADAR_EMPTY, data?.abilityRadar || {})
+      } catch (e) {
+        // 错误提示已由请求拦截器统一处理
       }
     }
 
+    // 时间范围筛选变更逻辑
+    const handleTimeRangeChange = (val) => {
+      loadOverview(val)
+    }
+
+    // 雷达图多边形顶点（五个维度分值 0~100，按正五边形从顶部顺时针排列）
+    const radarPoints = computed(() => {
+      return RADAR_AXES.map((key, i) => {
+        const value = Math.min(100, Math.max(0, Number(radarScores[key]) || 0))
+        const angle = (-90 + i * 72) * Math.PI / 180
+        const r = RADAR_RADIUS * value / 100
+        return `${(RADAR_CENTER_X + r * Math.cos(angle)).toFixed(1)},${(RADAR_CENTER_Y + r * Math.sin(angle)).toFixed(1)}`
+      }).join(' ')
+    })
+
     // 解题日历热力图生成与年份切换（52周全自然年，精准对齐12个月份标尺）
-    const calendarYear = ref(2026)
+    const calendarYear = ref(new Date().getFullYear())
+    const calendarCountMap = ref({})
     const calendarYearLabel = computed(() => `${calendarYear.value}年`)
     const calendarHeatmap = ref([])
 
@@ -220,18 +246,7 @@ export default defineComponent({
       const offset = (startDay + 6) % 7
       const firstMonday = new Date(yr, 0, 1 - offset)
 
-      const baseLevels = [
-        0, 1, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3, 1, 0, 0, 0, 0, 0, 0, 2, 4, 1, 0,
-        1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 1, 0, 3, 2, 0, 0, 0, 0, 4, 2, 0, 1, 0,
-        1, 2, 0, 0, 3, 1, 0, 0, 0, 1, 2, 4, 0, 0, 0, 3, 2, 0, 1, 0, 0, 0, 0, 0, 2, 3, 1, 0,
-        1, 0, 2, 4, 0, 0, 0, 0, 2, 0, 1, 3, 2, 0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 2, 0, 0, 0, 0,
-        0, 0, 0, 1, 3, 0, 0, 1, 0, 2, 0, 0, 4, 0, 0, 2, 0, 3, 1, 0, 0, 0, 0, 1, 0, 2, 0, 0,
-        2, 1, 0, 0, 3, 0, 0, 0, 0, 3, 2, 0, 1, 0, 0, 1, 0, 0, 4, 2, 0, 1, 0, 2, 1, 0, 0, 0,
-        0, 3, 0, 2, 1, 0, 0, 0, 0, 1, 0, 3, 2, 0, 2, 0, 0, 4, 1, 0, 0, 0, 1, 3, 0, 2, 0, 0,
-        0, 0, 0, 2, 1, 3, 0, 1, 2, 0, 0, 2, 0, 0
-      ]
-      const countsMap = [0, 2, 5, 9, 14]
-
+      const countMap = calendarCountMap.value
       const weeks = []
       for (let w = 0; w < 52; w++) {
         let monthName = ''
@@ -248,12 +263,12 @@ export default defineComponent({
             monthName = `${cur.getMonth() + 1}月`
           }
 
-          const seed = (w * 7 + d) % baseLevels.length
-          const lvl = baseLevels[seed]
+          const date = `${y}-${m}-${dayStr}`
+          const count = countMap[date] || 0
           days.push({
-            date: `${y}-${m}-${dayStr}`,
-            level: lvl,
-            count: countsMap[lvl]
+            date,
+            level: toHeatLevel(count),
+            count
           })
         }
         weeks.push({
@@ -264,19 +279,37 @@ export default defineComponent({
       calendarHeatmap.value = weeks
     }
 
+    // 加载指定年份的每日提交次数并重绘热力图
+    const loadCalendar = async () => {
+      try {
+        const data = await getUserCalendarApi(calendarYear.value)
+        const map = {}
+        for (const item of data?.calendarData || []) {
+          map[item.date] = item.count || 0
+        }
+        calendarCountMap.value = map
+      } catch (e) {
+        calendarCountMap.value = {}
+      }
+      generateCalendarHeatmap()
+    }
+
     const prevCalendarYear = () => {
       calendarYear.value--
-      generateCalendarHeatmap()
+      loadCalendar()
     }
 
     const nextCalendarYear = () => {
       calendarYear.value++
-      generateCalendarHeatmap()
+      loadCalendar()
     }
 
     // 复制 ID 标识
     const copyOjId = async () => {
-      const id = userProfile.value?.userId || userProfile.value?.id || '0949_TGx7'
+      const id = userProfile.value?.userId
+      if (!id) {
+        return
+      }
       try {
         await navigator.clipboard.writeText(String(id))
         ElMessage.success('已复制 ID')
@@ -287,7 +320,7 @@ export default defineComponent({
 
     // 格式化注册日期
     const formatRegisterTime = (timeStr) => {
-      if (!timeStr) return '2026-09-15 22:24:40'
+      if (!timeStr) return '-'
       return timeStr
     }
 
@@ -454,7 +487,8 @@ export default defineComponent({
 
     onMounted(() => {
       loadUserProfile()
-      generateCalendarHeatmap()
+      loadOverview(overviewTimeRange.value)
+      loadCalendar()
     })
 
     return {
@@ -479,6 +513,7 @@ export default defineComponent({
       overviewTimeRange,
       handleTimeRangeChange,
       statsData,
+      radarPoints,
       calendarYearLabel,
       calendarHeatmap,
       prevCalendarYear,
