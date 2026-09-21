@@ -188,6 +188,13 @@
             letter-spacing: 1px;
           }
 
+          // 公开示例开关靠右，与删除按钮留出间距
+          .case-sample-switch {
+            margin-left: auto;
+            margin-right: 12px;
+            --el-switch-on-color: #354435;
+          }
+
           .btn-delete-case {
             background: transparent;
             border: none;
@@ -223,7 +230,7 @@
             gap: 8px;
 
             .line-label {
-              min-width: 44px;
+              min-width: 72px;
               font-family: 'Songti SC', 'SimSun', serif;
               font-size: 12.5px;
               font-weight: 600;

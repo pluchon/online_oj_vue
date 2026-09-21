@@ -7,6 +7,35 @@ import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import CodeEditor from '@/components/CodeEditor'
 
+// 新题默认代码模板（用户只需实现方法）
+const DEFAULT_CODE = 'public int solve(int n) {\n    // 请在此处编写你的代码\n    return 0;\n}'
+
+// 新题默认评测主函数：首行读取用例数，之后每个用例读取一行输入并输出一行结果
+const DEFAULT_MAIN_FUNC = [
+  'public static void main(String[] args) throws IOException {',
+  '    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));',
+  '    int t = Integer.parseInt(in.readLine().trim());',
+  '    Main m = new Main();',
+  '    for (int i = 0; i < t; i++) {',
+  '        int n = Integer.parseInt(in.readLine().trim());',
+  '        System.out.println(m.solve(n));',
+  '    }',
+  '}'
+].join('\n')
+
+// 生成一组空用例（isSample：1 公开示例，0 隐藏用例）
+const createCase = (isSample = 1) => ({
+  displayInput: '',
+  displayOutput: '',
+  judgeInput: '',
+  judgeOutput: '',
+  isSample
+})
+
+// 用例四个字段是否都已填写
+const isCaseComplete = (item) => ['displayInput', 'displayOutput', 'judgeInput', 'judgeOutput']
+  .every(key => (item[key] || '').trim())
+
 export default defineComponent({
   name: 'QuestionDrawer',
   components: {
@@ -41,10 +70,8 @@ export default defineComponent({
       })
     })
 
-    // 结构化测试用例列表
-    const testCaseList = ref([
-      { input: '', output: '' }
-    ])
+    // 测试用例列表
+    const testCaseList = ref([createCase(1)])
 
     // 表单默认初始值
     const getInitialFormData = () => ({
@@ -54,9 +81,8 @@ export default defineComponent({
       timeLimit: 1000,
       spaceLimit: 128,
       content: '',
-      questionCase: '',
-      defaultCode: 'public class Solution {\n    // 请在此处编写核心解题逻辑\n}',
-      mainFunc: 'public class Main {\n    public static void main(String[] args) {\n        // 系统自动评测入口\n    }\n}',
+      defaultCode: DEFAULT_CODE,
+      mainFunc: DEFAULT_MAIN_FUNC,
     })
 
     // 表单响应式数据
@@ -67,41 +93,32 @@ export default defineComponent({
       return mode.value === 'add' ? '新增题目' : '编辑题目'
     })
 
-    // 解析测试用例 JSON 字符串为对象列表
-    const parseTestCases = (raw) => {
-      if (!raw || typeof raw !== 'string') {
-        return [{ input: '', output: '' }]
+    // 将详情接口返回的用例转为编辑列表
+    const toEditableCases = (cases) => {
+      if (!Array.isArray(cases) || cases.length === 0) {
+        return [createCase(1)]
       }
-      try {
-        const parsed = JSON.parse(raw)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item) => ({
-            input: typeof item.input === 'string' ? item.input : JSON.stringify(item.input ?? ''),
-            output: typeof item.output === 'string' ? item.output : JSON.stringify(item.output ?? ''),
-          }))
-        }
-      } catch (e) {
-        // 兼容非 JSON 格式旧字符串
-        return [{ input: raw, output: '' }]
-      }
-      return [{ input: '', output: '' }]
+      return cases.map(item => ({
+        displayInput: item.displayInput || '',
+        displayOutput: item.displayOutput || '',
+        judgeInput: item.judgeInput || '',
+        judgeOutput: item.judgeOutput || '',
+        isSample: item.isSample === 1 ? 1 : 0
+      }))
     }
 
-    // 序列化测试用例对象列表为标准 JSON 字符串
-    const serializeTestCases = () => {
-      const validCases = testCaseList.value
-        .map((item) => ({
-          input: (item.input || '').trim(),
-          output: (item.output || '').trim(),
-        }))
-        .filter((item) => item.input || item.output)
+    // 组装提交用的用例列表（去除首尾空白）
+    const buildCasesPayload = () => testCaseList.value.map(item => ({
+      displayInput: item.displayInput.trim(),
+      displayOutput: item.displayOutput.trim(),
+      judgeInput: item.judgeInput.trim(),
+      judgeOutput: item.judgeOutput.trim(),
+      isSample: item.isSample
+    }))
 
-      return JSON.stringify(validCases)
-    }
-
-    // 添加一组空测试用例
+    // 添加一组空测试用例（首组之后默认为隐藏用例）
     const handleAddTestCase = () => {
-      testCaseList.value.push({ input: '', output: '' })
+      testCaseList.value.push(createCase(0))
     }
 
     // 删除指定测试用例
@@ -148,7 +165,7 @@ export default defineComponent({
         timeLimit: Number(formData.timeLimit || 1000),
         spaceLimit: Number(formData.spaceLimit || 128),
         content: (formData.content || '').trim(),
-        testCases: serializeTestCases(),
+        testCases: JSON.stringify(testCaseList.value),
         defaultCode: (formData.defaultCode || '').trim(),
         mainFunc: (formData.mainFunc || '').trim(),
       })
@@ -172,7 +189,7 @@ export default defineComponent({
         const detailData = res?.data || res
         if (detailData && (detailData.questionId || res?.code === 1000)) {
           Object.assign(formData, detailData)
-          testCaseList.value = parseTestCases(detailData.questionCase)
+          testCaseList.value = toEditableCases(detailData.cases)
           recordSnapshot()
         } else {
           ElMessage.error(res?.msg || '获取题目详情失败')
@@ -192,14 +209,14 @@ export default defineComponent({
 
       if (type === 'add') {
         Object.assign(formData, getInitialFormData())
-        testCaseList.value = [{ input: '', output: '' }]
+        testCaseList.value = [createCase(1)]
         recordSnapshot()
         nextTick(() => {
           formRef.value?.clearValidate()
         })
       } else if (type === 'edit' && questionId) {
         Object.assign(formData, getInitialFormData())
-        testCaseList.value = [{ input: '', output: '' }]
+        testCaseList.value = [createCase(1)]
         recordSnapshot()
         fetchDetail(questionId)
         nextTick(() => {
@@ -212,13 +229,17 @@ export default defineComponent({
     const handleSubmit = async () => {
       if (!formRef.value) return
 
-      // 校验测试用例非空
-      const serializedCases = serializeTestCases()
-      if (serializedCases === '[]') {
-        ElMessage.warning('请至少填写一组有效的测试用例输入或输出')
+      // 校验测试用例：每组四项必填，且至少一组公开示例
+      const incompleteIndex = testCaseList.value.findIndex(item => !isCaseComplete(item))
+      if (incompleteIndex !== -1) {
+        ElMessage.warning(`用例 #${incompleteIndex + 1} 的展示与判题输入输出需全部填写`)
         return
       }
-      formData.questionCase = serializedCases
+      if (!testCaseList.value.some(item => item.isSample === 1)) {
+        ElMessage.warning('请至少设置一组公开示例')
+        return
+      }
+      const cases = buildCasesPayload()
 
       await formRef.value.validate(async (valid) => {
         if (!valid) return
@@ -231,7 +252,7 @@ export default defineComponent({
               timeLimit: formData.timeLimit,
               spaceLimit: formData.spaceLimit,
               content: formData.content,
-              questionCase: formData.questionCase,
+              cases,
               defaultCode: formData.defaultCode,
               mainFunc: formData.mainFunc,
             }
@@ -247,7 +268,7 @@ export default defineComponent({
               timeLimit: formData.timeLimit,
               spaceLimit: formData.spaceLimit,
               content: formData.content,
-              questionCase: formData.questionCase,
+              cases,
               defaultCode: formData.defaultCode,
               mainFunc: formData.mainFunc,
             }

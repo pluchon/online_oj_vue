@@ -95,6 +95,14 @@
               >
                 <div class="card-top-bar">
                   <span class="case-index-tag">用例 #{{ index + 1 }}</span>
+                  <el-switch
+                    v-model="item.isSample"
+                    :active-value="1"
+                    :inactive-value="0"
+                    active-text="公开示例"
+                    inactive-text="隐藏"
+                    class="case-sample-switch"
+                  />
                   <button
                     v-if="testCaseList.length > 1"
                     type="button"
@@ -108,9 +116,20 @@
 
                 <div class="card-inputs-grid">
                   <div class="input-line">
-                    <span class="line-label">输入：</span>
+                    <span class="line-label">展示输入：</span>
                     <el-input
-                      v-model="item.input"
+                      v-model="item.displayInput"
+                      type="textarea"
+                      :autosize="{ minRows: 1, maxRows: 3 }"
+                      resize="none"
+                      placeholder='题面显示，如 s = "()"'
+                      class="case-content-input"
+                    />
+                  </div>
+                  <div class="input-line">
+                    <span class="line-label">展示输出：</span>
+                    <el-input
+                      v-model="item.displayOutput"
                       type="textarea"
                       :autosize="{ minRows: 1, maxRows: 3 }"
                       resize="none"
@@ -118,12 +137,24 @@
                     />
                   </div>
                   <div class="input-line">
-                    <span class="line-label">输出：</span>
+                    <span class="line-label">判题输入：</span>
                     <el-input
-                      v-model="item.output"
+                      v-model="item.judgeInput"
+                      type="textarea"
+                      :autosize="{ minRows: 1, maxRows: 4 }"
+                      resize="none"
+                      placeholder="按 main 函数约定逐行给出参数"
+                      class="case-content-input"
+                    />
+                  </div>
+                  <div class="input-line">
+                    <span class="line-label">判题输出：</span>
+                    <el-input
+                      v-model="item.judgeOutput"
                       type="textarea"
                       :autosize="{ minRows: 1, maxRows: 3 }"
                       resize="none"
+                      placeholder="程序应输出的一行结果"
                       class="case-content-input"
                     />
                   </div>
