@@ -81,7 +81,7 @@ export function updateUserStatusApi(data) {
   })
 }
 
-// 管理员编辑普通用户信息（后端接口待确认是否开放）
+// 管理员编辑普通用户资料（手机号为登录凭据，需唯一）
 export function updateUserInfoApi(data) {
   return request({
     url: `/system/user/${data.userId}`,

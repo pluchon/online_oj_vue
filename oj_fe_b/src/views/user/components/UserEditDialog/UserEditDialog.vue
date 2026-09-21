@@ -41,19 +41,19 @@
           <el-input v-model="formData.email" clearable class="dialog-input" />
         </el-form-item>
 
-        <el-form-item label="微信号">
+        <el-form-item label="微信号" prop="wechat">
           <el-input v-model="formData.wechat" clearable class="dialog-input" />
         </el-form-item>
 
-        <el-form-item label="就读学校">
+        <el-form-item label="就读学校" prop="schoolName">
           <el-input v-model="formData.schoolName" clearable class="dialog-input" />
         </el-form-item>
 
-        <el-form-item label="所属专业">
+        <el-form-item label="所属专业" prop="majorName">
           <el-input v-model="formData.majorName" clearable class="dialog-input" />
         </el-form-item>
 
-        <el-form-item label="个人介绍">
+        <el-form-item label="个人介绍" prop="introduce">
           <el-input
             v-model="formData.introduce"
             type="textarea"

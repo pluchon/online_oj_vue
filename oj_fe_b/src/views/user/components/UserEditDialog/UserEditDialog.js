@@ -36,10 +36,23 @@ export default {
     const formRules = {
       nickName: [
         { required: true, message: '请输入用户昵称', trigger: 'blur' },
-        { min: 1, max: 30, message: '昵称长度在 1 到 30 个字符', trigger: 'blur' },
+        { min: 2, max: 32, message: '昵称长度在 2 到 32 个字符', trigger: 'blur' },
       ],
       phone: [
+        { required: true, message: '请输入手机号（用户登录凭据）', trigger: 'blur' },
         { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的11位手机号', trigger: 'blur' },
+      ],
+      wechat: [
+        { max: 50, message: '微信号不能超过 50 个字符', trigger: 'blur' },
+      ],
+      schoolName: [
+        { max: 100, message: '学校名称不能超过 100 个字符', trigger: 'blur' },
+      ],
+      majorName: [
+        { max: 100, message: '专业名称不能超过 100 个字符', trigger: 'blur' },
+      ],
+      introduce: [
+        { max: 200, message: '个人介绍不能超过 200 个字符', trigger: 'blur' },
       ],
       email: [
         { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' },
