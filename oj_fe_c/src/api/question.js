@@ -19,14 +19,6 @@ export function getQuestionDetailApi(questionId) {
   })
 }
 
-// 同步MySQL题目至ES索引
-export function syncQuestionsApi() {
-  return request({
-    url: '/friend/question/sync',
-    method: 'post'
-  })
-}
-
 // 获取上一题与下一题导航
 export function getQuestionPreAndNextApi(params) {
   return request({
