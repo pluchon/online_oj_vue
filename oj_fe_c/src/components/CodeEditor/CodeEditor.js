@@ -73,13 +73,9 @@ export default defineComponent({
     const currentLanguage = ref(props.language)
     const currentTheme = ref(props.theme)
 
-    // 支持的语言列表选项
+    // 支持的语言列表选项（与后端 ProgramTypeEnum 保持一致，判题服务目前仅支持 Java）
     const languageOptions = [
-      { label: 'Java', value: 'java' },
-      { label: 'C++', value: 'cpp' },
-      { label: 'C', value: 'c' },
-      { label: 'Python', value: 'python' },
-      { label: 'Go', value: 'go' }
+      { label: 'Java', value: 'java' }
     ]
 
     // Monaco 编辑器核心配置项合并

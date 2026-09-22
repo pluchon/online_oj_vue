@@ -1,43 +1,6 @@
 <template>
   <div class="question-list-page">
-    <!-- 顶部全局典雅导航栏 -->
-    <header class="global-navbar">
-      <div class="nav-inner">
-        <!-- 品牌标识（仅纯粹的墨衡二字，彻底移除英文） -->
-        <div class="brand-area" @click="goToHome">
-          <span class="brand-title">墨衡</span>
-        </div>
-
-        <!-- 核心导航栏：题库中心、竞赛中心、我的竞赛、消息中心、个人中心 -->
-        <nav class="nav-links">
-          <router-link to="/question" class="nav-link active">题库中心</router-link>
-          <router-link to="/exam" class="nav-link">竞赛中心</router-link>
-          <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
-          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
-          <router-link v-if="isLogin" to="/user/profile" class="nav-link">个人中心</router-link>
-        </nav>
-
-        <!-- 用户行为区（移除铃铛图标，移除下拉菜单，直接展示昵称与退出登录） -->
-        <div class="user-action-area">
-          <template v-if="isLogin">
-            <div class="user-direct-info">
-              <el-avatar :size="30" :src="headImage || defaultAvatar" class="user-avatar">
-                <el-icon><UserFilled /></el-icon>
-              </el-avatar>
-              <span class="user-name">{{ nickName || '学员' }}</span>
-              <button type="button" class="direct-logout-btn" @click="handleLogout">
-                退出登录
-              </button>
-            </div>
-          </template>
-          <template v-else>
-            <button type="button" class="nav-login-btn" @click="goToLogin">
-              登录 / 注册
-            </button>
-          </template>
-        </div>
-      </div>
-    </header>
+    <AppNavbar />
 
     <!-- 主体内容区域（加宽至大气格局） -->
     <main class="main-container">
@@ -117,11 +80,11 @@
                   <div class="limits-group">
                     <span class="limit-item">
                       <el-icon class="limit-icon"><Timer /></el-icon>
-                      {{ row.timeLimit || 1000 }} ms
+                      {{ row.timeLimit }} ms
                     </span>
                     <span class="limit-item">
                       <el-icon class="limit-icon"><Cpu /></el-icon>
-                      {{ row.spaceLimit || 128 }} MB
+                      {{ row.spaceLimit }} MB
                     </span>
                   </div>
                 </div>
@@ -137,10 +100,10 @@
               </div>
             </template>
 
-            <!-- 空态（垂直水平居中铺满卡片区域，展示小蒙插画与文字说明） -->
+            <!-- 空态与加载失败（垂直水平居中铺满卡片区域，展示小蒙插画与文字说明） -->
             <div v-else-if="!loading" class="empty-card">
               <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂无题目数据" class="empty-img" />
-              <span class="empty-text">暂无匹配题目数据</span>
+              <span class="empty-text">{{ loadError ? '题目列表加载失败，请稍后重试' : '暂无匹配题目数据' }}</span>
             </div>
           </div>
 
@@ -153,29 +116,31 @@
                 <strong class="badge-num">{{ total }}</strong>
                 <span class="badge-unit">道题</span>
               </div>
-              <span class="stat-divider">|</span>
-              <div class="stat-badge solved-badge">
-                <span class="badge-dot"></span>
-                <span class="badge-label">已攻克</span>
-                <strong class="badge-num">{{ solvedCount }}</strong>
-                <span class="badge-unit">道</span>
-              </div>
-              <div class="stat-badge progress-badge">
-                <span class="badge-dot"></span>
-                <span class="badge-label">尝试中</span>
-                <strong class="badge-num">{{ progressCount }}</strong>
-                <span class="badge-unit">道</span>
-              </div>
-              <div class="stat-badge untouched-badge">
-                <span class="badge-dot"></span>
-                <span class="badge-label">未尝试</span>
-                <strong class="badge-num">{{ untouchedCount }}</strong>
-                <span class="badge-unit">道</span>
-              </div>
+              <template v-if="isLogin">
+                <span class="stat-divider">|</span>
+                <div class="stat-badge solved-badge">
+                  <span class="badge-dot"></span>
+                  <span class="badge-label">已攻克</span>
+                  <strong class="badge-num">{{ stats.solvedCount }}</strong>
+                  <span class="badge-unit">道</span>
+                </div>
+                <div class="stat-badge progress-badge">
+                  <span class="badge-dot"></span>
+                  <span class="badge-label">尝试中</span>
+                  <strong class="badge-num">{{ stats.inProgressCount }}</strong>
+                  <span class="badge-unit">道</span>
+                </div>
+                <div class="stat-badge untouched-badge">
+                  <span class="badge-dot"></span>
+                  <span class="badge-label">未尝试</span>
+                  <strong class="badge-num">{{ untouchedCount }}</strong>
+                  <span class="badge-unit">道</span>
+                </div>
+              </template>
             </div>
             <el-pagination
-              v-model:current-page="queryParams.pageNum"
-              :page-size="10"
+              :current-page="queryParams.pageNum"
+              :page-size="pageSize"
               :total="total"
               layout="prev, pager, next"
               background
@@ -203,15 +168,15 @@
           </span>
           <span class="meta-tag limit-tag">
             <el-icon class="tag-icon"><Timer /></el-icon>
-            <span>时间限制: {{ currentQuestion.timeLimit || 1000 }} ms</span>
+            <span>时间限制: {{ currentQuestion.timeLimit }} ms</span>
           </span>
           <span class="meta-tag limit-tag">
             <el-icon class="tag-icon"><Cpu /></el-icon>
-            <span>空间限制: {{ currentQuestion.spaceLimit || 128 }} MB</span>
+            <span>空间限制: {{ currentQuestion.spaceLimit }} MB</span>
           </span>
         </div>
         <div class="dialog-content-box">
-          <p class="content-text">{{ currentQuestion.content }}</p>
+          <div class="content-text markdown-body" v-html="currentContentHtml"></div>
         </div>
       </div>
     </oj-dialog>

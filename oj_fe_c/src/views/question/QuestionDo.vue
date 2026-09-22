@@ -1,48 +1,6 @@
 <template>
   <div class="question-do-page" v-loading="pageLoading">
-    <!-- 顶部全局典雅导航栏 -->
-    <header class="global-navbar">
-      <div class="nav-inner">
-        <!-- 品牌标识 -->
-        <div class="brand-area" @click="goToHome">
-          <span class="brand-title">墨衡</span>
-        </div>
-
-        <!-- 核心导航栏 -->
-        <nav class="nav-links">
-          <router-link to="/question" class="nav-link" :class="{ active: !isExamMode }">题库中心</router-link>
-          <router-link to="/exam" class="nav-link" :class="{ active: isExamMode }">竞赛中心</router-link>
-          <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
-          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
-          <router-link v-if="isLogin" to="/user/profile" class="nav-link">个人中心</router-link>
-        </nav>
-
-        <!-- 用户行为区 -->
-        <div class="user-action-area">
-          <template v-if="isLogin">
-            <div class="user-direct-info">
-              <div class="user-avatar-box">
-                <img
-                  :src="userAvatar"
-                  class="user-avatar-img"
-                  alt="头像"
-                  @error="handleAvatarError"
-                />
-              </div>
-              <span class="user-name">{{ nickName || '学者' }}</span>
-              <button type="button" class="direct-logout-btn" @click="handleLogout">
-                退出登录
-              </button>
-            </div>
-          </template>
-          <template v-else>
-            <button type="button" class="nav-login-btn" @click="goToLogin">
-              登录 / 注册
-            </button>
-          </template>
-        </div>
-      </div>
-    </header>
+    <AppNavbar />
 
     <!-- 双卡工作台主容器 -->
     <main class="question-workbench-layout">
@@ -88,11 +46,11 @@
               </span>
               <span class="limit-pill">
                 <el-icon><Timer /></el-icon>
-                {{ question?.timeLimit || 1000 }} ms
+                {{ question?.timeLimit ?? '--' }} ms
               </span>
               <span class="limit-pill">
                 <el-icon><Coin /></el-icon>
-                {{ question?.spaceLimit || 128 }} MB
+                {{ question?.spaceLimit ?? '--' }} MB
               </span>
             </div>
           </div>

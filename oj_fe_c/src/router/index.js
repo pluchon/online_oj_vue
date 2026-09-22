@@ -1,10 +1,10 @@
-// C端前端路由配置
+// C 端前端路由配置
 import { createRouter, createWebHistory } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { setPageTitle } from '@/utils/title'
+import { PUBLIC_PATHS } from '@/constants'
 import Login from '../views/Login.vue'
 import ExamList from '../views/exam/ExamList.vue'
-import MyExamList from '../views/exam/MyExamList.vue'
 import QuestionList from '../views/question/QuestionList.vue'
 
 const router = createRouter({
@@ -35,7 +35,8 @@ const router = createRouter({
     {
       path: '/my-exam',
       name: 'myExam',
-      component: MyExamList,
+      component: ExamList,
+      props: { mine: true },
       meta: { title: '我的竞赛' }
     },
     {
@@ -57,32 +58,22 @@ const router = createRouter({
       meta: { title: '消息' }
     },
     {
-      path: '/home',
+      path: '/:pathMatch(.*)*',
       redirect: '/question'
     }
   ]
 })
 
-// 免登录白名单路由
-const whiteList = ['/login', '/exam', '/question', '/question/do']
-
-// 全局路由守卫
-router.beforeEach((to, from, next) => {
-  const hasToken = getToken()
-
-  if (hasToken) {
-    if (to.path === '/login') {
-      next({ path: '/exam' })
-    } else {
-      next()
-    }
-  } else {
-    if (whiteList.includes(to.path)) {
-      next()
-    } else {
-      next({ path: '/login', query: { redirect: to.fullPath } })
-    }
+// 全局路由守卫：已登录访问登录页回到题库，未登录访问受保护页面跳转登录
+router.beforeEach((to) => {
+  const hasToken = Boolean(getToken())
+  if (hasToken && to.path === '/login') {
+    return { path: '/question' }
   }
+  if (!hasToken && !PUBLIC_PATHS.includes(to.path)) {
+    return { path: '/login', query: { redirect: to.fullPath } }
+  }
+  return true
 })
 
 // 路由切换后同步标签页标题

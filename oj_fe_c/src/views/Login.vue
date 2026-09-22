@@ -61,10 +61,9 @@
             </button>
           </div>
 
-          <!-- 辅助选项行：记住我 + 手机号无法使用？ -->
+          <!-- 辅助选项：记住我时保留手机号，登录状态保持 7 天 -->
           <div class="form-meta-row">
             <el-checkbox v-model="rememberMe" class="custom-checkbox">记住我</el-checkbox>
-            <span class="help-link">手机号无法使用？</span>
           </div>
 
           <!-- 行内错误提示 -->

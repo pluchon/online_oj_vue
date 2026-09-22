@@ -6,7 +6,14 @@ import { Iphone, ChatDotSquare } from '@element-plus/icons-vue'
 import { sendCodeApi, loginApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
 
+// 记住我时保存手机号的本地存储键
 const STORAGE_PHONE_KEY = 'moheng_c_phone'
+
+// 手机号格式
+const PHONE_PATTERN = /^1[3-9]\d{9}$/
+
+// 验证码重新发送冷却秒数
+const CODE_COOLDOWN_SECONDS = 60
 
 export default defineComponent({
   name: 'Login',
@@ -17,7 +24,7 @@ export default defineComponent({
   setup() {
     const router = useRouter()
     const route = useRoute()
-    const { setTokenAction } = useUserStore()
+    const { setTokenAction, fetchUserInfoAction } = useUserStore()
 
     // 表单数据
     const loginForm = reactive({
@@ -41,12 +48,16 @@ export default defineComponent({
       }
     }
 
-    // 初始化读取已记住的手机号
+    // 初始化读取已记住的手机号（存储不可用时忽略）
     onMounted(() => {
-      const savedPhone = localStorage.getItem(STORAGE_PHONE_KEY)
-      if (savedPhone) {
-        loginForm.phone = savedPhone
-        rememberMe.value = true
+      try {
+        const savedPhone = localStorage.getItem(STORAGE_PHONE_KEY)
+        if (savedPhone) {
+          loginForm.phone = savedPhone
+          rememberMe.value = true
+        }
+      } catch (e) {
+        // 浏览器禁用存储时不回填
       }
     })
 
@@ -63,7 +74,7 @@ export default defineComponent({
         ElMessage.warning('请输入手机号')
         return
       }
-      if (!/^1[3-9]\d{9}$/.test(phone)) {
+      if (!PHONE_PATTERN.test(phone)) {
         errorMsg.value = '请输入正确的11位手机号'
         ElMessage.warning('请输入正确的11位手机号')
         return
@@ -76,8 +87,8 @@ export default defineComponent({
         await sendCodeApi({ phone })
         ElMessage.success('验证码已发送')
 
-        // 启动60秒冷却
-        countdown.value = 60
+        // 启动重新发送冷却
+        countdown.value = CODE_COOLDOWN_SECONDS
         clearTimer()
         timer = setInterval(() => {
           if (countdown.value > 1) {
@@ -108,7 +119,7 @@ export default defineComponent({
         ElMessage.warning('请输入手机号')
         return
       }
-      if (!/^1[3-9]\d{9}$/.test(phone)) {
+      if (!PHONE_PATTERN.test(phone)) {
         errorMsg.value = '请输入正确的11位手机号'
         ElMessage.warning('请输入正确的11位手机号')
         return
@@ -124,16 +135,19 @@ export default defineComponent({
 
       try {
         const token = await loginApi({ phone, code })
+        setTokenAction(token, rememberMe.value)
+        // 同步昵称与头像，失败不影响登录
+        fetchUserInfoAction().catch(() => {})
 
-        if (token) {
-          setTokenAction(token)
-        }
-
-        // 记住我持久化处理
-        if (rememberMe.value) {
-          localStorage.setItem(STORAGE_PHONE_KEY, phone)
-        } else {
-          localStorage.removeItem(STORAGE_PHONE_KEY)
+        // 记住我时保存手机号
+        try {
+          if (rememberMe.value) {
+            localStorage.setItem(STORAGE_PHONE_KEY, phone)
+          } else {
+            localStorage.removeItem(STORAGE_PHONE_KEY)
+          }
+        } catch (e) {
+          // 浏览器禁用存储时忽略
         }
 
         ElMessage.success('欢迎进入墨衡')

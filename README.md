@@ -143,7 +143,7 @@ flowchart TD
     end
 
     subgraph Private["登录后可访问"]
-        MyExam["/my-exam 我的竞赛"]
+        MyExam["/my-exam 我的竞赛（与竞赛页共用 ExamList，mine 模式）"]
         Msg["/message 消息"]
         Profile["/user/profile 个人中心"]
     end
@@ -165,15 +165,16 @@ flowchart LR
         Pages["页面组件"]
     end
     subgraph Comp["components"]
+        AppNavbar["AppNavbar<br/>全局导航栏 · 用户资料同步 · 退出登录"]
         CodeEditor["CodeEditor<br/>Monaco 编辑器封装"]
         OjDialog["OjDialog<br/>统一确认/详情弹窗"]
         RankDialog["ExamRankDialog<br/>赛后排名弹窗（基于 OjDialog）"]
-        Pagination["Pagination<br/>统一分页器"]
     end
     subgraph Data["数据层"]
         Store["store/user<br/>登录态与用户信息"]
         Api["api/*<br/>question / exam / message / user"]
         Request["utils/request<br/>Token 注入 · 统一错误提示 · 响应脱壳"]
+        Consts["constants<br/>与后端枚举对齐的业务常量"]
     end
 
     Pages --> Comp

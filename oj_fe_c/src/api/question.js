@@ -10,6 +10,14 @@ export function getQuestionListApi(params) {
   })
 }
 
+// 题库总题数与当前用户已攻克、尝试中题数
+export function getQuestionStatsApi() {
+  return request({
+    url: '/friend/question/stats',
+    method: 'get'
+  })
+}
+
 // 查询题目详情
 export function getQuestionDetailApi(questionId) {
   return request({

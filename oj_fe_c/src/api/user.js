@@ -1,13 +1,8 @@
-// C端用户相关 API
+// C 端用户相关接口
 import request from '@/utils/request'
 
-/**
- * 发送短信验证码接口
- * @param {Object|string} phone - 手机号或参数对象
- * @returns {Promise} OJResult<Void>
- */
-export function sendCodeApi(phone) {
-  const data = typeof phone === 'object' ? phone : { phone }
+// 发送短信验证码
+export function sendCodeApi(data) {
   return request({
     url: '/friend/user/send-code',
     method: 'post',
@@ -15,11 +10,7 @@ export function sendCodeApi(phone) {
   })
 }
 
-/**
- * 用户短信验证码登录与注册统一接口
- * @param {Object} data - { phone: string, code: string }
- * @returns {Promise} OJResult<String>，返回值直接脱壳为 JWT 令牌字符串
- */
+// 短信验证码登录（新用户自动注册），返回令牌字符串
 export function loginApi(data) {
   return request({
     url: '/friend/user/login',
@@ -28,10 +19,15 @@ export function loginApi(data) {
   })
 }
 
-/**
- * 获取当前登录用户个人资料
- * @returns {Promise<Object>} UserVO 用户详情
- */
+// 退出登录（销毁服务端会话）
+export function logoutApi() {
+  return request({
+    url: '/friend/user/logout',
+    method: 'delete'
+  })
+}
+
+// 获取当前登录用户个人资料
 export function getUserProfileApi() {
   return request({
     url: '/friend/user/profile',
@@ -39,11 +35,7 @@ export function getUserProfileApi() {
   })
 }
 
-/**
- * 更新当前登录用户个人资料
- * @param {Object} data - UserProfileUpdateDTO
- * @returns {Promise<boolean>}
- */
+// 更新当前登录用户个人资料
 export function updateUserProfileApi(data) {
   return request({
     url: '/friend/user/profile',
@@ -52,11 +44,7 @@ export function updateUserProfileApi(data) {
   })
 }
 
-/**
- * 上传当前登录用户头像
- * @param {FormData} formData - 包含 file 的表单数据
- * @returns {Promise<string>} 返回头像公网 URL
- */
+// 上传当前登录用户头像，返回头像地址
 export function uploadAvatarApi(formData) {
   return request({
     url: '/friend/user/avatar',
@@ -67,7 +55,6 @@ export function uploadAvatarApi(formData) {
     }
   })
 }
-
 
 // 获取当前用户做题统计与能力雷达（timeRange：all / year / month / week）
 export function getUserOverviewApi(timeRange) {

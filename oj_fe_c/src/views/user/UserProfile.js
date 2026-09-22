@@ -1,7 +1,6 @@
 // C端个人中心学者长卷业务逻辑实现
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import {
   Edit,
   CopyDocument,
@@ -21,9 +20,11 @@ import {
   Trophy
 } from '@element-plus/icons-vue'
 import defaultAvatar from '@/assets/images/c_user_avatar.png'
+import AppNavbar from '@/components/AppNavbar'
 import OjDialog from '@/components/OjDialog'
 import { getUserProfileApi, updateUserProfileApi, uploadAvatarApi, getUserOverviewApi, getUserCalendarApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
+import { USER_SEX, USER_SEX_OPTIONS } from '@/constants'
 
 // 雷达图维度顺序（与模板中五个维度文字的位置一致，从顶部顺时针）
 const RADAR_AXES = ['dataStructure', 'algorithm', 'implementation', 'math', 'competition']
@@ -42,6 +43,7 @@ const toHeatLevel = (count) => HEAT_LEVEL_THRESHOLDS.filter(t => count >= t).len
 export default defineComponent({
   name: 'UserProfile',
   components: {
+    AppNavbar,
     OjDialog,
     Edit,
     CopyDocument,
@@ -61,26 +63,7 @@ export default defineComponent({
     Trophy
   },
   setup() {
-    const router = useRouter()
-    const userStore = useUserStore()
-
-    // 登录态与全局基础信息
-    const isLogin = computed(() => Boolean(userStore.token))
-    const nickName = computed(() => userStore.nickName || '学员')
-
-    // 导航栏头像响应式与容灾兜底
-    const avatarError = ref(false)
-    const userAvatar = computed(() => {
-      if (avatarError.value) return defaultAvatar
-      const raw = userStore.headImage?.value !== undefined ? userStore.headImage.value : userStore.headImage
-      if (raw && typeof raw === 'string' && raw.trim() && raw !== 'null' && raw !== 'undefined') {
-        return raw
-      }
-      return defaultAvatar
-    })
-    const handleAvatarError = () => {
-      avatarError.value = true
-    }
+    const { updateUserInfoAction } = useUserStore()
 
     // 页面主资料与加载状态
     const pageLoading = ref(false)
@@ -92,15 +75,9 @@ export default defineComponent({
     // 用户详细档案原始快照
     const userProfile = ref({})
 
-    // 学者头像响应式与容灾兜底
+    // 资料卡头像（加载失败时回退默认头像）
     const profileAvatarError = ref(false)
-    const profileAvatar = computed(() => {
-      if (profileAvatarError.value) return defaultAvatar
-      if (formData.headImage && typeof formData.headImage === 'string' && formData.headImage.trim()) {
-        return formData.headImage
-      }
-      return userAvatar.value || defaultAvatar
-    })
+    const profileAvatar = computed(() => (!profileAvatarError.value && formData.headImage) || defaultAvatar)
     const handleProfileAvatarError = () => {
       profileAvatarError.value = true
     }
@@ -109,7 +86,7 @@ export default defineComponent({
     const formData = reactive({
       nickName: '',
       headImage: '',
-      sex: 0,
+      sex: USER_SEX.SECRET,
       email: '',
       wechat: '',
       qq: '',
@@ -324,18 +301,17 @@ export default defineComponent({
       return timeStr
     }
 
+    // 性别是否为女（资料卡图标）
+    const isFemale = computed(() => formData.sex === USER_SEX.FEMALE)
+
     // 获取性别描述文本
-    const getSexText = (val) => {
-      if (val === 1) return '男'
-      if (val === 2) return '女'
-      return '保密'
-    }
+    const getSexText = (val) => USER_SEX_OPTIONS.find((item) => item.value === val)?.label || '保密'
 
     // 同步服务端快照至表单
     const syncProfileToForm = (profile) => {
       formData.nickName = profile.nickName || ''
       formData.headImage = profile.headImage || ''
-      formData.sex = profile.sex !== undefined && profile.sex !== null ? profile.sex : 0
+      formData.sex = profile.sex ?? USER_SEX.SECRET
       formData.email = profile.email || ''
       formData.wechat = profile.wechat || ''
       formData.qq = profile.qq || ''
@@ -350,29 +326,15 @@ export default defineComponent({
       hasError.value = false
       try {
         const data = await getUserProfileApi()
-        userProfile.value = data || {}
-        syncProfileToForm(userProfile.value)
-        userStore.updateUserInfoAction({
+        userProfile.value = data
+        syncProfileToForm(data)
+        updateUserInfoAction({
           nickName: data.nickName,
           headImage: data.headImage
         })
       } catch (err) {
-        // 请求失败时若本地缓存存在则降级渲染
-        const cached = userStore.userInfo?.value || userStore.userInfo || {}
-        if (cached && (cached.nickName || cached.phone || cached.headImage)) {
-          userProfile.value = { ...cached }
-          syncProfileToForm(userProfile.value)
-          hasError.value = false
-        } else {
-          hasError.value = false
-          userProfile.value = {
-            nickName: nickName.value || '墨衡学者',
-            userId: '0949_TGx7',
-            createTime: '2026-09-15 22:24:40',
-            sexDesc: '保密'
-          }
-          syncProfileToForm(userProfile.value)
-        }
+        // 错误提示已由请求拦截器统一给出，页面展示重新加载入口
+        hasError.value = true
       } finally {
         pageLoading.value = false
       }
@@ -405,8 +367,7 @@ export default defineComponent({
           formData.headImage = avatarUrl
           userProfile.value.headImage = avatarUrl
           profileAvatarError.value = false
-          avatarError.value = false
-          userStore.updateUserInfoAction({ headImage: avatarUrl })
+          updateUserInfoAction({ headImage: avatarUrl })
           ElMessage.success('学者头像已更新')
         }
       } catch (err) {
@@ -443,15 +404,9 @@ export default defineComponent({
         ElMessage.success('个人档案已成功保存')
         userProfile.value = { ...userProfile.value, ...formData }
 
-        if (formData.sex === 1) {
-          userProfile.value.sexDesc = '男'
-        } else if (formData.sex === 2) {
-          userProfile.value.sexDesc = '女'
-        } else {
-          userProfile.value.sexDesc = '保密'
-        }
+        userProfile.value.sexDesc = getSexText(formData.sex)
 
-        userStore.updateUserInfoAction({
+        updateUserInfoAction({
           nickName: formData.nickName,
           headImage: formData.headImage
         })
@@ -464,27 +419,6 @@ export default defineComponent({
       }
     }
 
-    // 页面跳转与登出
-    const goToHome = () => {
-      router.push('/question')
-    }
-
-    const goToLogin = () => {
-      router.push({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
-    }
-
-    const handleLogout = () => {
-      ElMessageBox.confirm('确定要退出当前账号登录状态吗？', '退出登录确认', {
-        confirmButtonText: '确定退出',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        userStore.resetUserAction()
-        ElMessage.success('已安全退出')
-        router.push('/login')
-      }).catch(() => {})
-    }
-
     onMounted(() => {
       loadUserProfile()
       loadOverview(overviewTimeRange.value)
@@ -492,11 +426,7 @@ export default defineComponent({
     })
 
     return {
-      isLogin,
-      nickName,
-      userAvatar,
       profileAvatar,
-      handleAvatarError,
       handleProfileAvatarError,
       pageLoading,
       hasError,
@@ -524,13 +454,12 @@ export default defineComponent({
       copyOjId,
       formatRegisterTime,
       getSexText,
+      isFemale,
+      sexOptions: USER_SEX_OPTIONS,
       loadUserProfile,
       beforeAvatarUpload,
       handleAvatarUpload,
-      handleSaveProfile,
-      goToHome,
-      goToLogin,
-      handleLogout
+      handleSaveProfile
     }
   }
 })

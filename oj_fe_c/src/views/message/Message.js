@@ -1,9 +1,7 @@
 // 消息中心业务逻辑实现
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  UserFilled,
   Search,
   RefreshRight,
   Check,
@@ -13,9 +11,9 @@ import {
   Cpu,
   ChatDotRound
 } from '@element-plus/icons-vue'
-import defaultAvatar from '@/assets/images/c_user_avatar.png'
+import AppNavbar from '@/components/AppNavbar'
 import OjDialog from '@/components/OjDialog'
-import { useUserStore } from '@/store/user'
+import { MESSAGE_READ_STATUS } from '@/constants'
 import {
   getMessageListApi,
   getUnreadCountApi,
@@ -26,8 +24,8 @@ import {
 export default defineComponent({
   name: 'MessageCenter',
   components: {
+    AppNavbar,
     OjDialog,
-    UserFilled,
     Search,
     RefreshRight,
     Check,
@@ -38,27 +36,8 @@ export default defineComponent({
     ChatDotRound
   },
   setup() {
-    const router = useRouter()
-    const userStore = useUserStore()
-
-    // 登录态判定与用户信息
-    const isLogin = computed(() => Boolean(userStore.token))
-    const nickName = computed(() => userStore.nickName || '学员')
-    const headImage = computed(() => userStore.headImage)
-
-    // 用户头像（优先使用用户个性化头像，缺失或失效自动降级学者默认头像）
-    const avatarError = ref(false)
-    const userAvatar = computed(() => {
-      if (avatarError.value) return defaultAvatar
-      const raw = userStore.headImage?.value !== undefined ? userStore.headImage.value : userStore.headImage
-      if (raw && typeof raw === 'string' && raw.trim() && raw !== 'null' && raw !== 'undefined') {
-        return raw
-      }
-      return defaultAvatar
-    })
-    const handleAvatarError = () => {
-      avatarError.value = true
-    }
+    // 消息是否未读
+    const isUnread = (item) => item?.isRead === MESSAGE_READ_STATUS.UNREAD
 
     // 数据加载与状态
     const loading = ref(false)
@@ -206,18 +185,10 @@ export default defineComponent({
           pageSize: pageQuery.pageSize
         }
         const res = await getMessageListApi(params)
-        const data = res && res.data !== undefined ? res.data : res
-        if (data && data.rows !== undefined) {
-          messageList.value = data.rows || []
-          total.value = data.total || 0
-        } else if (Array.isArray(data)) {
-          messageList.value = data
-          total.value = data.length
-        } else {
-          messageList.value = []
-          total.value = 0
-        }
+        messageList.value = res.rows
+        total.value = res.total
       } catch (err) {
+        // 错误提示已由请求拦截器统一给出
         messageList.value = []
         total.value = 0
       } finally {
@@ -228,8 +199,7 @@ export default defineComponent({
     // 获取未读消息总数
     const fetchUnreadCount = async () => {
       try {
-        const res = await getUnreadCountApi()
-        const count = res && res.data !== undefined ? res.data : res
+        const count = await getUnreadCountApi()
         unreadCount.value = typeof count === 'number' ? count : 0
       } catch (err) {
         unreadCount.value = 0
@@ -275,10 +245,10 @@ export default defineComponent({
       if (!item) return
       currentMessage.value = item
       detailVisible.value = true
-      if (item.isRead === 0 && item.messageId) {
+      if (isUnread(item)) {
         try {
           await readMessageApi(item.messageId)
-          item.isRead = 1
+          item.isRead = MESSAGE_READ_STATUS.READ
           if (unreadCount.value > 0) {
             unreadCount.value--
           }
@@ -305,47 +275,22 @@ export default defineComponent({
         await readAllMessagesApi()
         ElMessage.success('已全部标记为已读')
         messageList.value.forEach(m => {
-          m.isRead = 1
+          m.isRead = MESSAGE_READ_STATUS.READ
         })
         unreadCount.value = 0
       } catch (err) {
-        ElMessage.error(err?.message || '标记已读失败，请稍后重试')
+        // 错误提示已由请求拦截器统一给出
       }
     }
 
-    // 品牌首页跳转
-    const goToHome = () => {
-      router.push('/question')
-    }
-
-    // 登录跳转
-    const goToLogin = () => {
-      router.push({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
-    }
-
-    // 退出登录
-    const handleLogout = () => {
-      userStore.resetUserAction()
-      ElMessage.success('已安全退出')
-      router.push('/question')
-    }
-
+    // 路由守卫已保证登录后才能进入本页
     onMounted(() => {
-      if (isLogin.value) {
-        fetchMessageList()
-        fetchUnreadCount()
-      } else {
-        router.push({ path: '/login', query: { redirect: '/message' } })
-      }
+      fetchMessageList()
+      fetchUnreadCount()
     })
 
     return {
-      isLogin,
-      nickName,
-      headImage,
-      defaultAvatar,
-      userAvatar,
-      handleAvatarError,
+      isUnread,
       loading,
       messageList,
       total,
@@ -369,10 +314,7 @@ export default defineComponent({
       handleReset,
       handlePageChange,
       openMessageDetail,
-      handleReadAll,
-      goToHome,
-      goToLogin,
-      handleLogout
+      handleReadAll
     }
   }
 })

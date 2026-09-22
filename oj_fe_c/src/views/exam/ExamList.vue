@@ -1,43 +1,6 @@
 <template>
   <div class="exam-list-page">
-    <!-- 顶部全局典雅导航栏 -->
-    <header class="global-navbar">
-      <div class="nav-inner">
-        <!-- 品牌标识（纯粹墨衡二字） -->
-        <div class="brand-area" @click="goToHome">
-          <span class="brand-title">墨衡</span>
-        </div>
-
-        <!-- 核心导航栏：题库中心、竞赛中心、我的竞赛、消息中心、个人中心 -->
-        <nav class="nav-links">
-          <router-link to="/question" class="nav-link">题库中心</router-link>
-          <router-link to="/exam" class="nav-link active">竞赛中心</router-link>
-          <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
-          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
-          <router-link v-if="isLogin" to="/user/profile" class="nav-link">个人中心</router-link>
-        </nav>
-
-        <!-- 用户行为区（直连展示昵称与退出登录） -->
-        <div class="user-action-area">
-          <template v-if="isLogin">
-            <div class="user-direct-info">
-              <el-avatar :size="30" :src="headImage || defaultAvatar" class="user-avatar">
-                <el-icon><UserFilled /></el-icon>
-              </el-avatar>
-              <span class="user-name">{{ nickName || '学员' }}</span>
-              <button type="button" class="direct-logout-btn" @click="handleLogout">
-                退出登录
-              </button>
-            </div>
-          </template>
-          <template v-else>
-            <button type="button" class="nav-login-btn" @click="handleLogin">
-              登录 / 注册
-            </button>
-          </template>
-        </div>
-      </div>
-    </header>
+    <AppNavbar />
 
     <!-- 主体内容区域（加宽至大气格局，一页8场，一行4场） -->
     <main class="main-container">
@@ -46,7 +9,7 @@
         <section class="filter-header-bar">
           <!-- 左侧：左右滑块切换时间筛选（丝滑动画，选择全部/本日/本周/本月/近半年） -->
           <div class="filter-left-group">
-            <div class="slider-segment-control" ref="sliderContainerRef">
+            <div class="slider-segment-control">
               <div class="slider-indicator" :style="sliderIndicatorStyle"></div>
               <button
                 v-for="(item, index) in timeFilterOptions"
@@ -55,7 +18,7 @@
                 type="button"
                 class="slider-btn"
                 :class="{ active: currentTimeFilter === item.value }"
-                @click="selectTimeFilter(item.value, index)"
+                @click="selectTimeFilter(item.value)"
               >
                 {{ item.label }}
               </button>
@@ -136,7 +99,7 @@
                 <div class="meta-row stats-row">
                   <span class="stat-item">
                     <el-icon class="stat-icon"><User /></el-icon>
-                    <span>{{ item.enterCount ?? item.isEnterCount ?? 0 }} 人参赛</span>
+                    <span>{{ item.enterCount ?? 0 }} 人参赛</span>
                   </span>
                   <span class="stat-item">
                     <el-icon class="stat-icon"><Document /></el-icon>
@@ -181,22 +144,24 @@
             </div>
           </div>
 
-          <!-- 缺省空态（水平垂直居中展示小蒙插画与说明） -->
+          <!-- 空态与加载失败（水平垂直居中展示小蒙插画与说明） -->
           <div v-else-if="!loading" class="empty-card">
             <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂无竞赛数据" class="empty-img" />
-            <span class="empty-text">暂无符合条件的竞赛数据</span>
+            <span class="empty-text">
+              {{ loadError ? '竞赛列表加载失败，请稍后重试' : (mine ? '还没有报名的竞赛' : '暂无符合条件的竞赛数据') }}
+            </span>
           </div>
 
-          <!-- 底部分页控制栏（左下角展示进行中、未开赛、已完赛全量状态徽章） -->
+          <!-- 底部分页控制栏（左下角展示总场次与本页各状态场次） -->
           <div class="pagination-footer">
             <div class="footer-stats-tags">
               <div class="stat-badge total-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">共</span>
                 <strong class="badge-num">{{ total }}</strong>
-                <span class="badge-unit">场竞赛</span>
+                <span class="badge-unit">{{ mine ? '场已报竞赛' : '场竞赛' }}</span>
               </div>
-              <span class="stat-divider">|</span>
+              <span class="stat-divider">| 本页</span>
               <div class="stat-badge ongoing-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">进行中</span>
@@ -217,12 +182,12 @@
               </div>
             </div>
             <el-pagination
-              v-model:current-page="queryParams.pageNum"
-              :page-size="8"
+              :current-page="queryParams.pageNum"
+              :page-size="pageSize"
               :total="total"
               layout="prev, pager, next"
               background
-              @current-change="loadExamList"
+              @current-change="handlePageChange"
             />
           </div>
         </section>

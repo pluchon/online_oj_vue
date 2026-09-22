@@ -1,48 +1,6 @@
 <template>
   <div class="user-profile-page">
-    <!-- 顶部全局典雅导航栏 -->
-    <header class="global-navbar">
-      <div class="nav-inner">
-        <!-- 品牌标识（纯粹的墨衡二字） -->
-        <div class="brand-area" @click="goToHome">
-          <span class="brand-title">墨衡</span>
-        </div>
-
-        <!-- 核心导航栏：题库中心、竞赛中心、我的竞赛、消息中心、个人中心 -->
-        <nav class="nav-links">
-          <router-link to="/question" class="nav-link">题库中心</router-link>
-          <router-link to="/exam" class="nav-link">竞赛中心</router-link>
-          <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
-          <router-link v-if="isLogin" to="/message" class="nav-link">消息中心</router-link>
-          <router-link v-if="isLogin" to="/user/profile" class="nav-link active">个人中心</router-link>
-        </nav>
-
-        <!-- 用户行为区（直连展示头像、昵称与退出登录） -->
-        <div class="user-action-area">
-          <template v-if="isLogin">
-            <div class="user-direct-info">
-              <div class="user-avatar-box">
-                <img
-                  :src="userAvatar"
-                  class="user-avatar-img"
-                  alt="头像"
-                  @error="handleAvatarError"
-                />
-              </div>
-              <span class="user-name">{{ nickName || '学员' }}</span>
-              <button type="button" class="direct-logout-btn" @click="handleLogout">
-                退出登录
-              </button>
-            </div>
-          </template>
-          <template v-else>
-            <button type="button" class="nav-login-btn" @click="goToLogin">
-              登录 / 注册
-            </button>
-          </template>
-        </div>
-      </div>
-    </header>
+    <AppNavbar />
 
     <!-- 主体区域：紧凑饱满单屏格局（彻底杜绝空白留白，无滚动条） -->
     <main class="profile-main-container">
@@ -117,7 +75,7 @@
 
             <div class="meta-item">
               <div class="item-left">
-                <el-icon class="meta-icon"><Female v-if="formData.sex === 2" /><Male v-else /></el-icon>
+                <el-icon class="meta-icon"><Female v-if="isFemale" /><Male v-else /></el-icon>
                 <span class="meta-label">性别</span>
               </div>
               <span class="meta-value">{{ userProfile.sexDesc || getSexText(formData.sex) }}</span>
@@ -417,9 +375,13 @@
             <!-- 性别 -->
             <el-form-item label="性别" prop="sex">
               <el-radio-group v-model="formData.sex" class="scholar-radio-group">
-                <el-radio :label="0">保密</el-radio>
-                <el-radio :label="1">男</el-radio>
-                <el-radio :label="2">女</el-radio>
+                <el-radio
+                  v-for="item in sexOptions"
+                  :key="item.value"
+                  :value="item.value"
+                >
+                  {{ item.label }}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
 

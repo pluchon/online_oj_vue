@@ -1,48 +1,6 @@
 <template>
   <div class="message-center-page">
-    <!-- 顶部全局典雅导航栏 -->
-    <header class="global-navbar">
-      <div class="nav-inner">
-        <!-- 品牌标识（仅纯粹的墨衡二字，彻底移除英文） -->
-        <div class="brand-area" @click="goToHome">
-          <span class="brand-title">墨衡</span>
-        </div>
-
-        <!-- 核心导航栏：题库中心、竞赛中心、我的竞赛、消息中心、个人中心 -->
-        <nav class="nav-links">
-          <router-link to="/question" class="nav-link">题库中心</router-link>
-          <router-link to="/exam" class="nav-link">竞赛中心</router-link>
-          <router-link v-if="isLogin" to="/my-exam" class="nav-link">我的竞赛</router-link>
-          <router-link v-if="isLogin" to="/message" class="nav-link active">消息中心</router-link>
-          <router-link v-if="isLogin" to="/user/profile" class="nav-link">个人中心</router-link>
-        </nav>
-
-        <!-- 用户行为区（直连展示头像、昵称与退出登录） -->
-        <div class="user-action-area">
-          <template v-if="isLogin">
-            <div class="user-direct-info">
-              <div class="user-avatar-box">
-                <img
-                  :src="userAvatar"
-                  class="user-avatar-img"
-                  alt="头像"
-                  @error="handleAvatarError"
-                />
-              </div>
-              <span class="user-name">{{ nickName || '学员' }}</span>
-              <button type="button" class="direct-logout-btn" @click="handleLogout">
-                退出登录
-              </button>
-            </div>
-          </template>
-          <template v-else>
-            <button type="button" class="nav-login-btn" @click="goToLogin">
-              登录 / 注册
-            </button>
-          </template>
-        </div>
-      </div>
-    </header>
+    <AppNavbar />
 
     <!-- 主体内容区域（加宽至1360px大气格局） -->
     <main class="main-container">
@@ -124,12 +82,12 @@
                 v-for="item in group.items"
                 :key="item.messageId"
                 class="chronicle-entry"
-                :class="{ 'is-unread': item.isRead === 0 }"
+                :class="{ 'is-unread': isUnread(item) }"
               >
                 <!-- 左侧时间轴节点（仅展示月.日，年份已在上方标定） -->
                 <div class="entry-timeline-axis">
                   <span class="timeline-date">{{ getMonthDay(item.createTime) }}</span>
-                  <div class="timeline-node" :class="{ unread: item.isRead === 0 }">
+                  <div class="timeline-node" :class="{ unread: isUnread(item) }">
                     <span class="node-dot"></span>
                   </div>
                 </div>
@@ -137,7 +95,7 @@
                 <!-- 右侧学者消息卡片（紧凑对称、高质感） -->
                 <div
                   class="entry-message-card"
-                  :class="{ 'card-unread': item.isRead === 0 }"
+                  :class="{ 'card-unread': isUnread(item) }"
                   @click="openMessageDetail(item)"
                 >
                   <!-- 左侧：分类图标底座 -->
@@ -154,10 +112,10 @@
                       </span>
                       <span
                         class="read-state-badge"
-                        :class="item.isRead === 0 ? 'badge-unread' : 'badge-read'"
+                        :class="isUnread(item) ? 'badge-unread' : 'badge-read'"
                       >
                         <span class="badge-dot"></span>
-                        {{ item.isRead === 0 ? '未读' : '已读' }}
+                        {{ isUnread(item) ? '未读' : '已读' }}
                       </span>
                     </div>
 
@@ -243,10 +201,10 @@
           </span>
           <span
             class="meta-tag status-tag"
-            :class="currentMessage.isRead === 0 ? 'unread' : 'read'"
+            :class="isUnread(currentMessage) ? 'unread' : 'read'"
           >
             <span class="status-dot"></span>
-            <span>{{ currentMessage.isRead === 0 ? '未读' : '已读' }}</span>
+            <span>{{ isUnread(currentMessage) ? '未读' : '已读' }}</span>
           </span>
         </div>
 
