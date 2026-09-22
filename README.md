@@ -423,6 +423,6 @@ npm run build
 
 - 两端都经 Vite 代理访问网关 `127.0.0.1:19090`，后端启动方式见后端仓库 README。
 - 后端初始化脚本自带测试数据：管理端 `admin / 123456`；学员端手机号 `13800000001` ~ `13800000007`，本地为模拟发码，验证码输出在 oj-friend 控制台。
-- `src/assets` 为图片素材，随仓库提供；`oj_fe_b/src/assets/images/raw/` 为高清原图备份，不入库。
+- `src/assets` 为图片素材，随仓库提供；`oj_fe_b/src/assets/images/raw/` 为登录页背景的高清原图。
 
 服务启动后访问：管理端 `http://localhost:5173`，学员端 `http://localhost:5174`。

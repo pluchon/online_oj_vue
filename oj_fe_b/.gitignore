@@ -38,6 +38,4 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 
-# Raw High-Res Generated Images Backup
-src/assets/images/raw/
 
