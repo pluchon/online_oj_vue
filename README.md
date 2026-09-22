@@ -205,7 +205,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph Left["左侧：题目卡片"]
-        Nav["返回 / 上一题 / 下一题"]
+        Nav["返回 / AI 辅导（星星）/ 上一题 / 下一题"]
         Desc["标题 · 难度 · 时空限制<br/>题目描述"]
         Samples["公开示例卡片（长内容自动独占整行）"]
     end
@@ -217,8 +217,14 @@ flowchart LR
             TabHistory["提交记录（提交后出现，后端分页）"]
         end
     end
+    subgraph Tutor["最右侧：AI 辅导卡片（点击星星展开，需登录，赛中不显示）"]
+        Quick["快捷操作：思路 / 分析最近一次提交 / 解释编译错误 / 点评代码"]
+        Chat["对话区：SSE 流式渲染 Markdown，可停止；今日剩余次数"]
+    end
     Editor --> Console
 ```
+
+AI 辅导走 `src/utils/sse.js`（fetch 读取 SSE，携带令牌；校验失败时后端直接返回 JSON 错误）。快捷操作按本题最近一次提交的判题状态出现，提交完成后自动刷新。
 
 ---
 
