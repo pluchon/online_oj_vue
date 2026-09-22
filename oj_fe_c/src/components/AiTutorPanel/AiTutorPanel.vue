@@ -9,7 +9,7 @@
         <span>AI 辅导</span>
       </div>
       <div class="tutor-header-right">
-        <span v-if="session && session.available" class="quota-tag">今日剩余 {{ session.remaining }} 次</span>
+        <span v-if="showQuota" class="quota-tag">今日剩余 {{ session.remaining }} 次</span>
         <button type="button" class="btn-close" aria-label="关闭" @click="$emit('close')">
           <el-icon><Close /></el-icon>
         </button>
@@ -32,8 +32,8 @@
       <!-- 消息列表 -->
       <div ref="listRef" class="tutor-messages">
         <div v-if="!messages.length" class="tutor-intro">
-          <p>我会帮你理清思路、分析提交和编译错误，但不会直接给出完整答案。</p>
-          <p>只回答与本题相关的问题。</p>
+          <img :src="xiaomoImage" alt="AI小墨" class="xiaomo-img" />
+          <span class="xiaomo-name">AI小墨</span>
         </div>
         <div
           v-for="(item, index) in messages"
@@ -72,11 +72,11 @@
         <el-input
           v-model="draft"
           type="textarea"
-          :autosize="{ minRows: 2, maxRows: 5 }"
+          class="tutor-textarea"
+          :autosize="{ minRows: 1, maxRows: 5 }"
           resize="none"
           maxlength="500"
           :disabled="asking || session.remaining <= 0"
-          :placeholder="session.remaining > 0 ? '问问与本题有关的问题，Enter 发送，Shift+Enter 换行' : '今日次数已用完，明天再来吧'"
           @keydown.enter.exact.prevent="handleSend"
         />
         <button

@@ -96,6 +96,9 @@ export const AI_TUTOR_ACTION = {
   REVIEW_CODE: 4
 }
 
+// AI 辅导剩余次数不超过该值时才显示（避免一直暗示用户次数有限）
+export const AI_QUOTA_WARN_THRESHOLD = 5
+
 // AI 辅导流式事件名（后端 AiInternalPaths.EVENT_*）
 export const AI_STREAM_EVENT = {
   DELTA: 'delta',

@@ -3,7 +3,7 @@ import { defineComponent, ref, reactive, computed, watch, onMounted, onBeforeUnm
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Search, RefreshRight, Clock, User, Document } from '@element-plus/icons-vue'
-import { getExamListApi, getMyExamListApi, enrollExamApi } from '@/api/exam'
+import { getExamListApi, getMyExamListApi, enrollExamApi, getExamStatsApi } from '@/api/exam'
 import { useUserStore } from '@/store/user'
 import { EXAM_CONTEST_STATUS, EXAM_LIST_TYPE } from '@/constants'
 import AppNavbar from '@/components/AppNavbar'
@@ -181,11 +181,15 @@ export default defineComponent({
         : { phase: 'upcoming', text: '未开赛', badgeClass: 'upcoming', btnText: '报名参赛', disabled: false, action: 'enroll' }
     }
 
-    // 本页各状态场次
-    const countByPhase = (phase) => examList.value.filter((item) => getStatusInfo(item).phase === phase).length
-    const ongoingCount = computed(() => countByPhase('ongoing'))
-    const upcomingCount = computed(() => countByPhase('upcoming'))
-    const endedCount = computed(() => countByPhase('ended'))
+    // 各状态场次统计（竞赛中心为全部竞赛，我的竞赛为已报名的竞赛，不受筛选影响）
+    const stats = reactive({ total: 0, ongoing: 0, notStarted: 0, finished: 0 })
+    const loadStats = async () => {
+      try {
+        Object.assign(stats, await getExamStatsApi(props.mine))
+      } catch (err) {
+        // 统计失败不影响列表，保持上次数值
+      }
+    }
 
     // 加载竞赛列表
     const loadExamList = async () => {
@@ -277,6 +281,7 @@ export default defineComponent({
             await enrollExamApi(item.examId)
             ElMessage.success('报名成功')
             await loadExamList()
+            loadStats()
           } catch (err) {
             // 错误提示已由请求拦截器统一给出
           } finally {
@@ -319,10 +324,14 @@ export default defineComponent({
     }
 
     // 竞赛中心与我的竞赛之间切换时复用组件，需重置筛选并重新加载
-    watch(() => props.mine, handleReset)
+    watch(() => props.mine, () => {
+      handleReset()
+      loadStats()
+    })
 
     onMounted(() => {
       loadExamList()
+      loadStats()
       nextTick(updateSliderIndicator)
       window.addEventListener('resize', updateSliderIndicator)
     })
@@ -348,9 +357,7 @@ export default defineComponent({
       rankDialog,
       confirmDialog,
       handleConfirmDialog,
-      ongoingCount,
-      upcomingCount,
-      endedCount,
+      stats,
       getStatusInfo,
       handleCategoryChange,
       selectTimeFilter,

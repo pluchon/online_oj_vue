@@ -19,6 +19,15 @@ export function getMyExamListApi(params) {
   })
 }
 
+// 竞赛状态统计（mine 为 true 时只统计已报名的竞赛；不受列表筛选影响）
+export function getExamStatsApi(mine) {
+  return request({
+    url: '/friend/exam/stats',
+    method: 'get',
+    params: { mine }
+  })
+}
+
 // 查询竞赛详情
 export function getExamDetailApi(examId) {
   return request({

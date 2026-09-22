@@ -114,11 +114,13 @@
               >
                 <div class="card-top-bar">
                   <span class="case-index-tag">用例 #{{ index + 1 }}</span>
+                  <span class="case-sample-label">公开性：</span>
                   <el-switch
                     v-model="item.isSample"
                     :active-value="CASE_TYPE.SAMPLE"
                     :inactive-value="CASE_TYPE.HIDDEN"
-                    active-text="公开示例"
+                    inline-prompt
+                    active-text="公开"
                     inactive-text="隐藏"
                     class="case-sample-switch"
                   />
@@ -237,7 +239,6 @@
     <QuestionAiCaseDialog
       ref="caseDialogRef"
       @confirm="appendAiCases"
-      @solution="rememberSolution"
     />
 
     <!-- 抽屉吸底操作栏 -->

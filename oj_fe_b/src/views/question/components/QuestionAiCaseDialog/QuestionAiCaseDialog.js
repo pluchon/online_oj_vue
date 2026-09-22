@@ -11,7 +11,7 @@ export default defineComponent({
     OjDialog,
     Loading,
   },
-  emits: ['confirm', 'solution'],
+  emits: ['confirm'],
   setup(props, { emit }) {
     // 弹窗可见性
     const visible = ref(false)
@@ -43,9 +43,8 @@ export default defineComponent({
         previewCases.value = (result.cases || []).map((item, index) => ({ ...item, checked: index < remaining }))
         droppedCount.value = result.droppedCount || 0
         if (result.standardCode && !questionContext.standardCode) {
-          // 记住本次使用的解法，重新生成与解法示例共用同一份
+          // 记住本次使用的解法，重新生成时沿用同一份（不回填到解法示例）
           questionContext.standardCode = result.standardCode
-          emit('solution', result.standardCode)
         }
       } catch (err) {
         loadError.value = true

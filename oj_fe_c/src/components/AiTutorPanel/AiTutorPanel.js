@@ -5,11 +5,12 @@ import { Close, Loading } from '@element-plus/icons-vue'
 import { getAiTutorSessionApi, askAiTutorStreamApi } from '@/api/aiTutor'
 import { renderMarkdown } from '@/utils/markdown'
 import unavailableImage from '@/assets/images/c_ai_not_avaliable.png'
-import { AI_TUTOR_ACTION, AI_STREAM_EVENT, JUDGE_STATUS_AC, JUDGE_STATUS_CE } from '@/constants'
+import xiaomoImage from '@/assets/images/c_ai_appearance_xiaomo.png'
+import { AI_TUTOR_ACTION, AI_STREAM_EVENT, AI_QUOTA_WARN_THRESHOLD, JUDGE_STATUS_AC, JUDGE_STATUS_CE } from '@/constants'
 
 // 快捷操作文案（与后端 AiTutorActionEnum 一致）
 const ACTION_LABELS = {
-  [AI_TUTOR_ACTION.HINT]: '给我一点思路',
+  [AI_TUTOR_ACTION.HINT]: '指点迷津',
   [AI_TUTOR_ACTION.ANALYZE_SUBMIT]: '分析我最近一次提交',
   [AI_TUTOR_ACTION.EXPLAIN_COMPILE]: '解释编译错误',
   [AI_TUTOR_ACTION.REVIEW_CODE]: '点评我的代码'
@@ -65,6 +66,9 @@ export default defineComponent({
 
     // 渲染 AI 回复（Markdown 经 DOMPurify 过滤）
     const render = (content) => renderMarkdown(content)
+
+    // 剩余次数较少时才显示次数标签
+    const showQuota = computed(() => Boolean(session.value?.available) && session.value.remaining <= AI_QUOTA_WARN_THRESHOLD)
 
     // 按提交状态显示的快捷操作
     const quickActions = computed(() => {
@@ -191,6 +195,8 @@ export default defineComponent({
 
     return {
       unavailableImage,
+      xiaomoImage,
+      showQuota,
       session,
       loading,
       loadError,

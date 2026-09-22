@@ -51,9 +51,9 @@
     padding: 0 8px;
     border-radius: 11px;
     font-size: 12px;
-    color: #354435;
-    background: rgba(53, 68, 53, 0.08);
-    border: 1px solid rgba(53, 68, 53, 0.25);
+    color: #a8382b;
+    background: rgba(168, 56, 43, 0.08);
+    border: 1px solid rgba(168, 56, 43, 0.3);
   }
 
   .btn-close {
@@ -119,12 +119,24 @@
 }
 
 .tutor-intro {
-  font-size: 13px;
-  line-height: 1.7;
-  color: #7d6f5e;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 
-  p {
-    margin: 0;
+  .xiaomo-img {
+    width: 140px;
+    max-width: 60%;
+    object-fit: contain;
+  }
+
+  .xiaomo-name {
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a4035;
+    letter-spacing: 1px;
   }
 }
 
@@ -243,16 +255,23 @@
   }
 }
 
+// 输入框随内容伸缩（超过 5 行内部滚动），发送按钮与输入框等高
 .tutor-input {
   flex-shrink: 0;
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 8px;
   padding: 8px 14px 12px;
+
+  .tutor-textarea {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .btn-send {
-  height: 32px;
+  min-height: 32px;
+  height: auto;
   padding: 0 14px;
   flex-shrink: 0;
   border: 1px solid #354435;

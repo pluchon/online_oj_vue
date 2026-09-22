@@ -152,32 +152,31 @@
             </span>
           </div>
 
-          <!-- 底部分页控制栏（左下角展示总场次与本页各状态场次） -->
+          <!-- 底部分页控制栏（左下角展示总场次与各状态场次，统计范围为全部竞赛或我报名的竞赛） -->
           <div class="pagination-footer">
             <div class="footer-stats-tags">
               <div class="stat-badge total-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">共</span>
-                <strong class="badge-num">{{ total }}</strong>
+                <strong class="badge-num">{{ stats.total }}</strong>
                 <span class="badge-unit">{{ mine ? '场已报竞赛' : '场竞赛' }}</span>
               </div>
-              <span class="stat-divider">| 本页</span>
               <div class="stat-badge ongoing-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">进行中</span>
-                <strong class="badge-num">{{ ongoingCount }}</strong>
+                <strong class="badge-num">{{ stats.ongoing }}</strong>
                 <span class="badge-unit">场</span>
               </div>
               <div class="stat-badge upcoming-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">未开赛</span>
-                <strong class="badge-num">{{ upcomingCount }}</strong>
+                <strong class="badge-num">{{ stats.notStarted }}</strong>
                 <span class="badge-unit">场</span>
               </div>
               <div class="stat-badge ended-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">已完赛</span>
-                <strong class="badge-num">{{ endedCount }}</strong>
+                <strong class="badge-num">{{ stats.finished }}</strong>
                 <span class="badge-unit">场</span>
               </div>
             </div>

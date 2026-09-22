@@ -10,12 +10,9 @@
   .drawer-ai-btn {
     position: absolute;
     right: 24px;
-    top: 50%;
-    transform: translateY(-50%);
-
-    &:hover:not(:disabled) {
-      transform: translateY(-50%);
-    }
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
   }
 
   // 代码标签页右侧的 AI 解法按钮
@@ -50,13 +47,19 @@
 
     &:hover:not(:disabled) {
       background-color: $primary-light;
-      transform: translateY(-1px);
     }
 
     &:disabled {
       opacity: 0.55;
       cursor: not-allowed;
     }
+  }
+
+  // 用例公开性标签
+  .case-sample-label {
+    margin-left: auto;
+    font-size: 12px;
+    color: #6b5f50;
   }
 
   .btn-ai-case {
@@ -253,7 +256,7 @@
 
           // 公开示例开关靠右，与删除按钮留出间距
           .case-sample-switch {
-            margin-left: auto;
+            margin-left: 4px;
             margin-right: 12px;
             --el-switch-on-color: #354435;
           }
