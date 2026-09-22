@@ -1,0 +1,109 @@
+// AI 生成用例弹窗样式
+@use '@/styles/variables' as *;
+
+.ai-case-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ai-case-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  .section-title {
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: $text-main;
+  }
+
+  .section-desc {
+    font-size: 12px;
+    color: $text-sub;
+  }
+}
+
+.count-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .count-label {
+    font-size: 13px;
+    color: $text-regular;
+  }
+
+  .count-input {
+    width: 120px;
+  }
+}
+
+.preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.preview-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid $border-color-light;
+  border-radius: 6px;
+  background-color: #fffdf9;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &.unchecked {
+    opacity: 0.55;
+  }
+
+  .preview-check {
+    height: 20px;
+  }
+
+  .preview-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .preview-intent {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-main;
+  }
+
+  .preview-line {
+    display: flex;
+    gap: 8px;
+    font-size: 12.5px;
+    color: $text-regular;
+
+    .line-label {
+      flex-shrink: 0;
+      color: $text-sub;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+  }
+}

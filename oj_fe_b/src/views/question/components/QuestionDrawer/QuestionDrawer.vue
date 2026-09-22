@@ -16,6 +16,14 @@
         label-position="top"
         class="question-form"
       >
+        <!-- AI 辅助出题入口 -->
+        <div class="ai-toolbar">
+          <button type="button" class="btn-ai" :disabled="submitting" @click="openDraftDialog">
+            <el-icon class="btn-icon"><MagicStick /></el-icon>
+            <span>AI 生成题面</span>
+          </button>
+        </div>
+
         <!-- 基础配置行：题目标题 -->
         <el-form-item label="题目标题" prop="title">
           <el-input
@@ -75,6 +83,15 @@
           <template #label>
             <div class="case-header-row">
               <span class="case-header-title">题目用例 · 共 {{ testCaseList.length }} 组</span>
+              <button
+                type="button"
+                class="btn-ai btn-ai-case"
+                :disabled="testCaseList.length >= MAX_CASES || submitting"
+                @click="openCaseDialog"
+              >
+                <el-icon class="btn-icon"><MagicStick /></el-icon>
+                <span>AI 生成用例</span>
+              </button>
               <button
                 type="button"
                 class="btn-add-case"
@@ -193,6 +210,13 @@
         </div>
       </el-form>
     </div>
+
+    <QuestionAiDraftDialog ref="draftDialogRef" @generated="applyDraft" />
+    <QuestionAiCaseDialog
+      ref="caseDialogRef"
+      v-model:standard-code="standardCode"
+      @confirm="appendAiCases"
+    />
 
     <!-- 抽屉吸底操作栏 -->
     <template #footer>

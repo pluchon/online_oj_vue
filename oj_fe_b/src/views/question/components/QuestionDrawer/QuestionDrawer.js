@@ -1,12 +1,14 @@
 // 题目新增与编辑抽屉组件业务逻辑
 import { defineComponent, ref, reactive, computed, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Delete } from '@element-plus/icons-vue'
+import { Plus, Delete, MagicStick } from '@element-plus/icons-vue'
 import { addQuestionApi, editQuestionApi, getQuestionDetailApi } from '@/api/question'
 import { CASE_TYPE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import CodeEditor from '@/components/CodeEditor'
+import QuestionAiDraftDialog from '../QuestionAiDraftDialog'
+import QuestionAiCaseDialog from '../QuestionAiCaseDialog'
 
 // 新题默认代码模板（用户只需实现方法）
 const DEFAULT_CODE = 'public int solve(int n) {\n    // 请在此处编写你的代码\n    return 0;\n}'
@@ -46,8 +48,11 @@ export default defineComponent({
     QuestionDifficultySelect,
     MarkdownEditor,
     CodeEditor,
+    QuestionAiDraftDialog,
+    QuestionAiCaseDialog,
     Plus,
     Delete,
+    MagicStick,
   },
   emits: ['success'],
   setup(props, { emit }) {
@@ -76,6 +81,13 @@ export default defineComponent({
 
     // 测试用例列表
     const testCaseList = ref([createCase()])
+
+    // AI 弹窗引用
+    const draftDialogRef = ref(null)
+    const caseDialogRef = ref(null)
+
+    // AI 生成用例使用的标程（只在本次编辑中保留，不保存）
+    const standardCode = ref('')
 
     // 表单默认初始值
     const getInitialFormData = () => ({
@@ -220,12 +232,85 @@ export default defineComponent({
 
       Object.assign(formData, getInitialFormData())
       testCaseList.value = [createCase()]
+      standardCode.value = ''
       recordSnapshot()
       nextTick(() => {
         formRef.value?.clearValidate()
       })
       if (type === 'edit' && questionId) {
         fetchDetail(questionId)
+      }
+    }
+
+    // 打开 AI 题面草稿弹窗
+    const openDraftDialog = () => {
+      draftDialogRef.value?.open()
+    }
+
+    // 用 AI 草稿回填表单（标题或描述已有内容时先确认覆盖）
+    const applyDraft = async (draft) => {
+      if ((formData.title || '').trim() || (formData.content || '').trim()) {
+        try {
+          await ElMessageBox.confirm('将用 AI 草稿覆盖当前的标题、描述、限制与代码模板，确认吗？', '提示', {
+            confirmButtonText: '覆盖',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+        } catch (err) {
+          return
+        }
+      }
+      const draftKeys = ['title', 'difficulty', 'timeLimit', 'spaceLimit', 'content', 'defaultCode', 'mainFunc']
+      draftKeys.forEach((key) => {
+        if (draft[key] !== undefined && draft[key] !== null && draft[key] !== '') {
+          formData[key] = draft[key]
+        }
+      })
+      nextTick(() => {
+        formRef.value?.clearValidate()
+      })
+      ElMessage.success('草稿已填入表单，请检查后再保存')
+    }
+
+    // 打开 AI 生成用例弹窗（需先有标题、描述、代码模板与 Main 函数）
+    const openCaseDialog = () => {
+      const missing = [
+        ['title', '题目标题'],
+        ['content', '题目描述'],
+        ['defaultCode', '默认代码模板'],
+        ['mainFunc', 'Main 评测函数'],
+      ].find(([key]) => !(formData[key] || '').trim())
+      if (missing) {
+        ElMessage.warning(`请先填写${missing[1]}`)
+        return
+      }
+      const existingInputs = testCaseList.value
+        .map(item => (item.judgeInput || '').trim())
+        .filter(Boolean)
+      caseDialogRef.value?.open({
+        title: formData.title.trim(),
+        content: formData.content,
+        defaultCode: formData.defaultCode,
+        mainFunc: formData.mainFunc,
+        timeLimit: formData.timeLimit,
+        spaceLimit: formData.spaceLimit,
+        existingInputs,
+      }, MAX_CASES - testCaseList.value.length)
+    }
+
+    // 把 AI 生成的用例加入列表（只有一组空白用例时直接替换它）
+    const appendAiCases = (cases) => {
+      const onlyBlank = testCaseList.value.length === 1
+        && !['displayInput', 'displayOutput', 'judgeInput', 'judgeOutput']
+          .some(key => (testCaseList.value[0][key] || '').trim())
+      const base = onlyBlank ? [] : testCaseList.value
+      const room = MAX_CASES - base.length
+      const added = cases.slice(0, room)
+      testCaseList.value = [...base, ...added]
+      if (added.length < cases.length) {
+        ElMessage.warning(`已达 ${MAX_CASES} 组上限，只加入了 ${added.length} 组`)
+      } else {
+        ElMessage.success(`已加入 ${added.length} 组用例，默认为隐藏用例，可按需设为公开示例`)
       }
     }
 
@@ -325,10 +410,17 @@ export default defineComponent({
       formData,
       formRules,
       testCaseList,
+      draftDialogRef,
+      caseDialogRef,
+      standardCode,
       MAX_CASES,
       CASE_TYPE,
       handleAddTestCase,
       handleRemoveTestCase,
+      openDraftDialog,
+      applyDraft,
+      openCaseDialog,
+      appendAiCases,
       open,
       handleSubmit,
       handleBeforeClose,

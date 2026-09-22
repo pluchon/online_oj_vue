@@ -6,6 +6,50 @@
     min-height: 200px;
   }
 
+  // AI 辅助出题按钮（描边样式，与实心的"添加用例"区分）
+  .ai-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .btn-ai {
+    height: 28px;
+    padding: 0 12px;
+    background-color: transparent;
+    border: 1px solid $primary-color;
+    color: $primary-color;
+    border-radius: 4px;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .btn-icon {
+      font-size: 12px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: $primary-light;
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-ai-case {
+    margin-left: auto;
+    margin-right: 8px;
+  }
+
   .question-form {
     :deep(.el-form-item) {
       margin-bottom: 20px;
