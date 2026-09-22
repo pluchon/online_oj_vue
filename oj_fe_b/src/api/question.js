@@ -57,6 +57,16 @@ export function generateQuestionCasesApi(data) {
   })
 }
 
+// AI 生成常见解法（解法示例，同时作为生成用例时的标程，不保存）
+export function generateQuestionSolutionApi(data) {
+  return request({
+    url: '/system/question/ai/solution',
+    method: 'post',
+    data,
+    timeout: AI_REQUEST_TIMEOUT_MS
+  })
+}
+
 // 删除题目接口
 export function deleteQuestionApi(questionId) {
   return request({

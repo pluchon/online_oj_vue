@@ -77,8 +77,12 @@
 
       // AI 辅导星星按钮
       .btn-ai-tutor {
-        width: 26px;
         height: 26px;
+        padding: 0 10px;
+        gap: 4px;
+        font-size: 12px;
+        font-family: 'Songti SC', 'SimSun', serif;
+        color: #8a6a1f;
         border: 1px solid rgba(195, 182, 164, 0.55);
         border-radius: 4px;
         background: transparent;
@@ -89,7 +93,7 @@
         transition: all 0.2s ease;
 
         svg {
-          width: 15px;
+          width: 14px;
           height: 15px;
           fill: none;
           stroke: #b38324;

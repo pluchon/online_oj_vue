@@ -6,13 +6,27 @@
     min-height: 200px;
   }
 
-  // AI 辅助出题按钮（描边样式，与实心的"添加用例"区分）
-  .ai-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 8px;
+  // 标题栏右侧的 AI 出题按钮（标题保持居中）
+  .drawer-ai-btn {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-50%);
+    }
   }
 
+  // 代码标签页右侧的 AI 解法按钮
+  .tabs-ai-btn {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    z-index: 2;
+  }
+
+  // AI 按钮（描边样式，与实心的"添加用例"区分）
   .btn-ai {
     height: 28px;
     padding: 0 12px;
@@ -318,6 +332,7 @@
 
   // 代码区域切换标签页
   .code-tabs-wrapper {
+    position: relative;
     margin-top: 10px;
     margin-bottom: 10px;
 

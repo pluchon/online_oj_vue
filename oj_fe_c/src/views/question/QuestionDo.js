@@ -738,6 +738,7 @@ export default defineComponent({
       handleBack,
       tutorOpen,
       tutorRefreshKey,
+      currentExamId,
       similarQuestions,
       switchQuestion,
       getUserCode,

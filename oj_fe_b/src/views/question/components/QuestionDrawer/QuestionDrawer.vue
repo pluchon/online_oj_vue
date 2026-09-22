@@ -8,6 +8,15 @@
     :destroy-on-close="true"
     class="question-drawer"
   >
+    <!-- 标题栏：居中标题，右侧 AI 出题 -->
+    <template #header>
+      <span class="el-drawer__title">{{ drawerTitle }}</span>
+      <button type="button" class="btn-ai drawer-ai-btn" :disabled="submitting" @click="openDraftDialog">
+        <el-icon class="btn-icon"><MagicStick /></el-icon>
+        <span>AI出题</span>
+      </button>
+    </template>
+
     <div v-loading="detailLoading" class="drawer-content">
       <el-form
         ref="formRef"
@@ -16,14 +25,6 @@
         label-position="top"
         class="question-form"
       >
-        <!-- AI 辅助出题入口 -->
-        <div class="ai-toolbar">
-          <button type="button" class="btn-ai" :disabled="submitting" @click="openDraftDialog">
-            <el-icon class="btn-icon"><MagicStick /></el-icon>
-            <span>AI 生成题面</span>
-          </button>
-        </div>
-
         <!-- 基础配置行：题目标题 -->
         <el-form-item label="题目标题" prop="title">
           <el-input
@@ -184,6 +185,17 @@
 
         <!-- 代码区域标签页切换 -->
         <div class="code-tabs-wrapper">
+          <button
+            type="button"
+            class="btn-ai tabs-ai-btn"
+            :disabled="solutionLoading || submitting"
+            @click="generateSolution"
+          >
+            <el-icon class="btn-icon" :class="{ 'is-loading': solutionLoading }">
+              <Loading v-if="solutionLoading" /><MagicStick v-else />
+            </el-icon>
+            <span>{{ solutionLoading ? '生成中...' : 'AI 解法代码示例' }}</span>
+          </button>
           <el-tabs v-model="activeCodeTab" class="code-tabs" type="border-card">
             <el-tab-pane label="默认代码模板" name="defaultCode" :lazy="true">
               <el-form-item prop="defaultCode" class="code-form-item">
@@ -206,6 +218,16 @@
                 />
               </el-form-item>
             </el-tab-pane>
+
+            <el-tab-pane v-if="aiSolution" label="AI 解法示例" name="aiSolution" :lazy="true">
+              <CodeEditor
+                v-model="aiSolution"
+                title="AI 解法示例（仅供参考，不保存）"
+                path="inmemory://question/aiSolution.java"
+                height="260px"
+                :read-only="true"
+              />
+            </el-tab-pane>
           </el-tabs>
         </div>
       </el-form>
@@ -214,8 +236,8 @@
     <QuestionAiDraftDialog ref="draftDialogRef" @generated="applyDraft" />
     <QuestionAiCaseDialog
       ref="caseDialogRef"
-      v-model:standard-code="standardCode"
       @confirm="appendAiCases"
+      @solution="rememberSolution"
     />
 
     <!-- 抽屉吸底操作栏 -->

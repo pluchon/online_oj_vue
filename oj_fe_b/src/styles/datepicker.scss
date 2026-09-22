@@ -1,0 +1,37 @@
+// 日期时间选择器主题（输入框聚焦边框与弹出面板统一为墨绿纸色，替换 Element Plus 默认的蓝色与白底）
+@use './variables' as *;
+
+.el-date-editor,
+.el-picker__popper {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-3: #4f5a4e;
+  --el-color-primary-light-5: #7c857b;
+  --el-color-primary-light-7: #b9bdb3;
+  --el-color-primary-light-8: #d3d5cc;
+  --el-color-primary-light-9: #{$primary-light};
+  --el-color-primary-dark-2: #{$primary-hover};
+  --el-input-focus-border-color: #{$primary-color};
+  --el-border-color-light: #{$border-color};
+  --el-border-color-lighter: #{$border-color-light};
+}
+
+.el-picker__popper.el-popper {
+  --el-bg-color-overlay: #fbf8f2;
+  --el-fill-color-blank: #fffdf9;
+  --el-fill-color-light: #f3eee5;
+  background: #fbf8f2;
+  border-color: $border-color;
+
+  .el-picker-panel,
+  .el-picker-panel__footer,
+  .el-date-range-picker__time-header,
+  .el-date-picker__time-header,
+  .el-time-panel {
+    background: #fbf8f2;
+    border-color: $border-color-light;
+  }
+
+  .el-input__wrapper {
+    background: #fffdf9;
+  }
+}

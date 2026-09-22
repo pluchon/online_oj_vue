@@ -14,7 +14,7 @@
           </button>
 
           <div class="nav-quick-btns">
-            <el-tooltip v-if="!isContestMode" content="AI 辅导" placement="bottom">
+            <template v-if="!isContestMode">
               <button
                 type="button"
                 class="btn-ai-tutor"
@@ -25,8 +25,9 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 2.8l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />
                 </svg>
+                <span>AI 辅导</span>
               </button>
-            </el-tooltip>
+            </template>
             <button
               type="button"
               class="nav-quick-btn"
@@ -430,6 +431,7 @@
         v-if="tutorOpen && question?.questionId && !isContestMode"
         class="ai-tutor-column"
         :question-id="question.questionId"
+        :exam-id="currentExamId"
         :get-user-code="getUserCode"
         :refresh-key="tutorRefreshKey"
         @close="tutorOpen = false"

@@ -9,7 +9,7 @@
         <span>AI 辅导</span>
       </div>
       <div class="tutor-header-right">
-        <span v-if="session" class="quota-text">今日剩余 {{ session.remaining }} / {{ session.dailyLimit }}</span>
+        <span v-if="session && session.available" class="quota-tag">今日剩余 {{ session.remaining }} 次</span>
         <button type="button" class="btn-close" aria-label="关闭" @click="$emit('close')">
           <el-icon><Close /></el-icon>
         </button>
@@ -24,8 +24,8 @@
       <span>加载失败</span>
       <button type="button" class="btn-text" @click="loadSession">重试</button>
     </div>
-    <div v-else-if="session && !session.available" class="tutor-state">
-      <span>竞赛进行中，AI 辅导暂不可用</span>
+    <div v-else-if="session && !session.available" class="tutor-unavailable">
+      <img :src="unavailableImage" alt="竞赛进行中，AI 辅导暂不可用" class="unavailable-img" />
     </div>
 
     <template v-else-if="session">

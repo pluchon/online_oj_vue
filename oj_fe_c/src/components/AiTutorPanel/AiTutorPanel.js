@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { Close, Loading } from '@element-plus/icons-vue'
 import { getAiTutorSessionApi, askAiTutorStreamApi } from '@/api/aiTutor'
 import { renderMarkdown } from '@/utils/markdown'
+import unavailableImage from '@/assets/images/c_ai_not_avaliable.png'
 import { AI_TUTOR_ACTION, AI_STREAM_EVENT, JUDGE_STATUS_AC, JUDGE_STATUS_CE } from '@/constants'
 
 // 快捷操作文案（与后端 AiTutorActionEnum 一致）
@@ -25,6 +26,11 @@ export default defineComponent({
     questionId: {
       type: [String, Number],
       required: true,
+    },
+    // 竞赛ID（竞赛中答题时传入，竞赛进行中不可用）
+    examId: {
+      type: [String, Number],
+      default: null,
     },
     // 读取编辑器当前代码
     getUserCode: {
@@ -82,7 +88,7 @@ export default defineComponent({
       loading.value = true
       loadError.value = false
       try {
-        const data = await getAiTutorSessionApi(props.questionId)
+        const data = await getAiTutorSessionApi(props.questionId, props.examId)
         session.value = data
         messages.value = data.messages || []
         scrollToBottom()
@@ -97,7 +103,7 @@ export default defineComponent({
     const refreshStatus = async () => {
       if (!session.value || asking.value) return
       try {
-        const data = await getAiTutorSessionApi(props.questionId)
+        const data = await getAiTutorSessionApi(props.questionId, props.examId)
         session.value = { ...data, messages: undefined }
       } catch (err) {
         // 静默失败，沿用旧状态
@@ -119,6 +125,7 @@ export default defineComponent({
       try {
         await askAiTutorStreamApi(props.questionId, {
           action,
+          examId: props.examId || null,
           content: text || null,
           userCode: props.getUserCode() || null
         }, {
@@ -183,6 +190,7 @@ export default defineComponent({
     watch(() => props.refreshKey, refreshStatus)
 
     return {
+      unavailableImage,
       session,
       loading,
       loadError,

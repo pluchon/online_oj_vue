@@ -3,10 +3,11 @@ import request from '@/utils/request'
 import { postEventStream } from '@/utils/sse'
 
 // 查询本题的辅导会话（历史消息、今日剩余次数与快捷操作所需的提交状态）
-export function getAiTutorSessionApi(questionId) {
+export function getAiTutorSessionApi(questionId, examId) {
   return request({
     url: `/friend/ai/tutor/${questionId}`,
-    method: 'get'
+    method: 'get',
+    params: examId ? { examId } : undefined
   })
 }
 

@@ -44,9 +44,16 @@
     gap: 8px;
   }
 
-  .quota-text {
+  .quota-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 11px;
     font-size: 12px;
-    color: #8a7d6c;
+    color: #354435;
+    background: rgba(53, 68, 53, 0.08);
+    border: 1px solid rgba(53, 68, 53, 0.25);
   }
 
   .btn-close {
@@ -76,6 +83,21 @@
   gap: 8px;
   font-size: 13px;
   color: #8a7d6c;
+}
+
+.tutor-unavailable {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  .unavailable-img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+  }
 }
 
 .btn-text {

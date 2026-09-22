@@ -32,9 +32,6 @@ export const CASE_TYPE = {
   SAMPLE: 1
 }
 
-// AI 单次最多生成的用例组数（后端 QuestionAiCaseDTO.count 上限）
-export const AI_CASE_MAX_PER_BATCH = 10
-
 // AI 接口请求超时（模型生成与标程运行耗时较长）
 export const AI_REQUEST_TIMEOUT_MS = 120000
 

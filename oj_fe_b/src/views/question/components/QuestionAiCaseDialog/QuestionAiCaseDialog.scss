@@ -7,10 +7,15 @@
   gap: 18px;
 }
 
-.ai-case-section {
+.case-state {
+  min-height: 160px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
+  font-size: 13px;
+  color: $text-sub;
 }
 
 .section-head {
@@ -30,22 +35,12 @@
     font-size: 12px;
     color: $text-sub;
   }
-}
 
-.count-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .count-label {
-    font-size: 13px;
-    color: $text-regular;
-  }
-
-  .count-input {
-    width: 120px;
+  .btn-regenerate {
+    margin-left: auto;
   }
 }
+
 
 .preview-list {
   display: flex;

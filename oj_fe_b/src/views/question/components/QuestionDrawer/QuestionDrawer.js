@@ -1,8 +1,8 @@
 // 题目新增与编辑抽屉组件业务逻辑
 import { defineComponent, ref, reactive, computed, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Delete, MagicStick } from '@element-plus/icons-vue'
-import { addQuestionApi, editQuestionApi, getQuestionDetailApi } from '@/api/question'
+import { Plus, Delete, MagicStick, Loading } from '@element-plus/icons-vue'
+import { addQuestionApi, editQuestionApi, getQuestionDetailApi, generateQuestionSolutionApi } from '@/api/question'
 import { CASE_TYPE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
@@ -53,6 +53,7 @@ export default defineComponent({
     Plus,
     Delete,
     MagicStick,
+    Loading,
   },
   emits: ['success'],
   setup(props, { emit }) {
@@ -86,8 +87,9 @@ export default defineComponent({
     const draftDialogRef = ref(null)
     const caseDialogRef = ref(null)
 
-    // AI 生成用例使用的标程（只在本次编辑中保留，不保存）
-    const standardCode = ref('')
+    // AI 解法示例（只在本次编辑中保留，不保存；生成用例时作为标程）
+    const aiSolution = ref('')
+    const solutionLoading = ref(false)
 
     // 表单默认初始值
     const getInitialFormData = () => ({
@@ -232,7 +234,7 @@ export default defineComponent({
 
       Object.assign(formData, getInitialFormData())
       testCaseList.value = [createCase()]
-      standardCode.value = ''
+      aiSolution.value = ''
       recordSnapshot()
       nextTick(() => {
         formRef.value?.clearValidate()
@@ -272,18 +274,54 @@ export default defineComponent({
       ElMessage.success('草稿已填入表单，请检查后再保存')
     }
 
-    // 打开 AI 生成用例弹窗（需先有标题、描述、代码模板与 Main 函数）
-    const openCaseDialog = () => {
-      const missing = [
-        ['title', '题目标题'],
-        ['content', '题目描述'],
-        ['defaultCode', '默认代码模板'],
-        ['mainFunc', 'Main 评测函数'],
-      ].find(([key]) => !(formData[key] || '').trim())
+    // 检查 AI 所需的表单字段，缺失时提示并返回 false
+    const ensureAiFields = (fields) => {
+      const missing = fields.find(([key]) => !(formData[key] || '').trim())
       if (missing) {
         ElMessage.warning(`请先填写${missing[1]}`)
-        return
+        return false
       }
+      return true
+    }
+
+    // 解法示例需要的字段
+    const SOLUTION_FIELDS = [
+      ['title', '题目标题'],
+      ['content', '题目描述'],
+      ['defaultCode', '默认代码模板'],
+    ]
+
+    // 生成用例还需要 Main 函数
+    const CASE_FIELDS = [...SOLUTION_FIELDS, ['mainFunc', 'Main 评测函数']]
+
+    // 生成 AI 解法示例并切换到对应标签页
+    const generateSolution = async () => {
+      if (!ensureAiFields(SOLUTION_FIELDS)) return
+      solutionLoading.value = true
+      try {
+        const result = await generateQuestionSolutionApi({
+          title: formData.title.trim(),
+          content: formData.content,
+          defaultCode: formData.defaultCode,
+        })
+        rememberSolution(result.code)
+      } catch (err) {
+        // 错误提示已由请求拦截器统一给出
+      } finally {
+        solutionLoading.value = false
+      }
+    }
+
+    // 记住解法示例并展示
+    const rememberSolution = (code) => {
+      if (!code) return
+      aiSolution.value = code
+      activeCodeTab.value = 'aiSolution'
+    }
+
+    // 打开 AI 生成用例弹窗（需先有标题、描述、代码模板与 Main 函数；已有解法示例时作为标程）
+    const openCaseDialog = () => {
+      if (!ensureAiFields(CASE_FIELDS)) return
       const existingInputs = testCaseList.value
         .map(item => (item.judgeInput || '').trim())
         .filter(Boolean)
@@ -294,6 +332,7 @@ export default defineComponent({
         mainFunc: formData.mainFunc,
         timeLimit: formData.timeLimit,
         spaceLimit: formData.spaceLimit,
+        standardCode: aiSolution.value || null,
         existingInputs,
       }, MAX_CASES - testCaseList.value.length)
     }
@@ -412,7 +451,8 @@ export default defineComponent({
       testCaseList,
       draftDialogRef,
       caseDialogRef,
-      standardCode,
+      aiSolution,
+      solutionLoading,
       MAX_CASES,
       CASE_TYPE,
       handleAddTestCase,
@@ -421,6 +461,8 @@ export default defineComponent({
       applyDraft,
       openCaseDialog,
       appendAiCases,
+      generateSolution,
+      rememberSolution,
       open,
       handleSubmit,
       handleBeforeClose,
