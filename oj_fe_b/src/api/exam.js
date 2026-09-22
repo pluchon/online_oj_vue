@@ -1,5 +1,6 @@
 // 竞赛管理相关 API 接口
 import request from '@/utils/request'
+import { AI_REQUEST_TIMEOUT_MS } from '@/constants'
 
 // 分页查询竞赛列表（支持标题与时间范围过滤）
 export function getExamListApi(params = {}) {
@@ -16,6 +17,16 @@ export function addExamApi(data) {
     url: '/system/exam',
     method: 'post',
     data
+  })
+}
+
+// AI 帮建竞赛：根据描述、难度倾向与题目数量生成竞赛名称和题目（只返回结果，不保存）
+export function generateExamPlanApi(data) {
+  return request({
+    url: '/system/exam/ai/plan',
+    method: 'post',
+    data,
+    timeout: AI_REQUEST_TIMEOUT_MS
   })
 }
 

@@ -2,6 +2,47 @@
 @use '@/styles/variables' as *;
 
 .exam-drawer {
+  // 标题栏右侧的 AI 帮建按钮（标题保持居中）
+  .drawer-ai-btn {
+    position: absolute;
+    right: 24px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+  }
+
+  // AI 按钮（描边样式）
+  .btn-ai {
+    height: 28px;
+    padding: 0 12px;
+    background-color: transparent;
+    border: 1px solid $primary-color;
+    color: $primary-color;
+    border-radius: 4px;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .btn-icon {
+      font-size: 12px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: $primary-light;
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
   :deep(.el-drawer__body) {
     height: calc(100vh - 65px) !important;
     display: flex !important;

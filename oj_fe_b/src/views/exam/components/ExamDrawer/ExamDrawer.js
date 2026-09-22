@@ -11,17 +11,20 @@ import {
 } from '@/api/exam'
 import DifficultyTag from '@/components/DifficultyTag'
 import OjEmpty from '@/components/OjEmpty'
-import { Plus, Check } from '@element-plus/icons-vue'
+import { Plus, Check, MagicStick } from '@element-plus/icons-vue'
 import ExamQuestionDialog from '../ExamQuestionDialog'
+import ExamAiPlanDialog from '../ExamAiPlanDialog'
 
 export default defineComponent({
   name: 'ExamDrawer',
   components: {
     DifficultyTag,
     ExamQuestionDialog,
+    ExamAiPlanDialog,
     OjEmpty,
     Plus,
-    Check
+    Check,
+    MagicStick
   },
   emits: ['success'],
   setup(props, { emit }) {
@@ -54,6 +57,9 @@ export default defineComponent({
 
     // 题目弹窗组件引用
     const questionDialogRef = ref(null)
+
+    // AI 帮建弹窗组件引用
+    const aiPlanDialogRef = ref(null)
 
     // 竞赛基本信息表单数据
     const formData = reactive({
@@ -200,7 +206,13 @@ export default defineComponent({
             startTime: formData.startTime,
             endTime: formData.endTime
           }
-          ElMessage.success('竞赛基本信息保存成功，请在下方点击添加题目')
+          if (pendingIds.value.length > 0) {
+            // AI 帮建等方式预先选好的题目随竞赛一起保存
+            ElMessage.success('竞赛基本信息保存成功')
+            await handleSaveQuestions()
+          } else {
+            ElMessage.success('竞赛基本信息保存成功，请在下方点击添加题目')
+          }
         } else {
           const currentTitle = formData.title.trim()
           if (
@@ -278,6 +290,31 @@ export default defineComponent({
       }
     }
 
+    // 打开 AI 帮建弹窗
+    const openAiPlanDialog = () => {
+      aiPlanDialogRef.value?.open()
+    }
+
+    // AI 帮建完成：回填竞赛名称，用生成的题目替换尚未保存的题目（已保存的保留）
+    const handlePlanGenerated = (plan) => {
+      if (!plan) return
+      if (plan.title) {
+        formData.title = plan.title.slice(0, 30)
+        formRef.value?.validateField('title')
+      }
+      const kept = boundQuestionList.value.filter((item) => persistedIds.value.has(item.questionId))
+      const keptIds = new Set(kept.map((item) => item.questionId))
+      const added = (plan.questions || []).filter((item) => !keptIds.has(item.questionId))
+      boundQuestionList.value = [...kept, ...added]
+      if (plan.message) {
+        ElMessage.warning(plan.message)
+      } else if (formData.examId) {
+        ElMessage.success(`已选出 ${added.length} 道题目，请点击“保存题目”完成保存`)
+      } else {
+        ElMessage.success(`已选出 ${added.length} 道题目，请设置竞赛周期后保存`)
+      }
+    }
+
     // 移出题目：未保存的仅从列表移除，已保存的需服务端删除成功后再移除
     const handleRemoveQuestion = (row, index) => {
       if (!persistedIds.value.has(row.questionId)) {
@@ -339,6 +376,7 @@ export default defineComponent({
       questionLoading,
       formRef,
       questionDialogRef,
+      aiPlanDialogRef,
       formData,
       defaultTime,
       boundQuestionList,
@@ -351,7 +389,9 @@ export default defineComponent({
       handleQuestionsSelected,
       handleSaveQuestions,
       handleRemoveQuestion,
-      handleBeforeClose
+      handleBeforeClose,
+      openAiPlanDialog,
+      handlePlanGenerated
     }
   }
 })

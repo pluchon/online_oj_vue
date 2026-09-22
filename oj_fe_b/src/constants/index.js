@@ -35,6 +35,21 @@ export const CASE_TYPE = {
 // AI 接口请求超时（模型生成与标程运行耗时较长）
 export const AI_REQUEST_TIMEOUT_MS = 120000
 
+// AI 帮建竞赛：难度倾向选项（value 与后端 ExamAiTendency 一致）
+export const EXAM_AI_TENDENCY_OPTIONS = [
+  { value: 1, label: '新手友好' },
+  { value: 2, label: '一般大众' },
+  { value: 3, label: '高手过招' }
+]
+
+// AI 帮建竞赛：题目数量档位选项（value 与后端 ExamAiCountLevel 一致）
+export const EXAM_AI_COUNT_OPTIONS = [
+  { value: 1, label: '少量（1~5 题）' },
+  { value: 2, label: '适中（6~10 题）' },
+  { value: 3, label: '偏多（11~15 题）' },
+  { value: 4, label: '超多（16~30 题）' }
+]
+
 // 列表固定每页条数（后端 PageQuery 默认值）
 export const PAGE_SIZE = 10
 

@@ -40,6 +40,11 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    // 主按钮是否禁用（如必填项未填完）
+    confirmDisabled: {
+      type: Boolean,
+      default: false,
+    },
     // 是否展示底部区域
     showFooter: {
       type: Boolean,

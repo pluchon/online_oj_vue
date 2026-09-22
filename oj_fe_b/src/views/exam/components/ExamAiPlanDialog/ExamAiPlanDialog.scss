@@ -1,0 +1,37 @@
+// AI 帮建竞赛弹窗样式
+@use '@/styles/variables' as *;
+
+// 主题色覆盖（下拉选中与聚焦不用默认蓝色）
+.ai-plan-body {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-9: #{$primary-light};
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// 选项行：从左到右排列，右侧留空给后续选项
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.option-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 170px;
+}
+
+.option-label {
+  font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d352b;
+  letter-spacing: 0.5px;
+}
+
+.option-select {
+  width: 100%;
+}

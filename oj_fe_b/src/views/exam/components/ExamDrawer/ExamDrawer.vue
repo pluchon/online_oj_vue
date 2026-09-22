@@ -8,6 +8,14 @@
     :destroy-on-close="true"
     class="exam-drawer"
   >
+    <template #header>
+      <span class="el-drawer__title">{{ drawerTitle }}</span>
+      <button type="button" class="btn-ai drawer-ai-btn" :disabled="saving || savingQuestions" @click="openAiPlanDialog">
+        <el-icon class="btn-icon"><MagicStick /></el-icon>
+        <span>AI帮建</span>
+      </button>
+    </template>
+
     <div v-loading="detailLoading" class="drawer-body">
       <!-- 竞赛基本信息配置表单 -->
       <el-form
@@ -168,6 +176,9 @@
         </el-table>
       </div>
     </div>
+
+    <!-- AI 帮建竞赛弹窗 -->
+    <ExamAiPlanDialog ref="aiPlanDialogRef" @generated="handlePlanGenerated" />
 
     <!-- 题目选择弹窗组件 -->
     <ExamQuestionDialog

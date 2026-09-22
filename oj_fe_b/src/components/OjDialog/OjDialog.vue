@@ -43,8 +43,8 @@
             v-if="showConfirm"
             type="button"
             class="btn-dialog-action"
-            :class="{ disabled: confirmLoading }"
-            :disabled="confirmLoading"
+            :class="{ disabled: confirmLoading || confirmDisabled }"
+            :disabled="confirmLoading || confirmDisabled"
             @click="handleConfirm"
           >
             <span>{{ confirmLoading ? loadingText : confirmText }}</span>
