@@ -21,7 +21,7 @@
           type="button"
           class="btn-dialog-close"
           title="关闭"
-          @click="handleCancel"
+          @click="handleClose"
         >
           <svg class="close-icon" viewBox="0 0 24 24" fill="none">
             <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -32,7 +32,9 @@
 
     <!-- 弹窗主体内容插槽 -->
     <div class="oj-dialog-body">
-      <slot />
+      <slot>
+        <p v-if="message" class="oj-dialog-message">{{ message }}</p>
+      </slot>
     </div>
 
     <!-- 底部操作区（默认提供取消与主操作按钮） -->

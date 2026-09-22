@@ -19,6 +19,11 @@ export default defineComponent({
       type: String,
       default: '640px'
     },
+    // 纯文本正文（未使用默认插槽时展示）
+    message: {
+      type: String,
+      default: ''
+    },
     // 确认/行动按钮文字
     confirmText: {
       type: String,
@@ -84,6 +89,12 @@ export default defineComponent({
       emit('close')
     }
 
+    // 右上角叉号关闭（不视为取消）
+    const handleClose = () => {
+      emit('update:modelValue', false)
+      emit('close')
+    }
+
     // 确认执行
     const handleConfirm = () => {
       if (props.confirmLoading) return
@@ -93,6 +104,7 @@ export default defineComponent({
     return {
       handleUpdateModelValue,
       handleCancel,
+      handleClose,
       handleConfirm
     }
   }

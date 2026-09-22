@@ -1,7 +1,8 @@
 // 沉浸式学者答题工作台业务交互逻辑
-import { defineComponent, ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { defineComponent, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { useConfirmDialog } from '@/utils/confirmDialog'
 import {
   ArrowLeft,
   ArrowRight,
@@ -77,6 +78,9 @@ export default defineComponent({
     DocumentChecked
   },
   setup() {
+    // 确认弹窗（离开未保存、登录引导等）
+    const confirmDialog = useConfirmDialog()
+
     const route = useRoute()
     const router = useRouter()
     const { isLogin } = useUserStore()
@@ -257,20 +261,18 @@ export default defineComponent({
       return isCodeDirty.value ? saveCode({ silent: true }) : true
     }
 
-    // 有未保存的修改时确认：保存并离开、直接离开，关闭弹框则留在当前页
+    // 有未保存的修改时确认：保存并离开、直接离开，点叉号关闭则留在当前页
     const confirmLeaveUnsaved = async () => {
       if (!isCodeDirty.value) return true
-      try {
-        await ElMessageBox.confirm('当前代码尚未保存，离开后修改将丢失。', '提示', {
-          confirmButtonText: '保存并离开',
-          cancelButtonText: '直接离开',
-          distinguishCancelAndClose: true,
-          type: 'warning'
-        })
-        return saveCode({ silent: true })
-      } catch (action) {
-        return action === 'cancel'
-      }
+      const choice = await confirmDialog.ask({
+        title: '代码未保存',
+        message: '当前代码尚未保存，离开后修改将丢失。',
+        confirmText: '保存并离开',
+        cancelText: '直接离开',
+        showClose: true
+      })
+      if (choice === 'confirm') return saveCode({ silent: true })
+      return choice === 'cancel'
     }
 
     // 浏览器关闭或刷新时的未保存提示
@@ -296,29 +298,10 @@ export default defineComponent({
       isEditorFullscreen.value = !isEditorFullscreen.value
     }
 
-    // 通用确认弹窗状态
-    const confirmDialog = reactive({
-      visible: false,
-      title: '',
-      content: '',
-      confirmText: '确定',
-      action: null
-    })
-
-    // 打开确认弹窗
-    const openConfirm = ({ title, content, confirmText = '确定', action }) => {
-      confirmDialog.title = title
-      confirmDialog.content = content
-      confirmDialog.confirmText = confirmText
-      confirmDialog.action = action
-      confirmDialog.visible = true
-    }
-
-    // 确认弹窗主操作
-    const handleConfirmDialog = () => {
-      const action = confirmDialog.action
-      confirmDialog.visible = false
-      if (action) action()
+    // 打开确认弹窗，点主操作后执行 action
+    const openConfirm = async ({ title, content, confirmText = '确定', action }) => {
+      const choice = await confirmDialog.ask({ title, message: content, confirmText })
+      if (choice === 'confirm' && action) action()
     }
 
     // 判断示例是否过长需独占整行
@@ -780,7 +763,6 @@ export default defineComponent({
       nextQuestionId,
       userCode,
       confirmDialog,
-      handleConfirmDialog,
       isLongExample,
       editorTheme,
       isEditorFullscreen,

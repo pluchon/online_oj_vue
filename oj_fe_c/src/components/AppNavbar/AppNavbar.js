@@ -1,10 +1,12 @@
 // C 端全局导航栏：导航高亮、用户信息展示与退出登录
 import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import { PUBLIC_PATHS } from '@/constants'
 import defaultAvatar from '@/assets/images/c_user_avatar.png'
+import OjDialog from '@/components/OjDialog'
+import { useConfirmDialog } from '@/utils/confirmDialog'
 
 // 导航项（needLogin 为 true 时仅登录后展示）
 const NAV_LINKS = [
@@ -20,7 +22,13 @@ let profileSynced = false
 
 export default defineComponent({
   name: 'AppNavbar',
+  components: {
+    OjDialog
+  },
   setup() {
+    // 退出登录确认弹窗
+    const confirmDialog = useConfirmDialog()
+
     const route = useRoute()
     const router = useRouter()
     const { isLogin, nickName, headImage, fetchUserInfoAction, logoutAction } = useUserStore()
@@ -60,26 +68,26 @@ export default defineComponent({
     }
 
     // 退出登录：公开页面留在原地，受保护页面回到题库
-    const handleLogout = () => {
-      ElMessageBox.confirm('确定要退出当前账号吗？', '退出登录', {
-        confirmButtonText: '确定退出',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        loggingOut.value = true
-        try {
-          await logoutAction()
-        } catch (err) {
-          // 服务端会话可能已失效，本地登录态已清除
-        } finally {
-          loggingOut.value = false
-        }
-        ElMessage.success('已安全退出')
-        profileSynced = false
-        if (!PUBLIC_PATHS.includes(route.path)) {
-          router.push('/question')
-        }
-      }).catch(() => {})
+    const handleLogout = async () => {
+      const choice = await confirmDialog.ask({
+        title: '退出登录',
+        message: '确定要退出当前账号吗？',
+        confirmText: '确定退出'
+      })
+      if (choice !== 'confirm') return
+      loggingOut.value = true
+      try {
+        await logoutAction()
+      } catch (err) {
+        // 服务端会话可能已失效，本地登录态已清除
+      } finally {
+        loggingOut.value = false
+      }
+      ElMessage.success('已安全退出')
+      profileSynced = false
+      if (!PUBLIC_PATHS.includes(route.path)) {
+        router.push('/question')
+      }
     }
 
     // 登录后首次进入页面时同步用户资料（昵称、头像）
@@ -93,6 +101,7 @@ export default defineComponent({
     })
 
     return {
+      confirmDialog,
       isLogin,
       nickName,
       avatarSrc,

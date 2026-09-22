@@ -214,6 +214,17 @@
         </div>
       </div>
     </oj-dialog>
+
+    <!-- 全部已读确认 -->
+    <oj-dialog
+      v-model="confirmDialog.state.visible"
+      :title="confirmDialog.state.title"
+      :message="confirmDialog.state.message"
+      width="420px"
+      :confirm-text="confirmDialog.state.confirmText"
+      @confirm="confirmDialog.onConfirm"
+      @cancel="confirmDialog.onCancel"
+    />
   </div>
 </template>
 

@@ -453,14 +453,16 @@
 
     <!-- 通用确认弹窗 -->
     <oj-dialog
-      v-model="confirmDialog.visible"
-      :title="confirmDialog.title"
+      v-model="confirmDialog.state.visible"
+      :title="confirmDialog.state.title"
+      :message="confirmDialog.state.message"
       width="420px"
-      :confirm-text="confirmDialog.confirmText"
-      @confirm="handleConfirmDialog"
-    >
-      <p class="confirm-dialog-text">{{ confirmDialog.content }}</p>
-    </oj-dialog>
+      :confirm-text="confirmDialog.state.confirmText"
+      :cancel-text="confirmDialog.state.cancelText"
+      :show-close="confirmDialog.state.showClose"
+      @confirm="confirmDialog.onConfirm"
+      @cancel="confirmDialog.onCancel"
+    />
   </div>
 </template>
 

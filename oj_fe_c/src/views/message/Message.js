@@ -1,6 +1,7 @@
 // 消息中心业务逻辑实现
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { useConfirmDialog } from '@/utils/confirmDialog'
 import {
   Search,
   RefreshRight,
@@ -32,6 +33,9 @@ export default defineComponent({
     Trophy
   },
   setup() {
+    // 全部已读确认弹窗
+    const confirmDialog = useConfirmDialog()
+
     // 消息是否未读
     const isUnread = (item) => item?.isRead === MESSAGE_READ_STATUS.UNREAD
 
@@ -218,15 +222,11 @@ export default defineComponent({
     // 标记全部已读
     const handleReadAll = async () => {
       if (unreadCount.value === 0 || loading.value) return
-      try {
-        await ElMessageBox.confirm('确认将全部未读消息标记为已读吗？', '标为已读', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'info'
-        })
-      } catch {
-        return
-      }
+      const choice = await confirmDialog.ask({
+        title: '全部已读',
+        message: '确认将全部未读消息标记为已读吗？'
+      })
+      if (choice !== 'confirm') return
 
       try {
         await readAllMessagesApi()
@@ -247,6 +247,7 @@ export default defineComponent({
     })
 
     return {
+      confirmDialog,
       isUnread,
       loading,
       messageList,

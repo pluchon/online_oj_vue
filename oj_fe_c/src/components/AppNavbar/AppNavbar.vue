@@ -45,6 +45,17 @@
         </button>
       </div>
     </div>
+
+    <!-- 退出登录确认 -->
+    <oj-dialog
+      v-model="confirmDialog.state.visible"
+      :title="confirmDialog.state.title"
+      :message="confirmDialog.state.message"
+      width="420px"
+      :confirm-text="confirmDialog.state.confirmText"
+      @confirm="confirmDialog.onConfirm"
+      @cancel="confirmDialog.onCancel"
+    />
   </header>
 </template>
 
