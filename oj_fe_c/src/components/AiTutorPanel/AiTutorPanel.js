@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import { Close, Loading } from '@element-plus/icons-vue'
 import { getAiTutorSessionApi, askAiTutorStreamApi } from '@/api/aiTutor'
 import { renderMarkdown } from '@/utils/markdown'
-import { AI_TUTOR_ACTION, JUDGE_STATUS_AC, JUDGE_STATUS_CE } from '@/constants'
+import { AI_TUTOR_ACTION, AI_STREAM_EVENT, JUDGE_STATUS_AC, JUDGE_STATUS_CE } from '@/constants'
 
 // 快捷操作文案（与后端 AiTutorActionEnum 一致）
 const ACTION_LABELS = {
@@ -126,13 +126,13 @@ export default defineComponent({
           onEvent: ({ event, data }) => {
             const payload = JSON.parse(data)
             const target = messages.value[replyIndex]
-            if (event === 'delta') {
+            if (event === AI_STREAM_EVENT.DELTA) {
               target.content += payload.text || ''
               scrollToBottom()
-            } else if (event === 'done') {
+            } else if (event === AI_STREAM_EVENT.DONE) {
               target.messageId = payload.messageId
               session.value.remaining = payload.remaining
-            } else if (event === 'error') {
+            } else if (event === AI_STREAM_EVENT.ERROR) {
               target.failed = payload.msg || 'AI 服务繁忙，请稍后重试'
             }
           }

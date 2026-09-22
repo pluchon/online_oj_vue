@@ -96,6 +96,13 @@ export const AI_TUTOR_ACTION = {
   REVIEW_CODE: 4
 }
 
+// AI 辅导流式事件名（后端 AiInternalPaths.EVENT_*）
+export const AI_STREAM_EVENT = {
+  DELTA: 'delta',
+  DONE: 'done',
+  ERROR: 'error'
+}
+
 // 业务成功码（后端 ResultCode.SUCCESS）
 export const SUCCESS_CODE = 1000
 
