@@ -46,7 +46,7 @@ const router = createRouter({
       ],
     },
     {
-      path: '/home',
+      path: '/:pathMatch(.*)*',
       redirect: '/system',
     },
   ],
@@ -66,7 +66,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       const { userInfo, getUserInfoAction, resetUserInfoAction } = useUserStore()
       // 判断本地全局状态中是否已有用户信息
-      if (userInfo.value && userInfo.value.nickName) {
+      if (userInfo.value) {
         next()
       } else {
         try {

@@ -1,12 +1,6 @@
 // 题目难度通用选择器逻辑
 import { defineComponent, computed } from 'vue'
-
-// 题目难度枚举字典定义
-export const DIFFICULTY_OPTIONS = [
-  { value: 1, label: '简单', tagClass: 'difficulty-easy' },
-  { value: 2, label: '中等', tagClass: 'difficulty-medium' },
-  { value: 3, label: '困难', tagClass: 'difficulty-hard' }
-]
+import { DIFFICULTY_OPTIONS } from '@/constants'
 
 export default defineComponent({
   name: 'QuestionDifficultySelect',

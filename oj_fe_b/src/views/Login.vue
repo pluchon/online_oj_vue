@@ -35,10 +35,9 @@
             />
           </div>
 
-          <!-- 辅助选项 -->
+          <!-- 辅助选项：记住我时令牌保留 7 天 -->
           <div class="form-meta-row">
             <el-checkbox v-model="rememberMe" class="custom-checkbox">记住我</el-checkbox>
-            <span class="forgot-link">忘记密码?</span>
           </div>
 
           <!-- 错误提示文本 -->

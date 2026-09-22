@@ -78,6 +78,7 @@
               <button
                 type="button"
                 class="btn-add-case"
+                :disabled="testCaseList.length >= MAX_CASES"
                 @click="handleAddTestCase"
               >
                 <el-icon class="btn-icon"><Plus /></el-icon>
@@ -97,8 +98,8 @@
                   <span class="case-index-tag">用例 #{{ index + 1 }}</span>
                   <el-switch
                     v-model="item.isSample"
-                    :active-value="1"
-                    :inactive-value="0"
+                    :active-value="CASE_TYPE.SAMPLE"
+                    :inactive-value="CASE_TYPE.HIDDEN"
                     active-text="公开示例"
                     inactive-text="隐藏"
                     class="case-sample-switch"

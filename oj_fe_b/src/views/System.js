@@ -2,13 +2,7 @@
 import { defineComponent, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import {
-  User,
-  ArrowDownBold,
-  SwitchButton,
-  Document,
-  Trophy
-} from '@element-plus/icons-vue'
+import { User, SwitchButton, Document, Trophy } from '@element-plus/icons-vue'
 import { logoutApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
 
@@ -16,7 +10,6 @@ export default defineComponent({
   name: 'System',
   components: {
     User,
-    ArrowDownBold,
     SwitchButton,
     Document,
     Trophy
@@ -46,17 +39,17 @@ export default defineComponent({
       }).then(async () => {
         try {
           await logoutApi()
-          resetUserInfoAction()
           ElMessage.success('已安全退出登录')
-          router.push('/login')
         } catch (err) {
-          // 异常已由拦截器处理
+          // 服务端会话可能已失效，本地凭据照常清除
+        } finally {
+          resetUserInfoAction()
+          router.push('/login')
         }
       }).catch(() => {})
     }
 
     return {
-      SwitchButton,
       nickName,
       activeMenu,
       handleLogout

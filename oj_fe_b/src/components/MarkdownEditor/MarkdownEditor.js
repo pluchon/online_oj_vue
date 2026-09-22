@@ -1,6 +1,7 @@
 // 轻量级分栏 Markdown 编辑器逻辑
 import { defineComponent, computed, ref } from 'vue'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 // 配置 marked 解析选项
 marked.setOptions({
@@ -31,16 +32,12 @@ export default defineComponent({
   setup(props, { emit }) {
     const textareaRef = ref(null)
 
-    // 实时计算 Markdown 转换后的 HTML 内容
+    // 实时计算 Markdown 转换后的 HTML 内容（经 DOMPurify 过滤脚本）
     const htmlContent = computed(() => {
       if (!props.modelValue || !props.modelValue.trim()) {
         return ''
       }
-      try {
-        return marked.parse(props.modelValue)
-      } catch (e) {
-        return props.modelValue
-      }
+      return DOMPurify.sanitize(marked.parse(props.modelValue))
     })
 
     // 输入内容双向绑定派发

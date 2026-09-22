@@ -79,9 +79,7 @@
           align="center"
         >
           <template #default="{ row }">
-            <span v-if="row.sex === 1" class="gender-text gender-male">男</span>
-            <span v-else-if="row.sex === 2" class="gender-text gender-female">女</span>
-            <span v-else class="gender-text gender-secret">保密</span>
+            <span class="gender-text" :class="sexClass(row.sex)">{{ sexLabel(row.sex) }}</span>
           </template>
         </el-table-column>
 
@@ -169,13 +167,13 @@
             <div class="status-indicator">
               <span
                 class="status-dot"
-                :class="row.status === 1 ? 'dot-active' : 'dot-banned'"
+                :class="isNormal(row) ? 'dot-active' : 'dot-banned'"
               >●</span>
               <span
                 class="status-label"
-                :class="row.status === 1 ? 'label-active' : 'label-banned'"
+                :class="isNormal(row) ? 'label-active' : 'label-banned'"
               >
-                {{ row.status === 1 ? '正常' : '拉黑' }}
+                {{ isNormal(row) ? '正常' : '拉黑' }}
               </span>
             </div>
           </template>
@@ -198,7 +196,7 @@
                 编辑
               </button>
               <button
-                v-if="row.status === 1"
+                v-if="isNormal(row)"
                 type="button"
                 class="action-btn btn-action-ban"
                 :disabled="row.statusLoading"
@@ -219,23 +217,24 @@
           </template>
         </el-table-column>
 
-        <!-- 暂无数据空状态：使用小蒙定制插画与针对性文案 -->
+        <!-- 空状态与加载失败共用插画，文案区分 -->
         <template #empty>
-          <OjEmpty text="暂无用户数据" :image-size="130" />
+          <OjEmpty
+            :text="loadError ? '用户列表加载失败' : '暂无用户数据'"
+            :sub-text="loadError ? '请稍后点击搜索重试' : ''"
+            :image-size="130"
+          />
         </template>
       </el-table>
     </div>
 
-    <!-- 底部分页控制栏（固定10条/页，无每页条数选择器） -->
-    <div class="pagination-container">
-      <el-pagination
-        v-model:current-page="queryParams.pageNum"
-        :page-size="10"
-        :total="total"
-        layout="total, prev, pager, next, jumper"
-        @current-change="handlePageChange"
-      />
-    </div>
+    <!-- 底部分页器（固定每页条数） -->
+    <pagination
+      v-model:page="queryParams.pageNum"
+      :limit="queryParams.pageSize"
+      :total="total"
+      @pagination="loadUserList"
+    />
 
     <!-- 编辑用户弹窗组件 -->
     <UserEditDialog

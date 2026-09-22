@@ -1,6 +1,6 @@
 // 题目难度徽章展示组件
 import { defineComponent, computed } from 'vue'
-import { DIFFICULTY_OPTIONS } from '@/components/QuestionDifficultySelect'
+import { DIFFICULTY_OPTIONS } from '@/constants'
 
 export default defineComponent({
   name: 'DifficultyTag',
@@ -17,26 +17,14 @@ export default defineComponent({
     }
   },
   setup(props) {
-    // 难度样式类名映射
-    const difficultyClass = computed(() => {
-      const val = Number(props.difficulty)
-      const map = {
-        1: 'difficulty-easy',
-        2: 'difficulty-medium',
-        3: 'difficulty-hard'
-      }
-      return map[val] || ''
-    })
+    // 当前难度对应的字典项
+    const option = computed(() => DIFFICULTY_OPTIONS.find((opt) => opt.value === Number(props.difficulty)))
 
-    // 难度展示文本
-    const displayText = computed(() => {
-      if (props.desc) {
-        return props.desc
-      }
-      const val = Number(props.difficulty)
-      const item = DIFFICULTY_OPTIONS.find((opt) => opt.value === val)
-      return item ? item.label : '未知'
-    })
+    // 难度样式类名
+    const difficultyClass = computed(() => option.value?.tagClass || '')
+
+    // 难度展示文本（优先使用后端返回的描述）
+    const displayText = computed(() => props.desc || option.value?.label || '未知')
 
     return {
       difficultyClass,

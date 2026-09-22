@@ -143,10 +143,15 @@
           font-size: 12px;
         }
 
-        &:hover {
+        &:hover:not(:disabled) {
           background-color: #171c16;
           border-color: #171c16;
           transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
         }
       }
     }

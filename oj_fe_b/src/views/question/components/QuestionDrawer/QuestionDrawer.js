@@ -3,6 +3,7 @@ import { defineComponent, ref, reactive, computed, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete } from '@element-plus/icons-vue'
 import { addQuestionApi, editQuestionApi, getQuestionDetailApi } from '@/api/question'
+import { CASE_TYPE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import CodeEditor from '@/components/CodeEditor'
@@ -23,8 +24,11 @@ const DEFAULT_MAIN_FUNC = [
   '}'
 ].join('\n')
 
-// 生成一组空用例（isSample：1 公开示例，0 隐藏用例）
-const createCase = (isSample = 1) => ({
+// 单题最多用例组数（与后端 QuestionAddDTO 校验一致）
+const MAX_CASES = 50
+
+// 生成一组空用例
+const createCase = (isSample = CASE_TYPE.SAMPLE) => ({
   displayInput: '',
   displayOutput: '',
   judgeInput: '',
@@ -71,7 +75,7 @@ export default defineComponent({
     })
 
     // 测试用例列表
-    const testCaseList = ref([createCase(1)])
+    const testCaseList = ref([createCase()])
 
     // 表单默认初始值
     const getInitialFormData = () => ({
@@ -96,14 +100,14 @@ export default defineComponent({
     // 将详情接口返回的用例转为编辑列表
     const toEditableCases = (cases) => {
       if (!Array.isArray(cases) || cases.length === 0) {
-        return [createCase(1)]
+        return [createCase()]
       }
       return cases.map(item => ({
         displayInput: item.displayInput || '',
         displayOutput: item.displayOutput || '',
         judgeInput: item.judgeInput || '',
         judgeOutput: item.judgeOutput || '',
-        isSample: item.isSample === 1 ? 1 : 0
+        isSample: item.isSample === CASE_TYPE.SAMPLE ? CASE_TYPE.SAMPLE : CASE_TYPE.HIDDEN
       }))
     }
 
@@ -118,7 +122,11 @@ export default defineComponent({
 
     // 添加一组空测试用例（首组之后默认为隐藏用例）
     const handleAddTestCase = () => {
-      testCaseList.value.push(createCase(0))
+      if (testCaseList.value.length >= MAX_CASES) {
+        ElMessage.warning(`每道题最多配置 ${MAX_CASES} 组用例`)
+        return
+      }
+      testCaseList.value.push(createCase(CASE_TYPE.HIDDEN))
     }
 
     // 删除指定测试用例
@@ -145,12 +153,15 @@ export default defineComponent({
       ],
       content: [
         { required: true, message: '题目描述不能为空', trigger: 'blur' },
+        { max: 1000, message: '题目描述长度不能超过1000个字符', trigger: 'blur' },
       ],
       defaultCode: [
         { required: true, message: '默认代码模板不能为空', trigger: 'blur' },
+        { max: 500, message: '默认代码模板长度不能超过500个字符', trigger: 'blur' },
       ],
       mainFunc: [
         { required: true, message: 'Main函数不能为空', trigger: 'blur' },
+        { max: 5000, message: 'Main函数长度不能超过5000个字符', trigger: 'blur' },
       ],
     }
 
@@ -181,21 +192,21 @@ export default defineComponent({
       return getFormDataSnapshot() !== originSnapshot
     }
 
-    // 根据题目ID获取详情并回显
+    // 根据题目ID获取详情并回显（加载失败时关闭抽屉，避免在空表单上误保存）
     const fetchDetail = async (questionId) => {
       detailLoading.value = true
       try {
-        const res = await getQuestionDetailApi(questionId)
-        const detailData = res?.data || res
-        if (detailData && (detailData.questionId || res?.code === 1000)) {
-          Object.assign(formData, detailData)
-          testCaseList.value = toEditableCases(detailData.cases)
-          recordSnapshot()
-        } else {
-          ElMessage.error(res?.msg || '获取题目详情失败')
-        }
+        const detail = await getQuestionDetailApi(questionId)
+        Object.keys(getInitialFormData()).forEach((key) => {
+          if (detail[key] !== undefined && detail[key] !== null) {
+            formData[key] = detail[key]
+          }
+        })
+        testCaseList.value = toEditableCases(detail.cases)
+        recordSnapshot()
       } catch (err) {
-        // 异常统一由全局拦截器提示
+        // 错误提示已由请求拦截器统一给出
+        visible.value = false
       } finally {
         detailLoading.value = false
       }
@@ -207,21 +218,14 @@ export default defineComponent({
       mode.value = type
       activeCodeTab.value = 'defaultCode'
 
-      if (type === 'add') {
-        Object.assign(formData, getInitialFormData())
-        testCaseList.value = [createCase(1)]
-        recordSnapshot()
-        nextTick(() => {
-          formRef.value?.clearValidate()
-        })
-      } else if (type === 'edit' && questionId) {
-        Object.assign(formData, getInitialFormData())
-        testCaseList.value = [createCase(1)]
-        recordSnapshot()
+      Object.assign(formData, getInitialFormData())
+      testCaseList.value = [createCase()]
+      recordSnapshot()
+      nextTick(() => {
+        formRef.value?.clearValidate()
+      })
+      if (type === 'edit' && questionId) {
         fetchDetail(questionId)
-        nextTick(() => {
-          formRef.value?.clearValidate()
-        })
       }
     }
 
@@ -235,7 +239,7 @@ export default defineComponent({
         ElMessage.warning(`用例 #${incompleteIndex + 1} 的展示与判题输入输出需全部填写`)
         return
       }
-      if (!testCaseList.value.some(item => item.isSample === 1)) {
+      if (!testCaseList.value.some(item => item.isSample === CASE_TYPE.SAMPLE)) {
         ElMessage.warning('请至少设置一组公开示例')
         return
       }
@@ -278,7 +282,7 @@ export default defineComponent({
             emit('success', 'edit')
           }
         } catch (err) {
-          // 异常拦截已处理
+          // 错误提示已由请求拦截器统一给出
         } finally {
           submitting.value = false
         }
@@ -321,6 +325,8 @@ export default defineComponent({
       formData,
       formRules,
       testCaseList,
+      MAX_CASES,
+      CASE_TYPE,
       handleAddTestCase,
       handleRemoveTestCase,
       open,

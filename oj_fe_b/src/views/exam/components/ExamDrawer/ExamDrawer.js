@@ -70,8 +70,16 @@ export default defineComponent({
       new Date(2000, 0, 1, 23, 59, 59)
     ]
 
-    // 关联绑定的题目列表
+    // 关联题目列表（含已保存与本次新选、尚未保存的题目）
     const boundQuestionList = ref([])
+
+    // 已保存到服务端的题目ID
+    const persistedIds = ref(new Set())
+
+    // 本次新选、尚未保存的题目ID
+    const pendingIds = computed(() => boundQuestionList.value
+      .map((item) => item.questionId)
+      .filter((id) => !persistedIds.value.has(id)))
 
     // 抽屉标题动态计算
     const drawerTitle = computed(() => {
@@ -113,16 +121,13 @@ export default defineComponent({
       formRef.value?.validateField('dateRange')
     }
 
-    // 加载已绑定的题目列表
+    // 加载已保存的关联题目
     const loadBoundQuestions = async (examId) => {
-      if (!examId) return
       questionLoading.value = true
       try {
-        const res = await getExamQuestionListApi(examId)
-        const list = Array.isArray(res) ? res : (res?.data || [])
-        boundQuestionList.value = list
-      } catch (err) {
-        ElMessage.error(err?.message || '获取关联题目列表失败')
+        const list = await getExamQuestionListApi(examId)
+        boundQuestionList.value = Array.isArray(list) ? list : []
+        persistedIds.value = new Set(boundQuestionList.value.map((item) => item.questionId))
       } finally {
         questionLoading.value = false
       }
@@ -139,6 +144,7 @@ export default defineComponent({
       formData.startTime = ''
       formData.endTime = ''
       boundQuestionList.value = []
+      persistedIds.value = new Set()
       initialBasicData.value = null
 
       nextTick(() => {
@@ -148,25 +154,22 @@ export default defineComponent({
       if (drawerMode === 'edit' && examId) {
         detailLoading.value = true
         try {
-          const detailRes = await getExamDetailApi(examId)
-          const data = detailRes?.data || detailRes
-          if (data && data.examId) {
-            formData.examId = data.examId
-            formData.title = data.title || ''
-            formData.startTime = data.startTime || ''
-            formData.endTime = data.endTime || ''
-            if (data.startTime && data.endTime) {
-              formData.dateRange = [data.startTime, data.endTime]
-            }
-            initialBasicData.value = {
-              title: (data.title || '').trim(),
-              startTime: data.startTime || '',
-              endTime: data.endTime || ''
-            }
+          const data = await getExamDetailApi(examId)
+          formData.title = data.title || ''
+          formData.startTime = data.startTime || ''
+          formData.endTime = data.endTime || ''
+          if (data.startTime && data.endTime) {
+            formData.dateRange = [data.startTime, data.endTime]
+          }
+          initialBasicData.value = {
+            title: (data.title || '').trim(),
+            startTime: data.startTime || '',
+            endTime: data.endTime || ''
           }
           await loadBoundQuestions(examId)
         } catch (err) {
-          ElMessage.error(err?.message || '获取竞赛详情失败')
+          // 错误提示已由请求拦截器统一给出；加载失败时关闭抽屉，避免在空表单上误保存
+          visible.value = false
         } finally {
           detailLoading.value = false
         }
@@ -182,25 +185,22 @@ export default defineComponent({
         return
       }
 
-      if (!formData.dateRange || formData.dateRange.length < 2) {
-        ElMessage.warning('请选择竞赛周期时间范围')
-        return
-      }
-
       saving.value = true
       try {
         if (!formData.examId) {
-          const res = await addExamApi({
-            title: formData.title.trim(),
+          const title = formData.title.trim()
+          formData.examId = await addExamApi({
+            title,
             startTime: formData.startTime,
             endTime: formData.endTime
           })
-          const newExamId = typeof res === 'string' || typeof res === 'number' ? res : (res?.data || res)
-          if (newExamId) {
-            formData.examId = newExamId
-            isNewlyCreated.value = true
-            ElMessage.success('竞赛基本信息保存成功，请在下方点击添加题目')
+          isNewlyCreated.value = true
+          initialBasicData.value = {
+            title,
+            startTime: formData.startTime,
+            endTime: formData.endTime
           }
+          ElMessage.success('竞赛基本信息保存成功，请在下方点击添加题目')
         } else {
           const currentTitle = formData.title.trim()
           if (
@@ -227,7 +227,7 @@ export default defineComponent({
           emit('success', 'edit')
         }
       } catch (err) {
-        ElMessage.error(err?.message || '保存竞赛基本信息失败')
+        // 错误提示已由请求拦截器统一给出
       } finally {
         saving.value = false
       }
@@ -240,7 +240,7 @@ export default defineComponent({
         return
       }
       const boundIds = boundQuestionList.value.map((item) => item.questionId)
-      questionDialogRef.value?.open(formData.examId, boundIds)
+      questionDialogRef.value?.open(boundIds)
     }
 
     // 题目弹窗选择确认后追加到当前列表
@@ -252,58 +252,81 @@ export default defineComponent({
       ElMessage.success(`已添加 ${added.length} 道题目，请点击“保存题目”完成保存`)
     }
 
-    // 点击“保存题目”按钮持久化关联题目
+    // 点击“保存题目”：只提交本次新选的题目
     const handleSaveQuestions = async () => {
       if (!formData.examId) {
         ElMessage.warning('请先保存竞赛基本信息')
         return
       }
-      if (boundQuestionList.value.length === 0) {
-        ElMessage.warning('当前暂无关联题目，请先添加题目')
+      if (pendingIds.value.length === 0) {
+        ElMessage.info('没有待保存的新题目')
         return
       }
       savingQuestions.value = true
       try {
-        const questionIds = boundQuestionList.value.map((item) => item.questionId)
         await addExamQuestionApi({
           examId: formData.examId,
-          questionIds
+          questionIds: pendingIds.value
         })
         ElMessage.success('竞赛关联题目保存成功')
         await loadBoundQuestions(formData.examId)
         emit('success', mode.value)
       } catch (err) {
-        ElMessage.error(err?.message || '保存题目失败')
+        // 错误提示已由请求拦截器统一给出
       } finally {
         savingQuestions.value = false
       }
     }
 
-    // 移出题目
+    // 移出题目：未保存的仅从列表移除，已保存的需服务端删除成功后再移除
     const handleRemoveQuestion = (row, index) => {
-      ElMessageBox.confirm(`确定要从当前列表中移出题目【${row.title}】吗？`, '提示', {
+      if (!persistedIds.value.has(row.questionId)) {
+        boundQuestionList.value.splice(index, 1)
+        return
+      }
+      ElMessageBox.confirm(`确定要从竞赛中移出题目【${row.title}】吗？`, '提示', {
         confirmButtonText: '确定移出',
         cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        boundQuestionList.value.splice(index, 1)
-        if (formData.examId && row.questionId) {
+        type: 'warning',
+        beforeClose: async (action, instance, done) => {
+          if (action !== 'confirm') {
+            done()
+            return
+          }
+          instance.confirmButtonLoading = true
           try {
             await deleteExamQuestionApi(formData.examId, row.questionId)
-          } catch (e) {
-            // 后端若尚未持久化则静默跳过
+            boundQuestionList.value = boundQuestionList.value.filter((item) => item.questionId !== row.questionId)
+            persistedIds.value.delete(row.questionId)
+            ElMessage.success('已移出该题目')
+            emit('success', mode.value)
+          } catch (err) {
+            // 错误提示已由请求拦截器统一给出
+          } finally {
+            instance.confirmButtonLoading = false
+            done()
           }
         }
-        ElMessage.success('已移出该题目')
       }).catch(() => {})
     }
 
-    // 关闭抽屉前的清理与状态同步
+    // 关闭抽屉：有未保存的新题目时二次确认，新建过竞赛则通知列表刷新
     const handleBeforeClose = (done) => {
-      if (isNewlyCreated.value) {
-        emit('success', 'add')
+      const close = () => {
+        if (isNewlyCreated.value) {
+          emit('success', 'add')
+        }
+        done()
       }
-      done()
+      if (pendingIds.value.length === 0) {
+        close()
+        return
+      }
+      ElMessageBox.confirm(`还有 ${pendingIds.value.length} 道新选题目未保存，确认关闭吗？`, '提示', {
+        confirmButtonText: '确定关闭',
+        cancelButtonText: '继续编辑',
+        type: 'warning'
+      }).then(close).catch(() => {})
     }
 
     return {
@@ -319,6 +342,7 @@ export default defineComponent({
       formData,
       defaultTime,
       boundQuestionList,
+      pendingIds,
       formRules,
       handleDateChange,
       open,

@@ -2,7 +2,7 @@
 import { defineComponent, ref, reactive, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getQuestionListApi } from '@/api/question'
-import { addExamQuestionApi } from '@/api/exam'
+import { PAGE_SIZE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import DifficultyTag from '@/components/DifficultyTag'
 import OjDialog from '@/components/OjDialog'
@@ -20,19 +20,13 @@ export default defineComponent({
     Refresh,
     Check
   },
-  emits: ['success', 'selected'],
+  emits: ['selected'],
   setup(props, { emit }) {
     // 弹窗可见性
     const visible = ref(false)
 
-    // 提交加载中状态
-    const submitting = ref(false)
-
     // 表格数据加载状态
     const loading = ref(false)
-
-    // 当前操作的竞赛ID
-    const currentExamId = ref(null)
 
     // 表格DOM引用
     const tableRef = ref(null)
@@ -49,7 +43,7 @@ export default defineComponent({
     // 查询过滤参数
     const queryParams = reactive({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: PAGE_SIZE,
       difficulty: null,
       title: ''
     })
@@ -59,12 +53,12 @@ export default defineComponent({
       loading.value = true
       try {
         const res = await getQuestionListApi(queryParams)
-        if (res) {
-          total.value = res.total || 0
-          questionList.value = res.rows || []
-        }
+        total.value = res.total
+        questionList.value = res.rows
       } catch (err) {
-        ElMessage.error(err?.message || '获取题目列表失败')
+        // 错误提示已由请求拦截器统一给出
+        questionList.value = []
+        total.value = 0
       } finally {
         loading.value = false
       }
@@ -74,12 +68,10 @@ export default defineComponent({
     const boundQuestionIds = ref([])
 
     // 打开选择题目弹窗
-    const open = (examId, existingIds = []) => {
-      currentExamId.value = examId
-      boundQuestionIds.value = existingIds || []
+    const open = (existingIds = []) => {
+      boundQuestionIds.value = existingIds
       visible.value = true
       queryParams.pageNum = 1
-      queryParams.pageSize = 10
       queryParams.difficulty = null
       queryParams.title = ''
       selectedRows.value = []
@@ -113,13 +105,6 @@ export default defineComponent({
       loadQuestionList()
     }
 
-    // 切换每页条数
-    const handleSizeChange = (val) => {
-      queryParams.pageSize = val
-      queryParams.pageNum = 1
-      loadQuestionList()
-    }
-
     // 切换当前页
     const handleCurrentChange = (val) => {
       queryParams.pageNum = val
@@ -138,13 +123,11 @@ export default defineComponent({
         return
       }
       emit('selected', selectedRows.value)
-      emit('success', selectedRows.value)
       visible.value = false
     }
 
     return {
       visible,
-      submitting,
       loading,
       tableRef,
       questionList,
@@ -156,7 +139,6 @@ export default defineComponent({
       isBound,
       handleSearch,
       handleReset,
-      handleSizeChange,
       handleCurrentChange,
       handleSelectionChange,
       handleSubmit

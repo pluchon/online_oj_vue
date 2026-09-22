@@ -1,10 +1,11 @@
 // 编辑用户弹窗逻辑
-import { ref, reactive } from 'vue'
+import { defineComponent, ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { updateUserInfoApi } from '@/api/user'
+import { USER_SEX_OPTIONS } from '@/constants'
 import OjDialog from '@/components/OjDialog'
 
-export default {
+export default defineComponent({
   name: 'UserEditDialog',
   components: {
     OjDialog,
@@ -102,7 +103,7 @@ export default {
           visible.value = false
           emit('success')
         } catch (err) {
-          // 异常统一由全局拦截器提示
+          // 错误提示已由请求拦截器统一给出
         } finally {
           submitting.value = false
         }
@@ -115,10 +116,11 @@ export default {
       formRef,
       formData,
       formRules,
+      sexOptions: USER_SEX_OPTIONS,
       promptVisible,
       promptMessage,
       open,
       handleSubmit,
     }
   },
-}
+})

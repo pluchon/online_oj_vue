@@ -3,6 +3,7 @@ import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { getQuestionListApi, deleteQuestionApi } from '@/api/question'
+import { PAGE_SIZE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import DifficultyTag from '@/components/DifficultyTag'
 import Pagination from '@/components/Pagination'
@@ -25,6 +26,9 @@ export default defineComponent({
     // 列表加载状态
     const loading = ref(false)
 
+    // 最近一次加载是否失败（用于区分空数据与加载失败）
+    const loadError = ref(false)
+
     // 题目列表数据
     const questionList = ref([])
 
@@ -34,38 +38,30 @@ export default defineComponent({
     // 查询与分页过滤参数
     const queryParams = reactive({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: PAGE_SIZE,
       difficulty: null,
       title: ''
     })
 
-    // 加载题目列表（支持分页器对象同步与超页自适应兜底）
-    const loadQuestionList = async (pagination) => {
-      if (pagination) {
-        if (typeof pagination.page === 'number') {
-          queryParams.pageNum = pagination.page
-        }
-        if (typeof pagination.limit === 'number') {
-          queryParams.pageSize = pagination.limit
-        }
-      }
+    // 加载题目列表（页码超出总页数时回退到最后一页重新拉取）
+    const loadQuestionList = async () => {
       loading.value = true
+      loadError.value = false
       try {
         const res = await getQuestionListApi(queryParams)
-        if (res) {
-          total.value = res.total || 0
-          // 计算当前总数下的最大合法页码
-          const maxPage = Math.ceil(total.value / queryParams.pageSize) || 1
-          // 若当前页码超出了最大有效页数，自动重置为最大有效页并重新拉取，避免展示空页
-          if (queryParams.pageNum > maxPage) {
-            queryParams.pageNum = maxPage
-            await loadQuestionList()
-            return
-          }
-          questionList.value = res.rows || []
+        total.value = res.total
+        const maxPage = Math.ceil(total.value / queryParams.pageSize) || 1
+        if (queryParams.pageNum > maxPage) {
+          queryParams.pageNum = maxPage
+          await loadQuestionList()
+          return
         }
+        questionList.value = res.rows
       } catch (err) {
-        ElMessage.error(err?.message || '获取题目列表失败')
+        // 错误提示已由请求拦截器统一给出
+        loadError.value = true
+        questionList.value = []
+        total.value = 0
       } finally {
         loading.value = false
       }
@@ -112,7 +108,7 @@ export default defineComponent({
 
     // 删除题目（具备二次确认危险操作防护、提交期间禁用按钮、防空页自适应调整）
     const handleDeleteQuestion = (row) => {
-      ElMessageBox.confirm(`确定要彻底删除题目【${row.title}】吗？删除后不可恢复。`, '删除确认', {
+      ElMessageBox.confirm(`确定要删除题目【${row.title}】吗？删除后用户端将不再展示该题目。`, '删除确认', {
         confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
@@ -131,7 +127,7 @@ export default defineComponent({
               await loadQuestionList()
               done()
             } catch (err) {
-              ElMessage.error(err?.message || '删除题目失败')
+              // 错误提示已由请求拦截器统一给出
             } finally {
               instance.confirmButtonLoading = false
               instance.confirmButtonText = '确定删除'
@@ -148,10 +144,8 @@ export default defineComponent({
     })
 
     return {
-      Search,
-      Refresh,
-      Plus,
       loading,
+      loadError,
       questionList,
       total,
       queryParams,

@@ -85,11 +85,12 @@
             <button
               type="button"
               class="btn-save-questions"
-              :disabled="!formData.examId || savingQuestions"
+              :disabled="!formData.examId || savingQuestions || pendingIds.length === 0"
               @click="handleSaveQuestions"
             >
               <el-icon class="btn-icon"><Check /></el-icon>
               <span>{{ savingQuestions ? '保存中...' : '保存题目' }}</span>
+              <span v-if="pendingIds.length && !savingQuestions">（{{ pendingIds.length }}）</span>
             </button>
           </div>
         </div>

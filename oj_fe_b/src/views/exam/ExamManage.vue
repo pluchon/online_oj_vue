@@ -118,10 +118,10 @@
             <div class="status-indicator">
               <span
                 class="status-dot"
-                :class="row.status === 1 ? 'dot-active' : 'dot-waiting'"
+                :class="isPublished(row) ? 'dot-active' : 'dot-waiting'"
               >●</span>
               <span class="status-label">
-                {{ row.status === 1 ? '已发布' : '未发布' }}
+                {{ isPublished(row) ? '已发布' : '未发布' }}
               </span>
             </div>
           </template>
@@ -178,10 +178,10 @@
               <button
                 type="button"
                 class="action-btn"
-                :class="row.status === 1 ? 'btn-action-unpublish' : 'btn-action-publish'"
+                :class="isPublished(row) ? 'btn-action-unpublish' : 'btn-action-publish'"
                 @click="handleTogglePublish(row)"
               >
-                {{ row.status === 1 ? '撤销发布' : '发布' }}
+                {{ isPublished(row) ? '撤销发布' : '发布' }}
               </button>
             </div>
           </template>
@@ -189,7 +189,11 @@
 
         <!-- 空状态展示：使用小蒙定制插画与针对性文案 -->
         <template #empty>
-          <OjEmpty text="暂无竞赛数据" :image-size="130" />
+          <OjEmpty
+            :text="loadError ? '竞赛列表加载失败' : '暂无竞赛数据'"
+            :sub-text="loadError ? '请稍后点击搜索重试' : ''"
+            :image-size="130"
+          />
         </template>
       </el-table>
     </div>
@@ -197,7 +201,7 @@
     <!-- 底部通用分页器组件（左下角布局“添加竞赛”操作按钮） -->
     <pagination
       v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
+      :limit="queryParams.pageSize"
       :total="total"
       @pagination="loadExamList"
     >

@@ -4,14 +4,12 @@
       <slot name="left" />
     </div>
     <el-pagination
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      :page-sizes="pageSizes"
+      :current-page="page"
+      :page-size="limit"
       :total="total"
       :layout="layout"
       :background="background"
       class="custom-pagination"
-      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
   </div>

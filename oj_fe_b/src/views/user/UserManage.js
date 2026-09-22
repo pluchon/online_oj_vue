@@ -1,22 +1,34 @@
 // 用户管理业务逻辑（墨衡后台管理）
-import { ref, reactive, onMounted } from 'vue'
+import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import { getUserListApi, updateUserStatusApi } from '@/api/user'
-import UserEditDialog from './components/UserEditDialog/UserEditDialog.vue'
+import { USER_STATUS, USER_SEX_OPTIONS, PAGE_SIZE } from '@/constants'
+import Pagination from '@/components/Pagination'
 import OjEmpty from '@/components/OjEmpty'
+import UserEditDialog from './components/UserEditDialog/UserEditDialog.vue'
 
-export default {
+// 性别对应的展示样式
+const SEX_CLASS = {
+  1: 'gender-male',
+  2: 'gender-female'
+}
+
+export default defineComponent({
   name: 'UserManage',
   components: {
     Search,
     Refresh,
+    Pagination,
     UserEditDialog,
     OjEmpty,
   },
   setup() {
     // 表格加载状态
     const loading = ref(false)
+
+    // 最近一次加载是否失败（用于区分空数据与加载失败）
+    const loadError = ref(false)
 
     // 用户数据列表
     const userList = ref([])
@@ -32,12 +44,13 @@ export default {
       userId: '',
       nickName: '',
       pageNum: 1,
-      pageSize: 10,
+      pageSize: PAGE_SIZE,
     })
 
     // 加载用户分页列表
     const loadUserList = async () => {
       loading.value = true
+      loadError.value = false
       try {
         const params = {
           pageNum: queryParams.pageNum,
@@ -51,13 +64,14 @@ export default {
         }
 
         const res = await getUserListApi(params)
-        const data = res?.data || res
-        userList.value = (data?.rows || []).map((item) => ({
+        userList.value = res.rows.map((item) => ({
           ...item,
           statusLoading: false,
         }))
-        total.value = Number(data?.total) || 0
+        total.value = res.total
       } catch (err) {
+        // 错误提示已由请求拦截器统一给出
+        loadError.value = true
         userList.value = []
         total.value = 0
       } finally {
@@ -83,11 +97,14 @@ export default {
       loadUserList()
     }
 
-    // 分页页码切换
-    const handlePageChange = (page) => {
-      queryParams.pageNum = page
-      loadUserList()
-    }
+    // 用户是否处于正常状态
+    const isNormal = (row) => row.status === USER_STATUS.NORMAL
+
+    // 性别展示文案
+    const sexLabel = (sex) => USER_SEX_OPTIONS.find((item) => item.value === sex)?.label || '保密'
+
+    // 性别展示样式
+    const sexClass = (sex) => SEX_CLASS[sex] || 'gender-secret'
 
     // 点击编辑用户，唤起弹窗
     const handleEdit = (row) => {
@@ -96,8 +113,8 @@ export default {
 
     // 切换用户状态（拉黑 / 解禁）
     const handleToggleStatus = (row) => {
-      const isBlacklist = row.status === 1
-      const targetStatus = isBlacklist ? 0 : 1
+      const isBlacklist = isNormal(row)
+      const targetStatus = isBlacklist ? USER_STATUS.BANNED : USER_STATUS.NORMAL
       const actionText = isBlacklist ? '拉黑' : '解禁'
       const confirmMessage = isBlacklist
         ? `确定要拉黑用户 "${row.nickName || row.userId}" 吗？拉黑后该用户将无法正常使用平台。`
@@ -117,7 +134,7 @@ export default {
           ElMessage.success(`用户已成功${actionText}`)
           loadUserList()
         } catch (error) {
-          // 异常由全局拦截器捕获提示
+          // 错误提示已由请求拦截器统一给出
         } finally {
           row.statusLoading = false
         }
@@ -130,9 +147,8 @@ export default {
     })
 
     return {
-      Search,
-      Refresh,
       loading,
+      loadError,
       userList,
       total,
       queryParams,
@@ -140,9 +156,11 @@ export default {
       loadUserList,
       handleSearch,
       handleReset,
-      handlePageChange,
       handleEdit,
       handleToggleStatus,
+      isNormal,
+      sexLabel,
+      sexClass,
     }
   },
-}
+})

@@ -38,7 +38,7 @@ export default defineComponent({
       password: ''
     })
 
-    // 记住我勾选项
+    // 记住我勾选项（勾选后令牌 Cookie 持久化）
     const rememberMe = ref(false)
 
     // 提交过程中的加载状态（防重复点击）
@@ -63,9 +63,7 @@ export default defineComponent({
       { id: 'card-12', height: 250, img: bg12 }
     ])
 
-    /**
-     * 处理管理员登录提交
-     */
+    // 处理管理员登录提交
     const handleLogin = async () => {
       // 提交期间禁止重复触发
       if (loading.value) {
@@ -92,15 +90,11 @@ export default defineComponent({
       loading.value = true
 
       try {
-        // 调用 B 端管理员登录接口：POST /system/sysUser/login
         const token = await loginApi({
           userAccount: account,
           password: pwd
         })
-
-        if (token) {
-          setToken(token)
-        }
+        setToken(token, rememberMe.value)
 
         ElMessage.success('登录成功，欢迎回来！')
 
@@ -110,7 +104,7 @@ export default defineComponent({
           : '/system'
         router.push(redirect)
       } catch (err) {
-        errorMsg.value = err?.message || '登录验证失败，请检查账号密码'
+        errorMsg.value = err?.message || '登录失败，请稍后重试'
       } finally {
         loading.value = false
       }

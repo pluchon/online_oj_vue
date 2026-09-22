@@ -133,7 +133,11 @@
 
         <!-- 空状态展示：使用小蒙定制插画与针对性文案 -->
         <template #empty>
-          <OjEmpty text="暂无题目数据" :image-size="130" />
+          <OjEmpty
+            :text="loadError ? '题目列表加载失败' : '暂无题目数据'"
+            :sub-text="loadError ? '请稍后点击搜索重试' : ''"
+            :image-size="130"
+          />
         </template>
       </el-table>
     </div>
@@ -141,7 +145,7 @@
     <!-- 底部通用分页器组件（左下角布局“添加题目”操作按钮） -->
     <pagination
       v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
+      :limit="queryParams.pageSize"
       :total="total"
       @pagination="loadQuestionList"
     >

@@ -1,5 +1,6 @@
 // 通用表格底部分页器业务逻辑
 import { defineComponent, computed } from 'vue'
+import { PAGE_SIZE } from '@/constants'
 
 export default defineComponent({
   name: 'Pagination',
@@ -7,18 +8,17 @@ export default defineComponent({
     // 总条数
     total: {
       type: Number,
-      required: true,
-      default: 0
+      required: true
     },
     // 当前页码 (v-model:page)
     page: {
       type: Number,
       default: 1
     },
-    // 每页条数 (v-model:limit) 固定10条
+    // 每页条数（固定，不提供切换）
     limit: {
       type: Number,
-      default: 10
+      default: PAGE_SIZE
     },
     // 布局组件（移除 sizes，固定 10 条/页）
     layout: {
@@ -36,38 +36,20 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['update:page', 'update:limit', 'pagination'],
+  emits: ['update:page', 'pagination'],
   setup(props, { emit }) {
-    const currentPage = computed({
-      get() {
-        return props.page
-      },
-      set(val) {
-        emit('update:page', val)
-      }
-    })
-
-    const pageSize = computed({
-      get() {
-        return props.limit
-      },
-      set(val) {
-        emit('update:limit', val)
-      }
-    })
-
+    // 无数据或显式隐藏时不展示分页器
     const isHidden = computed(() => {
       return props.hidden || props.total <= 0
     })
 
+    // 翻页：同步页码并通知父组件重新加载
     const handleCurrentChange = (val) => {
       emit('update:page', val)
       emit('pagination', { page: val, limit: props.limit })
     }
 
     return {
-      currentPage,
-      pageSize,
       isHidden,
       handleCurrentChange
     }

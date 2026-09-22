@@ -27,9 +27,13 @@
 
         <el-form-item label="用户性别">
           <el-radio-group v-model="formData.sex" class="dialog-radio-group">
-            <el-radio :value="1">男</el-radio>
-            <el-radio :value="2">女</el-radio>
-            <el-radio :value="0">保密</el-radio>
+            <el-radio
+              v-for="item in sexOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
 
