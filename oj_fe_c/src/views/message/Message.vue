@@ -140,7 +140,7 @@
           <!-- 缺省空态（水平垂直居中展示小蒙插画与文字说明） -->
           <div v-else-if="!loading" class="empty-card">
             <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂无消息" class="empty-img" />
-            <span class="empty-text">暂无相关消息通知</span>
+            <span class="empty-text">{{ isFiltered ? '没有符合条件的消息' : '暂无相关消息通知' }}</span>
           </div>
 
           <!-- 底部分页与全量状态统计徽章（带 | 分割线） -->
@@ -159,7 +159,7 @@
                 <strong class="badge-num">{{ unreadCount }}</strong>
                 <span class="badge-unit">条</span>
               </div>
-              <div class="stat-badge read-badge">
+              <div v-if="!isFiltered" class="stat-badge read-badge">
                 <span class="badge-dot"></span>
                 <span class="badge-label">已读</span>
                 <strong class="badge-num">{{ readCount }}</strong>
@@ -168,7 +168,7 @@
             </div>
 
             <el-pagination
-              v-model:current-page="pageQuery.pageNum"
+              :current-page="pageQuery.pageNum"
               :page-size="pageQuery.pageSize"
               :total="total"
               layout="prev, pager, next"

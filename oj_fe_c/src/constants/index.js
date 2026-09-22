@@ -61,6 +61,12 @@ export const MESSAGE_READ_STATUS = {
   READ: 1
 }
 
+// 消息类型（后端 MessageTypeEnum）
+export const MESSAGE_TYPE = {
+  SYSTEM: 1,
+  EXAM: 2
+}
+
 // 用户性别（后端 UserSexEnum）
 export const USER_SEX = {
   SECRET: 0,

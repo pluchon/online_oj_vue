@@ -7,13 +7,11 @@ import {
   Check,
   Clock,
   Bell,
-  Trophy,
-  Cpu,
-  ChatDotRound
+  Trophy
 } from '@element-plus/icons-vue'
 import AppNavbar from '@/components/AppNavbar'
 import OjDialog from '@/components/OjDialog'
-import { MESSAGE_READ_STATUS } from '@/constants'
+import { MESSAGE_READ_STATUS, MESSAGE_TYPE } from '@/constants'
 import {
   getMessageListApi,
   getUnreadCountApi,
@@ -31,9 +29,7 @@ export default defineComponent({
     Check,
     Clock,
     Bell,
-    Trophy,
-    Cpu,
-    ChatDotRound
+    Trophy
   },
   setup() {
     // 消息是否未读
@@ -45,18 +41,20 @@ export default defineComponent({
     const total = ref(0)
     const unreadCount = ref(0)
 
-    // 关键词搜索
+    // 关键词输入框内容与已生效的关键词（点击搜索后才生效）
     const keyword = ref('')
+    const appliedKeyword = ref('')
 
-    // 分类筛选下拉选项
+    // 类型筛选下拉选项
     const categoryOptions = [
       { label: '全部通知', value: 'all' },
-      { label: '系统通知', value: 'system' },
-      { label: '竞赛相关', value: 'exam' },
-      { label: '评测相关', value: 'judge' },
-      { label: '站内消息', value: 'station' }
+      { label: '系统通知', value: MESSAGE_TYPE.SYSTEM },
+      { label: '竞赛通知', value: MESSAGE_TYPE.EXAM }
     ]
     const currentCategory = ref('all')
+
+    // 是否处于筛选状态（筛选时总数只代表筛选结果）
+    const isFiltered = computed(() => currentCategory.value !== 'all' || Boolean(appliedKeyword.value))
 
     // 分页参数（一页固定 8 条消息）
     const pageQuery = reactive({
@@ -98,62 +96,16 @@ export default defineComponent({
       return '--'
     }
 
-    // 依据消息内容智能推导类型分类、图标与语义颜色
-    const getTypeInfo = (item) => {
-      if (!item) {
-        return { label: '站内消息', typeClass: 'station', iconComponent: ChatDotRound }
-      }
-      const t = item.type || item.messageType
-      if (t === 1 || t === 'system') {
-        return { label: '系统通知', typeClass: 'system', iconComponent: Bell }
-      }
-      if (t === 2 || t === 'exam') {
-        return { label: '竞赛相关', typeClass: 'exam', iconComponent: Trophy }
-      }
-      if (t === 3 || t === 'judge') {
-        return { label: '评测相关', typeClass: 'judge', iconComponent: Cpu }
-      }
-      if (t === 4 || t === 'station') {
-        return { label: '站内消息', typeClass: 'station', iconComponent: ChatDotRound }
-      }
-
-      // 根据标题与正文关键词兜底语义分类
-      const text = `${item.title || ''} ${item.content || ''}`
-      if (text.includes('竞赛') || text.includes('比赛') || text.includes('周赛') || text.includes('战报') || text.includes('排名')) {
-        return { label: '竞赛相关', typeClass: 'exam', iconComponent: Trophy }
-      }
-      if (text.includes('评测') || text.includes('判题') || text.includes('提交') || text.includes('通过') || text.includes('代码')) {
-        return { label: '评测相关', typeClass: 'judge', iconComponent: Cpu }
-      }
-      if (text.includes('系统') || text.includes('欢迎') || text.includes('公告') || text.includes('升级') || text.includes('维护')) {
-        return { label: '系统通知', typeClass: 'system', iconComponent: Bell }
-      }
-      return { label: '站内消息', typeClass: 'station', iconComponent: ChatDotRound }
+    // 消息类型对应的文案、样式与图标（以后端 type 为准）
+    const TYPE_INFO = {
+      [MESSAGE_TYPE.SYSTEM]: { label: '系统通知', typeClass: 'system', iconComponent: Bell },
+      [MESSAGE_TYPE.EXAM]: { label: '竞赛通知', typeClass: 'exam', iconComponent: Trophy }
     }
-
-    // 前端多维过滤展现清单（配合后端分页返回的数据进行类别与关键词实时过滤）
-    const displayMessageList = computed(() => {
-      let list = messageList.value || []
-      if (currentCategory.value !== 'all') {
-        list = list.filter(item => {
-          const info = getTypeInfo(item)
-          return info.typeClass === currentCategory.value
-        })
-      }
-      if (keyword.value && keyword.value.trim()) {
-        const kw = keyword.value.trim().toLowerCase()
-        list = list.filter(item => {
-          const t = (item.title || '').toLowerCase()
-          const c = (item.content || '').toLowerCase()
-          return t.includes(kw) || c.includes(kw)
-        })
-      }
-      return list
-    })
+    const getTypeInfo = (item) => TYPE_INFO[item?.type] || TYPE_INFO[MESSAGE_TYPE.SYSTEM]
 
     // 按照年份聚合编年史时间轴分组（左侧时间线顶部只显示该年度，向下贯穿该年消息）
     const timelineGroups = computed(() => {
-      const list = displayMessageList.value || []
+      const list = messageList.value
       if (list.length === 0) return []
 
       const groups = []
@@ -182,7 +134,9 @@ export default defineComponent({
       try {
         const params = {
           pageNum: pageQuery.pageNum,
-          pageSize: pageQuery.pageSize
+          pageSize: pageQuery.pageSize,
+          type: currentCategory.value === 'all' ? undefined : currentCategory.value,
+          keyword: appliedKeyword.value || undefined
         }
         const res = await getMessageListApi(params)
         messageList.value = res.rows
@@ -206,32 +160,35 @@ export default defineComponent({
       }
     }
 
-    // 下拉分类切换
-    const handleCategoryChange = (val) => {
-      currentCategory.value = val
+    // 回到第一页重新查询
+    const reloadFromFirstPage = () => {
+      pageQuery.pageNum = 1
+      fetchMessageList()
     }
 
-    // 分类切换
-    const selectCategory = (val) => {
-      currentCategory.value = val
+    // 切换类型
+    const handleCategoryChange = () => {
+      reloadFromFirstPage()
     }
 
-    // 搜索
+    // 按关键词搜索
     const handleSearch = () => {
-      // 触发 displayMessageList 过滤
+      appliedKeyword.value = keyword.value.trim()
+      reloadFromFirstPage()
     }
 
     // 清空关键词
     const clearKeyword = () => {
       keyword.value = ''
+      handleSearch()
     }
 
-    // 重置
+    // 重置全部筛选
     const handleReset = () => {
       keyword.value = ''
+      appliedKeyword.value = ''
       currentCategory.value = 'all'
-      pageQuery.pageNum = 1
-      fetchMessageList()
+      reloadFromFirstPage()
     }
 
     // 翻页
@@ -299,15 +256,14 @@ export default defineComponent({
       keyword,
       categoryOptions,
       currentCategory,
+      isFiltered,
       pageQuery,
       detailVisible,
       currentMessage,
-      displayMessageList,
       timelineGroups,
       getYear,
       getMonthDay,
       getTypeInfo,
-      selectCategory,
       handleCategoryChange,
       handleSearch,
       clearKeyword,

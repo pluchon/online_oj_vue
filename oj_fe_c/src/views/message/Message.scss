@@ -420,15 +420,7 @@
                     color: #a66b24;
                   }
 
-                  &.judge {
-                    background-color: rgba(47, 114, 85, 0.08);
-                    color: #2f7255;
-                  }
 
-                  &.station {
-                    background-color: rgba(125, 112, 96, 0.1);
-                    color: #635749;
-                  }
                 }
 
                 // 主体内容
@@ -473,17 +465,7 @@
                         border: 1px solid rgba(166, 107, 36, 0.3);
                       }
 
-                      &.judge {
-                        background-color: rgba(47, 114, 85, 0.08);
-                        color: #2f7255;
-                        border: 1px solid rgba(47, 114, 85, 0.3);
-                      }
 
-                      &.station {
-                        background-color: rgba(125, 112, 96, 0.1);
-                        color: #635749;
-                        border: 1px solid rgba(125, 112, 96, 0.25);
-                      }
                     }
 
                     .read-state-badge {
@@ -753,17 +735,7 @@
           border: 1px solid rgba(166, 107, 36, 0.25);
         }
 
-        &.judge {
-          color: #2f7255;
-          background-color: rgba(47, 114, 85, 0.1);
-          border: 1px solid rgba(47, 114, 85, 0.25);
-        }
 
-        &.station {
-          color: #635749;
-          background-color: rgba(125, 112, 96, 0.1);
-          border: 1px solid rgba(125, 112, 96, 0.25);
-        }
       }
 
       &.time-tag {
