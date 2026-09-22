@@ -14,6 +14,7 @@ import OjEmpty from '@/components/OjEmpty'
 import { Plus, Check, MagicStick } from '@element-plus/icons-vue'
 import ExamQuestionDialog from '../ExamQuestionDialog'
 import ExamAiPlanDialog from '../ExamAiPlanDialog'
+import QuestionPreview from '@/components/QuestionPreview'
 
 export default defineComponent({
   name: 'ExamDrawer',
@@ -21,6 +22,7 @@ export default defineComponent({
     DifficultyTag,
     ExamQuestionDialog,
     ExamAiPlanDialog,
+    QuestionPreview,
     OjEmpty,
     Plus,
     Check,
@@ -60,6 +62,14 @@ export default defineComponent({
 
     // AI 帮建弹窗组件引用
     const aiPlanDialogRef = ref(null)
+
+    // 题目详情预览组件引用
+    const previewRef = ref(null)
+
+    // 查看题目详情
+    const openPreview = (questionId) => {
+      previewRef.value?.open(questionId)
+    }
 
     // 竞赛基本信息表单数据
     const formData = reactive({
@@ -377,6 +387,8 @@ export default defineComponent({
       formRef,
       questionDialogRef,
       aiPlanDialogRef,
+      previewRef,
+      openPreview,
       formData,
       defaultTime,
       boundQuestionList,

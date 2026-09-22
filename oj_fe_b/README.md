@@ -26,7 +26,9 @@ flowchart TD
     UserView --> UserDialog["UserEditDialog 用户资料弹窗"]
     
     Workspace --> QuestionView["/question 题目管理"]
+    QuestionView --> QuestionPreview["QuestionPreview 题目详情预览（点击标题，与学员端题面一致）"]
     QuestionView --> QuestionDrawer["QuestionDrawer 题目抽屉"]
+    QuestionDrawer --> AiDraft["AI 出题 / AI 生成用例 / AI 解法示例"]
     QuestionDrawer --> MdEditor["Markdown 实时分栏编辑器"]
     QuestionDrawer --> MonacoEditor["Monaco 代码模板编辑器"]
     QuestionDrawer --> CaseBuilder["题目测试用例结构化构建器"]
@@ -34,6 +36,8 @@ flowchart TD
     Workspace --> ExamView["/exam 竞赛管理"]
     ExamView --> ExamDrawer["ExamDrawer 竞赛抽屉"]
     ExamDrawer --> ExamQDialog["ExamQuestionDialog 题目勾选弹窗"]
+    ExamDrawer --> ExamAiPlan["ExamAiPlanDialog AI 帮建（描述 + 难度倾向 + 题目数量）"]
+    ExamDrawer --> QuestionPreview
 ```
 
 ---

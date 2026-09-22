@@ -8,6 +8,7 @@ import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import DifficultyTag from '@/components/DifficultyTag'
 import Pagination from '@/components/Pagination'
 import OjEmpty from '@/components/OjEmpty'
+import QuestionPreview from '@/components/QuestionPreview'
 import QuestionDrawer from './components/QuestionDrawer'
 
 export default defineComponent({
@@ -17,6 +18,7 @@ export default defineComponent({
     DifficultyTag,
     Pagination,
     QuestionDrawer,
+    QuestionPreview,
     OjEmpty,
     Search,
     Refresh,
@@ -84,6 +86,14 @@ export default defineComponent({
     // 题目抽屉组件实例引用
     const questionDrawerRef = ref(null)
 
+    // 题目详情预览组件引用
+    const previewRef = ref(null)
+
+    // 查看题目详情
+    const openPreview = (questionId) => {
+      previewRef.value?.open(questionId)
+    }
+
     // 新增题目（打开抽屉并进入 add 模式）
     const handleAddQuestion = () => {
       questionDrawerRef.value?.open('add')
@@ -150,6 +160,8 @@ export default defineComponent({
       total,
       queryParams,
       questionDrawerRef,
+      previewRef,
+      openPreview,
       loadQuestionList,
       handleSearch,
       handleReset,

@@ -10,8 +10,8 @@ graph TD
 
     B_End --> Design["墨衡古籍画卷 / Claude Editorial 视觉系统"]
     C_End --> Design
-    B_End --> Modules["用户管理 / 题目管理 / 竞赛管理 / 登录画卷"]
-    C_End --> CModules["题库 / 做题工作台 / 竞赛与排名 / 消息 / 个人中心"]
+    B_End --> Modules["用户管理 / 题目管理 / 竞赛管理 / AI 出题与帮建 / 登录画卷"]
+    C_End --> CModules["题库 / 做题工作台 / AI 辅导 / 竞赛与排名 / 消息 / 个人中心"]
 ```
 
 ---
@@ -38,7 +38,9 @@ flowchart TD
     UserView --> UserDialog["UserEditDialog 用户资料弹窗"]
     
     Workspace --> QuestionView["/question 题目管理"]
+    QuestionView --> QuestionPreview["QuestionPreview 题目详情预览（点击标题，与学员端题面一致）"]
     QuestionView --> QuestionDrawer["QuestionDrawer 题目抽屉"]
+    QuestionDrawer --> AiDraft["AI 出题 / AI 生成用例 / AI 解法示例"]
     QuestionDrawer --> MdEditor["Markdown 实时分栏编辑器"]
     QuestionDrawer --> MonacoEditor["Monaco 代码模板编辑器"]
     QuestionDrawer --> CaseBuilder["题目测试用例结构化构建器"]
@@ -46,6 +48,8 @@ flowchart TD
     Workspace --> ExamView["/exam 竞赛管理"]
     ExamView --> ExamDrawer["ExamDrawer 竞赛抽屉"]
     ExamDrawer --> ExamQDialog["ExamQuestionDialog 题目勾选弹窗"]
+    ExamDrawer --> ExamAiPlan["ExamAiPlanDialog AI 帮建（描述 + 难度倾向 + 题目数量）"]
+    ExamDrawer --> QuestionPreview
 ```
 
 ---
@@ -122,19 +126,36 @@ flowchart LR
 
 ### 3. AI 辅助出题
 
-题目抽屉顶部的「AI 生成题面」与用例区的「AI 生成用例」只回填表单，保存仍走原有流程。
+题目抽屉标题栏右侧的「AI出题」、用例区的「AI 生成用例」与代码区的「AI 解法示例」只回填表单，保存仍走原有流程；生成中弹窗或区域边框播放彩色光效。
 
 ```mermaid
 flowchart LR
     Desc["一句话描述"] --> Draft["AI 生成题面草稿"]
     Draft --> Fill["回填标题、难度、限制、描述、代码模板与 Main 函数"]
-    Fill --> Std["填写标程"]
-    Std --> Gen["AI 生成用例输入"]
-    Gen --> Run["标程在判题沙箱中运行得到预期输出"]
+    Fill --> Gen["一键生成用例：AI 先出解法与用例输入"]
+    Gen --> Run["解法在判题沙箱中运行得到预期输出"]
     Run --> Preview["预览并勾选"]
-    Preview --> Append["加入用例列表（默认隐藏用例）"]
+    Preview --> Append["加入用例列表（默认隐藏用例，可设为公开示例）"]
     Append --> Save["检查后保存题目"]
 ```
+
+### 4. AI 帮建竞赛
+
+竞赛抽屉标题栏右侧的「AI帮建」：写好描述并选好难度倾向（新手友好 / 一般大众 / 高手过招）与题目数量（少量 / 适中 / 偏多 / 超多）后才调用模型；生成完成后弹窗自动关闭，抽屉回填竞赛名称与题目列表（由易到难），管理员设置竞赛周期后保存，新建竞赛时选出的题目随竞赛一起保存。
+
+```mermaid
+flowchart LR
+    Input["描述 + 难度倾向 + 题目数量"] --> Plan["POST /system/exam/ai/plan"]
+    Plan --> Intent["模型理解需求：名称、主题、题数"]
+    Intent --> Recall["按难度配比混合检索候选（向量 + 关键词）"]
+    Recall --> Pick["模型挑题，后端校验并补齐"]
+    Pick --> Fill["回填名称与题目（不落库）"]
+    Fill --> Save["设置周期后保存"]
+```
+
+### 5. 题目详情预览
+
+题目管理列表与竞赛抽屉的题目表格中点击标题，弹出与学员端做题页一致的题面：标题、难度与时空限制、Markdown 描述、示例（优先从描述解析，否则取公开示例用例）与提示；隐藏用例不展示。
 
 ---
 
@@ -205,21 +226,21 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph Left["左侧：题目卡片"]
-        Nav["返回 / AI 辅导（星星）/ 上一题 / 下一题"]
+        Nav["返回 / AI 辅导 / 上一题 / 下一题"]
         Desc["标题 · 难度 · 时空限制<br/>题目描述"]
         Samples["公开示例卡片（长内容自动独占整行）"]
     end
     subgraph Right["右侧工作区"]
-        Editor["编辑器卡片<br/>Java · 重置 · 格式化 · 主题 · 全屏 · 运行 · 提交"]
+        Editor["编辑器卡片<br/>Java · 重置 · 格式化 · 主题 · 全屏 · 保存 · 运行 · 提交"]
         subgraph Console["控制台卡片"]
             TabCase["测试用例"]
             TabResult["执行结果<br/>通过时绿色描边 + 庆祝插画"]
             TabHistory["提交记录（提交后出现，后端分页）"]
         end
     end
-    subgraph Tutor["最右侧：AI 辅导卡片（点击星星展开，需登录，赛中不显示）"]
-        Quick["快捷操作：思路 / 分析最近一次提交 / 解释编译错误 / 点评代码"]
-        Chat["对话区：SSE 流式渲染 Markdown，可停止；今日剩余次数"]
+    subgraph Tutor["最右侧：AI 辅导卡片（需登录，竞赛答题中禁用）"]
+        Quick["快捷操作：指点迷津 / 帮我优化代码思路 / 分析最近一次提交 / 解释编译错误 / 点评代码"]
+        Chat["对话区：SSE 流式渲染 Markdown，可停止；剩余次数不超过 5 次时以红色标签提示"]
     end
     Editor --> Console
 ```
@@ -227,6 +248,8 @@ flowchart LR
 题库关键词无匹配时，后端返回语义推荐结果（`semantic` 标记），列表顶部提示"以下为相关推荐"；做题页题目卡片在登录且非竞赛模式时展示"你可能还想做"。
 
 AI 辅导走 `src/utils/sse.js`（fetch 读取 SSE，携带令牌；校验失败时后端直接返回 JSON 错误）。快捷操作按本题最近一次提交的判题状态出现，提交完成后自动刷新。
+
+代码草稿跨设备保存（`GET|PUT /friend/question/{id}/draft`）：编辑器有未保存修改时保存按钮高亮，切题、离开页面或关闭标签页前提示；「帮我优化代码思路」读取已保存的代码，未保存时先自动保存。
 
 ---
 
@@ -315,18 +338,18 @@ sequenceDiagram
     Do->>Do: 前置校验：题目已加载、代码非空、已登录（未登录弹 OjDialog）
 
     alt 运行（仅公开示例，不计分）
-        Do->>API: POST /question/run
+        Do->>API: POST /question/{questionId}/run
         API-->>Do: 结论 + 逐用例 输入 / 输出 / 预期
         Do-->>U: 执行结果页：用例标签圆点标记通过与否，错误输出标红
     else 提交（全部用例）
-        Do->>API: POST /question/submit
+        Do->>API: POST /question/{questionId}/submissions
         API-->>Do: submitId（评测中）
         loop 每 500ms 轮询，直到出结论
-            Do->>API: GET /question/submit/result
+            Do->>API: GET /question/submissions/{submitId}
         end
         API-->>Do: 结论 · 通过数 · 得分 · 逐用例状态 · 首个未通过用例
         Do-->>U: 结论行右侧用例色块，下方展示首个未通过用例
-        Do->>API: GET /question/submit/history（第 1 页）
+        Do->>API: GET /question/{questionId}/submissions（第 1 页）
         Do-->>U: 出现「提交记录」页签
     end
 ```
@@ -354,7 +377,7 @@ stateDiagram-v2
 
 ```mermaid
 flowchart LR
-    Tab["提交记录页签"] --> Load["GET /question/submit/history<br/>pageNum · pageSize=6"]
+    Tab["提交记录页签"] --> Load["GET /question/{questionId}/submissions<br/>pageNum · pageSize=6"]
     Load --> List["列表区可滚动<br/>结论 · 通过数 · 耗时 · 时间"]
     Load --> Pager["翻页器固定在卡片底部"]
     Pager --"翻页"--> Load
@@ -397,5 +420,9 @@ npm run dev
 # 生产环境打包（两端相同）
 npm run build
 ```
+
+- 两端都经 Vite 代理访问网关 `127.0.0.1:19090`，后端启动方式见后端仓库 README。
+- 后端初始化脚本自带测试数据：管理端 `admin / 123456`；学员端手机号 `13800000001` ~ `13800000007`，本地为模拟发码，验证码输出在 oj-friend 控制台。
+- `src/assets` 为图片素材，随仓库提供；`oj_fe_b/src/assets/images/raw/` 为高清原图备份，不入库。
 
 服务启动后访问：管理端 `http://localhost:5173`，学员端 `http://localhost:5174`。

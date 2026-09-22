@@ -345,11 +345,28 @@
           color: #554839;
         }
 
-        .question-title-text {
+        // 题目标题：点击查看详情
+        .question-title-link {
+          max-width: 100%;
+          padding: 0;
+          border: none;
+          background: transparent;
           font-family: 'Songti SC', 'SimSun', serif;
           font-size: 13.5px;
           color: #24201c;
           font-weight: 500;
+          text-align: left;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: $primary-color;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+          }
         }
 
         .btn-remove-question {

@@ -116,9 +116,8 @@
           <el-table-column
             prop="questionId"
             label="题目 ID"
-            width="160"
+            width="190"
             align="center"
-            show-overflow-tooltip
           >
             <template #default="{ row }">
               <span class="tabular-code-text">{{ row.questionId }}</span>
@@ -133,7 +132,7 @@
             show-overflow-tooltip
           >
             <template #default="{ row }">
-              <span class="question-title-text">{{ row.title }}</span>
+              <button type="button" class="question-title-link" @click="openPreview(row.questionId)">{{ row.title }}</button>
             </template>
           </el-table-column>
 
@@ -176,6 +175,9 @@
         </el-table>
       </div>
     </div>
+
+    <!-- 题目详情预览 -->
+    <QuestionPreview ref="previewRef" />
 
     <!-- AI 帮建竞赛弹窗 -->
     <ExamAiPlanDialog ref="aiPlanDialogRef" @generated="handlePlanGenerated" />

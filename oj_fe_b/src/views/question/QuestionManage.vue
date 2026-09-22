@@ -66,7 +66,7 @@
           show-overflow-tooltip
         >
           <template #default="{ row }">
-            <span class="question-title-text">{{ row.title }}</span>
+            <button type="button" class="question-title-link" @click="openPreview(row.questionId)">{{ row.title }}</button>
           </template>
         </el-table-column>
 
@@ -158,6 +158,9 @@
     </pagination>
 
     <!-- 题目新增与编辑抽屉组件 -->
+    <!-- 题目详情预览 -->
+    <QuestionPreview ref="previewRef" />
+
     <QuestionDrawer
       ref="questionDrawerRef"
       @success="handleDrawerSuccess"
