@@ -62,25 +62,25 @@ flowchart TD
 
 ### 2. 用户管理主界面
 
-![image-20260920131043278](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131043325.png)
+![image-20260922230705903](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230706124.png)
 
 ### 3. 题目管理主界面
 
-![image-20260920131117055](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131117106.png)
+![image-20260922230716698](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230716764.png)
 
 ### 4. 题目编辑抽屉与双栏工作区
 
-![image-20260920131503672](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131503737.png)
+![image-20260922230738473](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230738537.png)
 
-![image-20260920131540208](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131540251.png)
+![image-20260922230800282](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230800342.png)
+
+![image-20260922230823340](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230823418.png)
 
 ### 5. 竞赛管理主界面与状态操作
 
-![image-20260920131601438](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131601494.png)
+![image-20260922230837667](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230837760.png)
 
-### 6. 关联竞赛题目弹窗
-
-![image-20260920131636304](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131636387.png)
+![image-20260922230854024](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230854103.png)
 
 ---
 
@@ -261,43 +261,29 @@ AI 辅导走 `src/utils/sse.js`（fetch 读取 SSE，携带令牌；校验失败
 
 ### 2. 题库
 
-![image-20260921153940274](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921153940372.png)
+![image-20260922230951685](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230951766.png)
 
 ### 3. 做题工作台
 
-![image-20260921154025760](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154025892.png)
+![image-20260922231009097](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922231009174.png)
 
-### 4. 运行结果（逐用例对比）
+### 4. 提交记录
 
-![image-20260921154039274](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154039368.png)
+![image-20260922231208879](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922231208971.png)
 
-![image-20260921154113865](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154113951.png)
+### 5. 竞赛列表
 
-### 5. 提交结果与全部通过
+![image-20260922231635062](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922231635155.png)
 
-![image-20260921154140270](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154140372.png)
-
-### 6. 提交记录
-
-![image-20260921154153203](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154153285.png)
-
-### 7. 竞赛列表
-
-![image-20260921154219321](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921154219404.png)
-
-### 8. 竞赛排名弹窗
-
-![image-20260921171620332](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171620451.png)
-
-### 9. 我的竞赛
+### 6. 我的竞赛
 
 ![image-20260921171628869](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171628938.png)
 
-### 10. 消息
+### 7. 消息
 
 ![image-20260921171638616](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171638674.png)
 
-### 11. 个人中心
+### 8. 个人中心
 
 ![image-20260921171648586](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171648637.png)
 
