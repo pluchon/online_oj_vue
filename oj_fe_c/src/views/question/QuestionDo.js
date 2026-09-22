@@ -19,6 +19,7 @@ import {
 import AppNavbar from '@/components/AppNavbar'
 import CodeEditor from '@/components/CodeEditor'
 import OjDialog from '@/components/OjDialog'
+import AiTutorPanel from '@/components/AiTutorPanel'
 import submitSuccessImage from '@/assets/images/c_submit_success_background.png'
 import { setPageTitle } from '@/utils/title'
 import { renderMarkdown } from '@/utils/markdown'
@@ -56,6 +57,7 @@ export default defineComponent({
     AppNavbar,
     CodeEditor,
     OjDialog,
+    AiTutorPanel,
     ArrowLeft,
     ArrowRight,
     Loading,
@@ -167,6 +169,31 @@ export default defineComponent({
         router.replace('/exam')
         return false
       }
+    }
+
+    // AI 辅导卡片是否展开，以及提交完成后用于刷新其快捷操作的计数
+    const tutorOpen = ref(false)
+    const tutorRefreshKey = ref(0)
+
+    // 读取编辑器当前代码（供 AI 辅导作为上下文）
+    const getUserCode = () => userCode.value
+
+    // 展开或收起 AI 辅导（需登录）
+    const toggleTutor = () => {
+      if (tutorOpen.value) {
+        tutorOpen.value = false
+        return
+      }
+      if (!isLogin.value) {
+        openConfirm({
+          title: '需要登录',
+          content: '登录后才能使用 AI 辅导。',
+          confirmText: '去登录',
+          action: goToLogin
+        })
+        return
+      }
+      tutorOpen.value = true
     }
 
     // 控制台当前激活Tab：'case'（测试用例）或 'result'（执行结果）
@@ -451,6 +478,7 @@ export default defineComponent({
         }
         lastResult.value = { mode: 'submit', data }
         hasSubmitted.value = true
+        tutorRefreshKey.value++
         loadHistory(1)
       } catch (err) {
         // 错误提示已由请求拦截器统一处理
@@ -692,7 +720,11 @@ export default defineComponent({
       displayHints,
       handleRun,
       handleSubmit,
-      handleBack
+      handleBack,
+      tutorOpen,
+      tutorRefreshKey,
+      getUserCode,
+      toggleTutor
     }
   }
 })

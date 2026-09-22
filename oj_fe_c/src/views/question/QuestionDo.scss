@@ -75,6 +75,39 @@
       flex: 0 0 44%;
       min-width: 440px;
 
+      // AI 辅导星星按钮
+      .btn-ai-tutor {
+        width: 26px;
+        height: 26px;
+        border: 1px solid rgba(195, 182, 164, 0.55);
+        border-radius: 4px;
+        background: transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        svg {
+          width: 15px;
+          height: 15px;
+          fill: none;
+          stroke: #b38324;
+          stroke-width: 1.6;
+          stroke-linejoin: round;
+        }
+
+        &:hover,
+        &.active {
+          background: rgba(201, 150, 43, 0.12);
+          border-color: #c9962b;
+
+          svg {
+            fill: #c9962b;
+          }
+        }
+      }
+
       .card-header-bar {
         @include card-bar;
 
@@ -404,6 +437,19 @@
           }
         }
       }
+    }
+
+    // 展开 AI 辅导时收窄题目卡片，给代码区留出空间
+    &.has-tutor {
+      .problem-spec-card {
+        flex: 0 0 30%;
+        min-width: 340px;
+      }
+    }
+
+    // 最右侧：AI 辅导卡片
+    .ai-tutor-column {
+      flex: 0 0 360px;
     }
 
     // 右侧：代码编辑器与控制台

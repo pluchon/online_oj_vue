@@ -3,7 +3,7 @@
     <AppNavbar />
 
     <!-- 双卡工作台主容器 -->
-    <main class="question-workbench-layout">
+    <main class="question-workbench-layout" :class="{ 'has-tutor': tutorOpen }">
       <!-- 左侧：题目详情卡片 -->
       <section class="problem-spec-card">
         <!-- 卡片头部：返回与上下题切换 -->
@@ -14,6 +14,19 @@
           </button>
 
           <div class="nav-quick-btns">
+            <el-tooltip v-if="!isContestMode" content="AI 辅导" placement="bottom">
+              <button
+                type="button"
+                class="btn-ai-tutor"
+                :class="{ active: tutorOpen }"
+                aria-label="AI 辅导"
+                @click="toggleTutor"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.8l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />
+                </svg>
+              </button>
+            </el-tooltip>
             <button
               type="button"
               class="nav-quick-btn"
@@ -392,6 +405,16 @@
           </div>
         </div>
       </section>
+
+      <!-- 最右侧：AI 辅导卡片（赛中不显示） -->
+      <AiTutorPanel
+        v-if="tutorOpen && question?.questionId && !isContestMode"
+        class="ai-tutor-column"
+        :question-id="question.questionId"
+        :get-user-code="getUserCode"
+        :refresh-key="tutorRefreshKey"
+        @close="tutorOpen = false"
+      />
     </main>
 
     <!-- 通用确认弹窗 -->

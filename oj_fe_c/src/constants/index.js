@@ -84,6 +84,18 @@ export const USER_SEX_OPTIONS = [
 // 免登录可访问的页面
 export const PUBLIC_PATHS = ['/login', '/exam', '/question', '/question/do']
 
+// 判题状态：编译错误（后端 JudgeStatusEnum.CE）
+export const JUDGE_STATUS_CE = 5
+
+// AI 辅导提问类型（后端 AiTutorActionEnum）
+export const AI_TUTOR_ACTION = {
+  CHAT: 0,
+  HINT: 1,
+  ANALYZE_SUBMIT: 2,
+  EXPLAIN_COMPILE: 3,
+  REVIEW_CODE: 4
+}
+
 // 业务成功码（后端 ResultCode.SUCCESS）
 export const SUCCESS_CODE = 1000
 
