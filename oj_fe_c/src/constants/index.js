@@ -93,7 +93,8 @@ export const AI_TUTOR_ACTION = {
   HINT: 1,
   ANALYZE_SUBMIT: 2,
   EXPLAIN_COMPILE: 3,
-  REVIEW_CODE: 4
+  REVIEW_CODE: 4,
+  OPTIMIZE_CODE: 5
 }
 
 // AI 辅导剩余次数不超过该值时才显示（避免一直暗示用户次数有限）

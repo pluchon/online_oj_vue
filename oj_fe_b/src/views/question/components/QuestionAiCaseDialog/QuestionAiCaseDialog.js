@@ -1,15 +1,15 @@
 // AI 生成用例弹窗：打开即生成（组数由 AI 决定），预览勾选后交给父组件加入用例列表
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Loading } from '@element-plus/icons-vue'
 import OjDialog from '@/components/OjDialog'
+import AiGlowBorder from '@/components/AiGlowBorder'
 import { generateQuestionCasesApi } from '@/api/question'
 
 export default defineComponent({
   name: 'QuestionAiCaseDialog',
   components: {
     OjDialog,
-    Loading,
+    AiGlowBorder,
   },
   emits: ['confirm'],
   setup(props, { emit }) {
@@ -29,9 +29,6 @@ export default defineComponent({
     // 预览用例（带勾选状态）与丢弃组数
     const previewCases = ref([])
     const droppedCount = ref(0)
-
-    // 已勾选的组数
-    const selectedCount = computed(() => previewCases.value.filter(item => item.checked).length)
 
     // 请求生成用例预览
     const handleGenerate = async () => {
@@ -79,7 +76,6 @@ export default defineComponent({
       loadError,
       previewCases,
       droppedCount,
-      selectedCount,
       open,
       handleGenerate,
       handleConfirm,

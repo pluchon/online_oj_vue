@@ -3,15 +3,14 @@
     v-model="visible"
     title="AI 生成用例"
     width="760px"
-    :confirm-text="`加入用例列表（${selectedCount} 组）`"
+    confirm-text="加入用例列表"
     :show-confirm="previewCases.length > 0"
     :confirm-loading="generating"
     @confirm="handleConfirm"
   >
-    <div class="ai-case-body">
+    <AiGlowBorder :active="generating" :border-radius="8" class="ai-case-body">
       <div v-if="generating" class="case-state">
-        <el-icon class="is-loading"><Loading /></el-icon>
-        <span>AI 正在出解法、设计用例并运行得到预期输出，约需半分钟到一分钟</span>
+        <span class="sparkle" aria-label="AI 生成中">✨</span>
       </div>
 
       <div v-else-if="loadError" class="case-state">
@@ -41,7 +40,7 @@
           </label>
         </div>
       </template>
-    </div>
+    </AiGlowBorder>
   </OjDialog>
 </template>
 

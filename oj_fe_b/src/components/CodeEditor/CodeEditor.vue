@@ -23,6 +23,16 @@
       </div>
 
       <div class="header-right">
+        <!-- 复制代码按钮（copyable 时显示） -->
+        <el-button
+          v-if="copyable"
+          size="small"
+          class="header-btn"
+          text
+          @click="copyCode"
+        >
+          复制
+        </el-button>
         <!-- 主题切换按钮 -->
         <el-tooltip :content="currentTheme === 'vs-dark' ? '切换为浅色代码主题' : '切换为深色代码主题'" placement="top">
           <el-button

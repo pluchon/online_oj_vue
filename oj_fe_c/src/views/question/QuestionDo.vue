@@ -169,6 +169,18 @@
                   <el-icon><FullScreen /></el-icon>
                 </button>
               </el-tooltip>
+
+              <el-tooltip :content="isCodeDirty ? '保存代码（有未保存的修改）' : '保存代码'" placement="top">
+                <button
+                  type="button"
+                  class="btn-tool-icon"
+                  :class="{ 'is-dirty': isCodeDirty }"
+                  :disabled="savingCode"
+                  @click="saveCode()"
+                >
+                  <el-icon><DocumentChecked /></el-icon>
+                </button>
+              </el-tooltip>
             </div>
 
             <div class="header-right-actions">
@@ -434,6 +446,7 @@
         :exam-id="currentExamId"
         :get-user-code="getUserCode"
         :refresh-key="tutorRefreshKey"
+        :before-optimize="ensureCodeSaved"
         @close="tutorOpen = false"
       />
     </main>

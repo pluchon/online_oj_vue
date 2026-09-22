@@ -1,7 +1,7 @@
 // 沉浸式学者答题工作台业务交互逻辑
 import { defineComponent, ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,7 +14,8 @@ import {
   CaretRight,
   Upload,
   Timer,
-  Coin
+  Coin,
+  DocumentChecked
 } from '@element-plus/icons-vue'
 import AppNavbar from '@/components/AppNavbar'
 import CodeEditor from '@/components/CodeEditor'
@@ -41,7 +42,9 @@ import {
   getSubmitResultApi,
   runQuestionApi,
   getSubmitHistoryApi,
-  getSimilarQuestionsApi
+  getSimilarQuestionsApi,
+  getCodeDraftApi,
+  saveCodeDraftApi
 } from '@/api/question'
 import { getExamDetailApi } from '@/api/exam'
 
@@ -70,7 +73,8 @@ export default defineComponent({
     CaretRight,
     Upload,
     Timer,
-    Coin
+    Coin,
+    DocumentChecked
   },
   setup() {
     const route = useRoute()
@@ -195,6 +199,85 @@ export default defineComponent({
         return
       }
       tutorOpen.value = true
+    }
+
+    // 最近一次保存（或加载）的代码，用于判断是否有未保存的修改
+    const savedCode = ref('')
+    const savingCode = ref(false)
+
+    // 是否有未保存的修改（保存需要登录，未登录时不提示）
+    const isCodeDirty = computed(() => isLogin.value && Boolean(question.value) && userCode.value !== savedCode.value)
+
+    // 加载本人在本题保存的代码草稿，有草稿时替换默认模板
+    const loadCodeDraft = async (questionId) => {
+      if (!isLogin.value || !questionId) return
+      try {
+        const draft = await getCodeDraftApi(questionId)
+        if (draft && typeof draft === 'object' && draft.code && question.value?.questionId === questionId) {
+          userCode.value = draft.code
+          savedCode.value = draft.code
+        }
+      } catch (err) {
+        // 草稿加载失败时沿用默认模板
+      }
+    }
+
+    // 保存当前代码（跨设备），silent 时不弹成功提示；返回是否保存成功
+    const saveCode = async ({ silent = false } = {}) => {
+      if (!question.value?.questionId) return false
+      if (!isLogin.value) {
+        openConfirm({
+          title: '需要登录',
+          content: '登录后才能保存代码。',
+          confirmText: '去登录',
+          action: goToLogin
+        })
+        return false
+      }
+      const code = userCode.value
+      savingCode.value = true
+      try {
+        await saveCodeDraftApi(question.value.questionId, code)
+        savedCode.value = code
+        if (!silent) ElMessage.success('已保存')
+        return true
+      } catch (err) {
+        return false
+      } finally {
+        savingCode.value = false
+      }
+    }
+
+    // 优化代码思路前自动保存（AI 读取的是已保存的代码）
+    const ensureCodeSaved = async () => {
+      if (!userCode.value || !userCode.value.trim()) {
+        ElMessage.warning('请先编写代码')
+        return false
+      }
+      return isCodeDirty.value ? saveCode({ silent: true }) : true
+    }
+
+    // 有未保存的修改时确认：保存并离开、直接离开，关闭弹框则留在当前页
+    const confirmLeaveUnsaved = async () => {
+      if (!isCodeDirty.value) return true
+      try {
+        await ElMessageBox.confirm('当前代码尚未保存，离开后修改将丢失。', '提示', {
+          confirmButtonText: '保存并离开',
+          cancelButtonText: '直接离开',
+          distinguishCancelAndClose: true,
+          type: 'warning'
+        })
+        return saveCode({ silent: true })
+      } catch (action) {
+        return action === 'cancel'
+      }
+    }
+
+    // 浏览器关闭或刷新时的未保存提示
+    const handleBeforeUnload = (event) => {
+      if (!isCodeDirty.value) return
+      event.preventDefault()
+      event.returnValue = ''
     }
 
     // 控制台当前激活Tab：'case'（测试用例）或 'result'（执行结果）
@@ -356,6 +439,8 @@ export default defineComponent({
         question.value = data
         setPageTitle(data.title || '做题')
         userCode.value = data.defaultCode || ''
+        savedCode.value = userCode.value
+        loadCodeDraft(data.questionId)
         lastResult.value = null
         activeConsoleTab.value = 'case'
         hasSubmitted.value = false
@@ -393,6 +478,7 @@ export default defineComponent({
     // 切换题目执行逻辑
     const switchQuestion = async (targetQuestionId) => {
       if (!targetQuestionId) return
+      if (!(await confirmLeaveUnsaved())) return
       const query = { ...route.query, questionId: targetQuestionId }
       await router.replace({ path: '/question/do', query })
       await loadQuestionDetail(targetQuestionId)
@@ -664,7 +750,14 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       stopExamTimer()
+      window.removeEventListener('beforeunload', handleBeforeUnload)
     })
+
+    // 离开做题页前确认未保存的代码
+    onBeforeRouteLeave(() => confirmLeaveUnsaved())
+
+    // 关闭或刷新浏览器标签页时由浏览器提示未保存
+    window.addEventListener('beforeunload', handleBeforeUnload)
 
     watch(
       () => route.query.questionId,
@@ -738,6 +831,10 @@ export default defineComponent({
       handleBack,
       tutorOpen,
       tutorRefreshKey,
+      isCodeDirty,
+      savingCode,
+      saveCode,
+      ensureCodeSaved,
       currentExamId,
       similarQuestions,
       switchQuestion,

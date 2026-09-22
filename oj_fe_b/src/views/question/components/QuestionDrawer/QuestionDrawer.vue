@@ -186,7 +186,7 @@
         </el-form-item>
 
         <!-- 代码区域标签页切换 -->
-        <div class="code-tabs-wrapper">
+        <AiGlowBorder :active="solutionLoading" :border-radius="6" class="code-tabs-wrapper">
           <button
             type="button"
             class="btn-ai tabs-ai-btn"
@@ -224,14 +224,15 @@
             <el-tab-pane v-if="aiSolution" label="AI 解法示例" name="aiSolution" :lazy="true">
               <CodeEditor
                 v-model="aiSolution"
-                title="AI 解法示例（仅供参考，不保存）"
+                title="AI 解法示例"
                 path="inmemory://question/aiSolution.java"
                 height="260px"
                 :read-only="true"
+                copyable
               />
             </el-tab-pane>
           </el-tabs>
-        </div>
+        </AiGlowBorder>
       </el-form>
     </div>
 

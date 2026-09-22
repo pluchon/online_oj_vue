@@ -76,6 +76,23 @@ export function getSubmitHistoryApi(params) {
   })
 }
 
+// 查询本人在本题保存的代码草稿（没有时返回空）
+export function getCodeDraftApi(questionId) {
+  return request({
+    url: `/friend/question/${questionId}/draft`,
+    method: 'get'
+  })
+}
+
+// 保存本人在本题的代码草稿（跨设备，保存即覆盖）
+export function saveCodeDraftApi(questionId, code) {
+  return request({
+    url: `/friend/question/${questionId}/draft`,
+    method: 'put',
+    data: { code }
+  })
+}
+
 // 查询判题最新结果
 export function getSubmitResultApi(submitId) {
   return request({

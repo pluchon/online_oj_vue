@@ -47,7 +47,11 @@
     box-sizing: border-box;
     overflow: hidden;
 
-    // 公共图标按钮
+    // 公共图标按钮（有未保存修改时保存按钮高亮）
+    .btn-tool-icon.is-dirty {
+      color: #b38324;
+    }
+
     .btn-tool-icon {
       width: 28px;
       height: 28px;

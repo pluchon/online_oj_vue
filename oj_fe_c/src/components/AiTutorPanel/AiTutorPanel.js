@@ -11,6 +11,7 @@ import { AI_TUTOR_ACTION, AI_STREAM_EVENT, AI_QUOTA_WARN_THRESHOLD, JUDGE_STATUS
 // 快捷操作文案（与后端 AiTutorActionEnum 一致）
 const ACTION_LABELS = {
   [AI_TUTOR_ACTION.HINT]: '指点迷津',
+  [AI_TUTOR_ACTION.OPTIMIZE_CODE]: '帮我优化代码思路',
   [AI_TUTOR_ACTION.ANALYZE_SUBMIT]: '分析我最近一次提交',
   [AI_TUTOR_ACTION.EXPLAIN_COMPILE]: '解释编译错误',
   [AI_TUTOR_ACTION.REVIEW_CODE]: '点评我的代码'
@@ -37,6 +38,11 @@ export default defineComponent({
     getUserCode: {
       type: Function,
       default: () => '',
+    },
+    // 优化代码思路前的准备（父组件负责自动保存代码），返回是否可以继续
+    beforeOptimize: {
+      type: Function,
+      default: async () => true,
     },
     // 父组件在提交完成后递增，用于刷新快捷操作状态
     refreshKey: {
@@ -73,7 +79,7 @@ export default defineComponent({
     // 按提交状态显示的快捷操作
     const quickActions = computed(() => {
       const status = session.value?.latestJudgeStatus
-      const list = [AI_TUTOR_ACTION.HINT]
+      const list = [AI_TUTOR_ACTION.HINT, AI_TUTOR_ACTION.OPTIMIZE_CODE]
       if (status && status !== JUDGE_STATUS_AC) list.push(AI_TUTOR_ACTION.ANALYZE_SUBMIT)
       if (status === JUDGE_STATUS_CE) list.push(AI_TUTOR_ACTION.EXPLAIN_COMPILE)
       if (session.value?.accepted) list.push(AI_TUTOR_ACTION.REVIEW_CODE)
@@ -117,6 +123,8 @@ export default defineComponent({
     // 提问：先追加用户消息与空的 AI 消息，再按事件逐段填充
     const ask = async (action, content) => {
       if (asking.value) return
+      // 优化代码思路读取的是已保存的代码，未保存时先自动保存
+      if (action === AI_TUTOR_ACTION.OPTIMIZE_CODE && !(await props.beforeOptimize())) return
       const text = (content || '').trim()
       messages.value.push({ fromUser: true, action, content: text || ACTION_LABELS[action] })
       const reply = { fromUser: false, action, content: '', streaming: true, failed: '' }

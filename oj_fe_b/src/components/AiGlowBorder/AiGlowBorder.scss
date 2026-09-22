@@ -1,0 +1,72 @@
+// 环绕角度作为可动画的自定义属性，驱动锥形渐变顺时针旋转
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@keyframes ai-glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+.ai-glow-border {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--glow-radius);
+
+  .glow-ring,
+  .glow-halo {
+    position: absolute;
+    inset: -2px;
+    border-radius: calc(var(--glow-radius) + 2px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    background: conic-gradient(
+      from var(--glow-angle),
+      transparent 0%,
+      var(--glow-c1) 12%,
+      var(--glow-c2) 24%,
+      var(--glow-c3) 36%,
+      var(--glow-c4) 48%,
+      transparent 60%,
+      transparent 100%
+    );
+  }
+
+  // 只保留 2px 边框宽度的一圈
+  .glow-ring {
+    z-index: 2;
+    padding: 2px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+
+  // 外发光：同一光带模糊后放在内容下方
+  .glow-halo {
+    z-index: -1;
+    filter: blur(14px);
+  }
+
+  .glow-content {
+    position: relative;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  &.is-active {
+    .glow-ring,
+    .glow-halo {
+      opacity: 1;
+      transition: opacity 0.25s ease-out;
+      animation: ai-glow-spin var(--glow-duration) linear infinite;
+    }
+
+    .glow-halo {
+      opacity: 0.55;
+    }
+  }
+}

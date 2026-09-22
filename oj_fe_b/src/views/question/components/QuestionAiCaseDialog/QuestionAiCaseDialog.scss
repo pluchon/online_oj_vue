@@ -1,14 +1,22 @@
 // AI 生成用例弹窗样式
 @use '@/styles/variables' as *;
 
+// 主题色覆盖（复选框、按钮悬浮不用默认蓝色）
 .ai-case-body {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-3: #4f5a4e;
+  --el-color-primary-light-7: #b9bdb3;
+  --el-color-primary-light-8: #d3d5cc;
+  --el-color-primary-light-9: #{$primary-light};
+  --el-color-primary-dark-2: #{$primary-hover};
   display: flex;
   flex-direction: column;
   gap: 18px;
+  padding: 4px;
 }
 
 .case-state {
-  min-height: 160px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,6 +24,26 @@
   gap: 10px;
   font-size: 13px;
   color: $text-sub;
+}
+
+// 生成中的闪烁星光
+.sparkle {
+  font-size: 40px;
+  line-height: 1;
+  animation: sparkle-twinkle 1.6s ease-in-out infinite;
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    transform: scale(0.85) rotate(0deg);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.15) rotate(15deg);
+    opacity: 1;
+  }
 }
 
 .section-head {

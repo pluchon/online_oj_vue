@@ -1,4 +1,5 @@
 // 编译器代码块组件逻辑实现
+import { ElMessage } from 'element-plus'
 import { ref, shallowRef, computed, watch, defineComponent, onBeforeUnmount } from 'vue'
 import * as monaco from 'monaco-editor'
 import { VueMonacoEditor, loader } from '@guolao/vue-monaco-editor'
@@ -12,6 +13,11 @@ export default defineComponent({
     VueMonacoEditor
   },
   props: {
+    // 是否显示复制按钮
+    copyable: {
+      type: Boolean,
+      default: false,
+    },
     // 双向绑定代码文本
     modelValue: {
       type: String,
@@ -146,6 +152,16 @@ export default defineComponent({
     }
 
     // 主题快捷切换（明/暗）
+    // 复制当前代码到剪贴板
+    const copyCode = async () => {
+      try {
+        await navigator.clipboard.writeText(props.modelValue || '')
+        ElMessage.success('已复制')
+      } catch (err) {
+        ElMessage.error('复制失败，请手动选择代码复制')
+      }
+    }
+
     const toggleTheme = () => {
       currentTheme.value = currentTheme.value === 'vs-dark' ? 'vs' : 'vs-dark'
     }
@@ -195,6 +211,7 @@ export default defineComponent({
       handleValueChange,
       handleLanguageChange,
       toggleTheme,
+      copyCode,
       handleFormatCode
     }
   }

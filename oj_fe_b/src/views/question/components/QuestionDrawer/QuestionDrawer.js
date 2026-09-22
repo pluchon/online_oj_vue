@@ -7,6 +7,7 @@ import { CASE_TYPE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import CodeEditor from '@/components/CodeEditor'
+import AiGlowBorder from '@/components/AiGlowBorder'
 import QuestionAiDraftDialog from '../QuestionAiDraftDialog'
 import QuestionAiCaseDialog from '../QuestionAiCaseDialog'
 
@@ -48,6 +49,7 @@ export default defineComponent({
     QuestionDifficultySelect,
     MarkdownEditor,
     CodeEditor,
+    AiGlowBorder,
     QuestionAiDraftDialog,
     QuestionAiCaseDialog,
     Plus,
@@ -349,7 +351,7 @@ export default defineComponent({
       if (added.length < cases.length) {
         ElMessage.warning(`已达 ${MAX_CASES} 组上限，只加入了 ${added.length} 组`)
       } else {
-        ElMessage.success(`已加入 ${added.length} 组用例，默认为隐藏用例，可按需设为公开示例`)
+        ElMessage.success('已加入')
       }
     }
 

@@ -255,8 +255,11 @@
   }
 }
 
-// 输入框随内容伸缩（超过 5 行内部滚动），发送按钮与输入框等高
+// 输入框随内容伸缩（超过 5 行内部滚动），发送按钮与输入框等高；聚焦边框用墨绿而非默认蓝
 .tutor-input {
+  --el-color-primary: #354435;
+  --el-input-focus-border-color: #354435;
+  --el-input-hover-border-color: rgba(53, 68, 53, 0.5);
   flex-shrink: 0;
   display: flex;
   align-items: stretch;
