@@ -120,6 +120,22 @@ flowchart LR
     Verify --"通过"--> Submit["触发保存并刷新题目管理列表"]
 ```
 
+### 3. AI 辅助出题
+
+题目抽屉顶部的「AI 生成题面」与用例区的「AI 生成用例」只回填表单，保存仍走原有流程。
+
+```mermaid
+flowchart LR
+    Desc["一句话描述"] --> Draft["AI 生成题面草稿"]
+    Draft --> Fill["回填标题、难度、限制、描述、代码模板与 Main 函数"]
+    Fill --> Std["填写标程"]
+    Std --> Gen["AI 生成用例输入"]
+    Gen --> Run["标程在判题沙箱中运行得到预期输出"]
+    Run --> Preview["预览并勾选"]
+    Preview --> Append["加入用例列表（默认隐藏用例）"]
+    Append --> Save["检查后保存题目"]
+```
+
 ---
 
 ## 四、 学员端 (oj_fe_c) 架构与路由流转
