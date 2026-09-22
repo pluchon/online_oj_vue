@@ -4,8 +4,10 @@
     <div class="code-editor-header">
       <div class="header-left">
         <span v-if="title" class="editor-title">{{ title }}</span>
-        <!-- 编程语言选择器 -->
+        <!-- 编程语言：只有一种语言时直接显示名称，多种时才提供切换 -->
+        <span v-if="languageOptions.length === 1" class="lang-label">{{ languageOptions[0].label }}</span>
         <el-select
+          v-else
           v-model="currentLanguage"
           size="small"
           class="lang-select"

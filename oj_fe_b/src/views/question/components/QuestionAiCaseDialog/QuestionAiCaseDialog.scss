@@ -29,7 +29,10 @@
 
 .section-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed $border-color-light;
   gap: 10px;
   flex-wrap: wrap;
 
@@ -45,8 +48,36 @@
     color: $text-sub;
   }
 
+  // 重新生成：描边胶囊按钮，悬浮时浅墨绿底
   .btn-regenerate {
     margin-left: auto;
+    height: 28px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid $primary-color;
+    border-radius: 14px;
+    background: transparent;
+    color: $primary-color;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .btn-icon {
+      font-size: 12px;
+      transition: transform 0.4s ease;
+    }
+
+    &:hover {
+      background: $primary-light;
+
+      .btn-icon {
+        transform: rotate(180deg);
+      }
+    }
   }
 }
 

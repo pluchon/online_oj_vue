@@ -22,7 +22,10 @@
         <div class="section-head">
           <span class="section-title">预览 · {{ previewCases.length }} 组</span>
           <span v-if="droppedCount" class="section-desc">另有 {{ droppedCount }} 组因解法运行失败或输出过长被丢弃</span>
-          <el-button class="btn-regenerate" size="small" @click="handleGenerate">重新生成</el-button>
+          <button type="button" class="btn-regenerate" @click="handleGenerate">
+            <el-icon class="btn-icon"><RefreshRight /></el-icon>
+            <span>重新生成</span>
+          </button>
         </div>
         <div class="preview-list">
           <label

@@ -89,6 +89,17 @@
           </template>
         </el-table-column>
 
+        <!-- 参赛人数 -->
+        <el-table-column
+          label="参赛人数"
+          width="90"
+          align="center"
+        >
+          <template #default="{ row }">
+            <span class="tabular-text">{{ row.enterCount ?? 0 }}</span>
+          </template>
+        </el-table-column>
+
         <!-- 是否开赛 -->
         <el-table-column
           label="是否开赛"

@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import OjDialog from '@/components/OjDialog'
 import AiGlowBorder from '@/components/AiGlowBorder'
 import AiSparkleLoader from '@/components/AiSparkleLoader'
+import { RefreshRight } from '@element-plus/icons-vue'
 import { generateQuestionCasesApi } from '@/api/question'
 
 export default defineComponent({
@@ -12,6 +13,7 @@ export default defineComponent({
     OjDialog,
     AiGlowBorder,
     AiSparkleLoader,
+    RefreshRight,
   },
   emits: ['confirm'],
   setup(props, { emit }) {

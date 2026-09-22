@@ -203,7 +203,6 @@
               <el-form-item prop="defaultCode" class="code-form-item">
                 <CodeEditor
                   v-model="formData.defaultCode"
-                  title="用户默认代码模板"
                   path="inmemory://question/defaultCode.java"
                   height="260px"
                 />
@@ -214,7 +213,6 @@
               <el-form-item prop="mainFunc" class="code-form-item">
                 <CodeEditor
                   v-model="formData.mainFunc"
-                  title="Main 评测函数"
                   path="inmemory://question/mainFunc.java"
                   height="260px"
                 />
@@ -224,7 +222,6 @@
             <el-tab-pane v-if="aiSolution" label="AI 解法示例" name="aiSolution" :lazy="true">
               <CodeEditor
                 v-model="aiSolution"
-                title="AI 解法示例"
                 path="inmemory://question/aiSolution.java"
                 height="260px"
                 :read-only="true"
