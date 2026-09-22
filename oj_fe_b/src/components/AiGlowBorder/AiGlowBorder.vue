@@ -1,10 +1,14 @@
 <template>
-  <div class="ai-glow-border" :class="{ 'is-active': active }" :style="glowStyle">
-    <!-- 外发光（模糊后的环绕光带） -->
-    <span class="glow-halo" aria-hidden="true"></span>
-    <!-- 边框光带（只保留边框宽度的一圈） -->
-    <span class="glow-ring" aria-hidden="true"></span>
-    <div class="glow-content">
+  <div
+    class="ai-glow-border"
+    :class="{ 'is-active': active, 'is-overlay': overlay }"
+    :style="glowStyle"
+  >
+    <!-- 外发光：先裁成边框环再整体模糊，光晕只沿边框分布 -->
+    <span class="glow-halo" aria-hidden="true"><span class="glow-band"></span></span>
+    <!-- 边框光带 -->
+    <span class="glow-band glow-ring" aria-hidden="true"></span>
+    <div v-if="!overlay" class="glow-content">
       <slot />
     </div>
   </div>

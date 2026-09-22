@@ -1,4 +1,4 @@
-// 环绕角度作为可动画的自定义属性，驱动锥形渐变顺时针旋转
+// 环绕角度作为可动画的自定义属性，驱动锥形渐变沿边框顺时针旋转
 @property --glow-angle {
   syntax: '<angle>';
   inherits: true;
@@ -16,39 +16,49 @@
   isolation: isolate;
   border-radius: var(--glow-radius);
 
-  .glow-ring,
-  .glow-halo {
+  // 光带：锥形渐变裁成 2px 的边框环，只有一段彩色光沿边框移动
+  .glow-band {
     position: absolute;
     inset: -2px;
+    padding: 2px;
     border-radius: calc(var(--glow-radius) + 2px);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.6s ease-in-out;
     background: conic-gradient(
       from var(--glow-angle),
       transparent 0%,
-      var(--glow-c1) 12%,
-      var(--glow-c2) 24%,
-      var(--glow-c3) 36%,
-      var(--glow-c4) 48%,
-      transparent 60%,
+      var(--glow-c1) 8%,
+      var(--glow-c2) 16%,
+      var(--glow-c3) 24%,
+      var(--glow-c4) 32%,
+      transparent 40%,
       transparent 100%
     );
-  }
-
-  // 只保留 2px 边框宽度的一圈
-  .glow-ring {
-    z-index: 2;
-    padding: 2px;
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   }
 
-  // 外发光：同一光带模糊后放在内容下方
+  .glow-ring,
   .glow-halo {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+  }
+
+  .glow-ring {
+    z-index: 2;
+  }
+
+  // 外发光：对裁好的边框环整体模糊（模糊在裁剪之后，光晕向内外两侧柔和散开）
+  .glow-halo {
+    position: absolute;
+    inset: 0;
     z-index: -1;
-    filter: blur(14px);
+    border-radius: inherit;
+    filter: blur(8px);
+
+    .glow-band {
+      padding: 3px;
+    }
   }
 
   .glow-content {
@@ -57,16 +67,26 @@
     border-radius: inherit;
   }
 
+  // 叠加模式：铺满父元素，放在父元素内容之下，只在边框外侧可见
+  &.is-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    isolation: auto;
+  }
+
   &.is-active {
-    .glow-ring,
-    .glow-halo {
+    animation: ai-glow-spin var(--glow-duration) linear infinite;
+
+    .glow-ring {
       opacity: 1;
       transition: opacity 0.25s ease-out;
-      animation: ai-glow-spin var(--glow-duration) linear infinite;
     }
 
     .glow-halo {
-      opacity: 0.55;
+      opacity: 0.8;
+      transition: opacity 0.25s ease-out;
     }
   }
 }

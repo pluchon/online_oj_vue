@@ -22,6 +22,11 @@ export default defineComponent({
       type: Array,
       default: () => DEFAULT_COLORS,
     },
+    // 叠加模式：不包裹内容，只作为父元素（需已定位）边框上的光效层
+    overlay: {
+      type: Boolean,
+      default: false,
+    },
     // 环绕一圈的时长（秒）
     duration: {
       type: Number,

@@ -10,7 +10,7 @@
   >
     <AiGlowBorder :active="generating" :border-radius="8" class="ai-case-body">
       <div v-if="generating" class="case-state">
-        <span class="sparkle" aria-label="AI 生成中">✨</span>
+        <AiSparkleLoader :size="52" />
       </div>
 
       <div v-else-if="loadError" class="case-state">

@@ -12,6 +12,8 @@
   >
     <!-- 顶部居中加粗标题栏与右侧关闭叉号 -->
     <template #header>
+      <!-- AI 生成中的弹窗边框光效（相对整个弹窗定位） -->
+      <AiGlowBorder overlay :active="glowing" :border-radius="8" />
       <div class="oj-dialog-header">
         <div class="header-placeholder" />
         <h3 class="oj-dialog-title">

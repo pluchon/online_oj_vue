@@ -6,6 +6,7 @@
     confirm-text="生成草稿"
     loading-text="生成中，约需半分钟..."
     :confirm-loading="generating"
+    :glowing="generating"
     @confirm="handleGenerate"
   >
     <div class="ai-draft-body">

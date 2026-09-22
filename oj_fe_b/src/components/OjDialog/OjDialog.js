@@ -1,10 +1,12 @@
 // 通用古典弹窗组件逻辑
 import { defineComponent } from 'vue'
 import { Close } from '@element-plus/icons-vue'
+import AiGlowBorder from '@/components/AiGlowBorder'
 
 export default defineComponent({
   name: 'OjDialog',
   components: {
+    AiGlowBorder,
     Close,
   },
   props: {
@@ -50,6 +52,11 @@ export default defineComponent({
     },
     // 点击遮罩是否关闭弹窗
     closeOnClickModal: {
+      type: Boolean,
+      default: false,
+    },
+    // 是否在弹窗边框播放 AI 生成中光效
+    glowing: {
       type: Boolean,
       default: false,
     },

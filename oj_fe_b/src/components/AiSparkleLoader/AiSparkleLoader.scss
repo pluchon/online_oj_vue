@@ -1,0 +1,44 @@
+.ai-sparkle-loader {
+  display: block;
+  overflow: visible;
+
+  .star {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .star-main {
+    animation: sparkle-main 2.4s ease-in-out infinite;
+  }
+
+  .star-small {
+    opacity: 0;
+    animation: sparkle-twinkle 1.6s ease-in-out infinite;
+  }
+
+  .star-b {
+    animation-delay: 0.8s;
+  }
+}
+
+@keyframes sparkle-main {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(0.86);
+  }
+
+  50% {
+    transform: rotate(90deg) scale(1.04);
+  }
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
