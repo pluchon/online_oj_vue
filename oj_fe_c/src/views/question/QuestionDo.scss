@@ -356,6 +356,69 @@
             }
           }
 
+          // 相似题推荐
+          .similar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+          }
+
+          .similar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid rgba(195, 182, 164, 0.5);
+            border-radius: 6px;
+            background: rgba(255, 253, 249, 0.7);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+
+            &:hover {
+              border-color: #354435;
+              background: rgba(245, 240, 232, 0.9);
+            }
+
+            .diff-badge {
+              flex-shrink: 0;
+              font-family: 'Songti SC', 'SimSun', serif;
+              font-size: 12px;
+              font-weight: 600;
+              padding: 1px 8px;
+              border-radius: 3px;
+
+              &.diff-1 {
+                background: rgba(53, 68, 53, 0.08);
+                color: #354435;
+                border: 1px solid rgba(53, 68, 53, 0.28);
+              }
+
+              &.diff-2 {
+                background: rgba(184, 115, 51, 0.08);
+                color: #9c5b23;
+                border: 1px solid rgba(184, 115, 51, 0.28);
+              }
+
+              &.diff-3 {
+                background: rgba(158, 59, 50, 0.08);
+                color: #9e3b32;
+                border: 1px solid rgba(158, 59, 50, 0.28);
+              }
+            }
+
+            .similar-title {
+              flex: 1;
+              min-width: 0;
+              font-size: 13px;
+              color: #2e2921;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+
           // 示例卡片（自适应列数，窄屏自动单列）
           .examples-grid {
             display: grid;

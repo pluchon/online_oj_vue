@@ -40,7 +40,8 @@ import {
   submitQuestionApi,
   getSubmitResultApi,
   runQuestionApi,
-  getSubmitHistoryApi
+  getSubmitHistoryApi,
+  getSimilarQuestionsApi
 } from '@/api/question'
 import { getExamDetailApi } from '@/api/exam'
 
@@ -333,6 +334,19 @@ export default defineComponent({
     // 难度文案
     const getDiffText = (difficulty) => DIFFICULTY_OPTIONS.find((item) => item.value === Number(difficulty))?.label || '未知'
 
+    // 相似题推荐（登录且非竞赛模式时加载，失败时不显示）
+    const similarQuestions = ref([])
+    const loadSimilarQuestions = async (questionId) => {
+      similarQuestions.value = []
+      if (!isLogin.value || isExamMode.value || !questionId) return
+      try {
+        const list = await getSimilarQuestionsApi(questionId)
+        similarQuestions.value = Array.isArray(list) ? list : []
+      } catch (err) {
+        similarQuestions.value = []
+      }
+    }
+
     // 加载指定题目详情与代码模板
     const loadQuestionDetail = async (questionId) => {
       if (!questionId) return
@@ -348,6 +362,7 @@ export default defineComponent({
         historyList.value = []
         historyTotal.value = 0
         activeCaseIndex.value = 0
+        loadSimilarQuestions(data.questionId)
       } catch (err) {
         // 错误提示已由请求拦截器统一给出
       } finally {
@@ -723,6 +738,8 @@ export default defineComponent({
       handleBack,
       tutorOpen,
       tutorRefreshKey,
+      similarQuestions,
+      switchQuestion,
       getUserCode,
       toggleTutor
     }

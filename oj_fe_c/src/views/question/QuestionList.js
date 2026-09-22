@@ -162,7 +162,11 @@ export default defineComponent({
       fetchStats()
     })
 
+    // 当前结果是否为语义推荐（关键词无匹配时后端补充）
+    const isSemanticResult = computed(() => questionList.value.length > 0 && questionList.value.every(item => item.semantic))
+
     return {
+      isSemanticResult,
       isLogin,
       loading,
       loadError,

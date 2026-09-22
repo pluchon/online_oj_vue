@@ -83,3 +83,11 @@ export function getSubmitResultApi(submitId) {
     method: 'get'
   })
 }
+
+// 相似题推荐（需登录，排除当前题与已通过的题）
+export function getSimilarQuestionsApi(questionId) {
+  return request({
+    url: `/friend/question/${questionId}/similar`,
+    method: 'get'
+  })
+}

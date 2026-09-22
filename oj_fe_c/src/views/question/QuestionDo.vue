@@ -100,7 +100,26 @@
             </div>
           </div>
 
-          <!-- 3. 提示与约束 -->
+          <!-- 3. 相似题推荐（登录且非竞赛模式，无结果时不显示） -->
+          <div class="problem-section-block" v-if="similarQuestions.length > 0">
+            <h3 class="section-title">你可能还想做</h3>
+            <div class="similar-list">
+              <button
+                v-for="item in similarQuestions"
+                :key="item.questionId"
+                type="button"
+                class="similar-item"
+                @click="switchQuestion(item.questionId)"
+              >
+                <span class="diff-badge" :class="'diff-' + (item.difficulty || 1)">
+                  {{ item.difficultyDesc || getDiffText(item.difficulty || 1) }}
+                </span>
+                <span class="similar-title">{{ item.title }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. 提示与约束 -->
           <div class="problem-section-block" v-if="displayHints.length > 0">
             <h3 class="section-title">提示</h3>
             <ul class="hints-list">

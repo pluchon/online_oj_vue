@@ -51,6 +51,9 @@
         <!-- 题目列表长卷（固定承载区，不足10条时留白，无数据时居中铺满展示小蒙插画） -->
         <section v-loading="loading" class="question-stream">
           <div class="card-list">
+            <div v-if="isSemanticResult" class="semantic-tip">
+              没有找到完全匹配的题目，以下为相关推荐
+            </div>
             <template v-if="questionList && questionList.length">
               <div
                 v-for="row in questionList"

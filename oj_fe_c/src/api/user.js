@@ -40,7 +40,9 @@ export function updateUserProfileApi(data) {
   return request({
     url: '/friend/user/profile',
     method: 'put',
-    data
+    data,
+    // 昵称与个人介绍变化时后端会先做内容审核
+    timeout: 15000
   })
 }
 
@@ -50,6 +52,8 @@ export function uploadAvatarApi(formData) {
     url: '/friend/user/avatar',
     method: 'post',
     data: formData,
+    // 上传前后端会先做头像审核，耗时较长
+    timeout: 20000,
     headers: {
       'Content-Type': 'multipart/form-data'
     }
