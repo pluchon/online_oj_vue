@@ -1,12 +1,20 @@
 // C端题目检索与列表相关 API
 import request from '@/utils/request'
 
-// 分页检索题目列表（支持关键字、难度与分页）
+// 分页检索题目列表（支持关键字、难度、标签、做题状态与分页）
 export function getQuestionListApi(params) {
   return request({
     url: '/friend/question',
     method: 'get',
     params
+  })
+}
+
+// 查询全部题目标签（按分类排序，题库筛选用）
+export function getQuestionTagsApi() {
+  return request({
+    url: '/friend/question/tags',
+    method: 'get'
   })
 }
 

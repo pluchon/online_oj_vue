@@ -66,6 +66,14 @@
                 <el-icon><Coin /></el-icon>
                 {{ question?.spaceLimit ?? '--' }} MB
               </span>
+              <!-- 标签会提示解法，竞赛答题中不展示 -->
+              <template v-if="!isContestMode">
+                <span
+                  v-for="tag in question?.tags || []"
+                  :key="tag.tagId"
+                  class="topic-tag"
+                >{{ tag.tagName }}</span>
+              </template>
             </div>
           </div>
 

@@ -175,6 +175,18 @@
       background-color: rgba(230, 219, 203, 0.8) !important;
     }
   }
+
+  // 分组标题（如标签按分类分组）
+  .el-select-group__title {
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12px;
+    color: #8c7e6c;
+    letter-spacing: 1px;
+  }
+
+  .el-select-group__split-dash {
+    background-color: rgba(195, 180, 160, 0.5);
+  }
 }
 
 // 日期时间范围选择浮层全局羊皮纸主题

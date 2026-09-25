@@ -14,6 +14,14 @@ export const USER_QUESTION_STATUS = {
   IN_PROGRESS: 2
 }
 
+// 标签分类（后端 TagCategoryEnum）
+export const TAG_CATEGORY_OPTIONS = [
+  { value: 1, label: '数据结构' },
+  { value: 2, label: '算法' },
+  { value: 3, label: '数学' },
+  { value: 4, label: '其他' }
+]
+
 // 提交是否通过（后端 SubmitPassEnum）
 export const SUBMIT_PASS = {
   NOT_PASS: 0,

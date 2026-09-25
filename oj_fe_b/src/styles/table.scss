@@ -193,6 +193,17 @@
       padding: 6px 0;
       border-bottom: 1px solid rgba(215, 202, 185, 0.45) !important;
     }
+
+    // 固定列要不透明：Element Plus 固定列默认继承行背景，行是透明的，横向滚动时底下的内容会透出来
+    .el-table__body td.el-table__cell.el-table-fixed-column--left,
+    .el-table__body td.el-table__cell.el-table-fixed-column--right {
+      background-color: $table-fixed-bg !important;
+    }
+
+    .el-table__body tr:hover > td.el-table__cell.el-table-fixed-column--left,
+    .el-table__body tr:hover > td.el-table__cell.el-table-fixed-column--right {
+      background-color: $table-fixed-hover-bg !important;
+    }
   }
 
   // 表格操作列按钮统一规格与雅致矿彩规范
