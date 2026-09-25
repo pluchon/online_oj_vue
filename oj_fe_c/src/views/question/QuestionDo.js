@@ -33,7 +33,8 @@ import {
   JUDGE_STATUS_AC,
   JUDGE_STATUS_WA,
   PROGRAM_TYPE_JAVA,
-  EXAM_CONTEST_STATUS
+  EXAM_CONTEST_STATUS,
+  USER_QUESTION_STATUS
 } from '@/constants'
 import {
   getQuestionDetailApi,
@@ -45,7 +46,8 @@ import {
   getSubmitHistoryApi,
   getSimilarQuestionsApi,
   getCodeDraftApi,
-  saveCodeDraftApi
+  saveCodeDraftApi,
+  getQuestionEditorialApi
 } from '@/api/question'
 import { getExamDetailApi } from '@/api/exam'
 
@@ -413,6 +415,67 @@ export default defineComponent({
       }
     }
 
+    // 左侧题目卡片当前页签：'description'（题目描述）或 'editorial'（题解）
+    const specTab = ref('description')
+
+    // 官方题解：内容、加载中、加载失败文案、已加载的题目ID、已确认查看的题目ID
+    const editorial = ref(null)
+    const editorialLoading = ref(false)
+    const editorialError = ref('')
+    let editorialLoadedFor = null
+    let editorialConfirmedFor = null
+    const editorialHtml = computed(() => renderMarkdown(editorial.value?.content))
+
+    // 切题时回到题目描述并清空题解
+    const resetEditorial = () => {
+      specTab.value = 'description'
+      editorial.value = null
+      editorialError.value = ''
+      editorialLoadedFor = null
+      editorialConfirmedFor = null
+    }
+
+    // 加载当前题目的题解（没有题解时后端返回空）
+    const loadEditorial = async () => {
+      const questionId = question.value?.questionId
+      if (!questionId) return
+      editorialLoading.value = true
+      editorialError.value = ''
+      try {
+        const data = await getQuestionEditorialApi(questionId)
+        editorial.value = data && typeof data === 'object' ? data : null
+        editorialLoadedFor = questionId
+      } catch (err) {
+        // 错误提示已由请求拦截器统一给出，这里保留文案用于面板展示
+        editorial.value = null
+        editorialError.value = err?.message || '题解加载失败'
+      } finally {
+        editorialLoading.value = false
+      }
+    }
+
+    // 打开题解页签：还没通过的题先确认一次（同一道题只问一次）
+    const openEditorialTab = async () => {
+      if (specTab.value === 'editorial') return
+      const questionId = question.value?.questionId
+      if (!questionId) return
+      const solved = question.value?.userStatus === USER_QUESTION_STATUS.SOLVED
+      if (!solved && editorialConfirmedFor !== questionId) {
+        const choice = await confirmDialog.ask({
+          title: '查看题解',
+          message: '你还没有通过这道题，先看题解可能会影响独立思考。确定现在查看吗？',
+          confirmText: '查看题解',
+          cancelText: '再想想'
+        })
+        if (choice !== 'confirm') return
+        editorialConfirmedFor = questionId
+      }
+      specTab.value = 'editorial'
+      if (editorialLoadedFor !== questionId) {
+        loadEditorial()
+      }
+    }
+
     // 加载指定题目详情与代码模板
     const loadQuestionDetail = async (questionId) => {
       if (!questionId) return
@@ -420,6 +483,7 @@ export default defineComponent({
       try {
         const data = await getQuestionDetailApi(questionId)
         question.value = data
+        resetEditorial()
         setPageTitle(data.title || '做题')
         userCode.value = data.defaultCode || ''
         savedCode.value = userCode.value
@@ -763,6 +827,13 @@ export default defineComponent({
       nextQuestionId,
       userCode,
       confirmDialog,
+      specTab,
+      editorial,
+      editorialLoading,
+      editorialError,
+      editorialHtml,
+      openEditorialTab,
+      loadEditorial,
       isLongExample,
       editorTheme,
       isEditorFullscreen,

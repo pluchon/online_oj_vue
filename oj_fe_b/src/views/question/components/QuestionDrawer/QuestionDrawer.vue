@@ -239,6 +239,32 @@
             </el-tab-pane>
           </el-tabs>
         </AiGlowBorder>
+
+        <!-- 官方题解（选填，随题目一起保存；左写右看） -->
+        <el-form-item prop="editorial" class="editorial-form-item">
+          <template #label>
+            <div class="case-header-row">
+              <span class="case-header-title">官方题解 · 选填</span>
+              <button
+                type="button"
+                class="btn-ai btn-ai-editorial"
+                :disabled="editorialLoading || submitting"
+                @click="generateEditorial"
+              >
+                <el-icon class="btn-icon" :class="{ 'is-loading': editorialLoading }">
+                  <Loading v-if="editorialLoading" /><MagicStick v-else />
+                </el-icon>
+                <span>{{ editorialLoading ? '生成中...' : 'AI 生成题解' }}</span>
+              </button>
+            </div>
+          </template>
+          <AiGlowBorder :active="editorialLoading" :border-radius="6" class="editorial-wrapper">
+            <MarkdownEditor
+              v-model="formData.editorial"
+              height="320px"
+            />
+          </AiGlowBorder>
+        </el-form-item>
       </el-form>
     </div>
 

@@ -67,6 +67,16 @@
     margin-right: 8px;
   }
 
+  // 官方题解标题行右侧的 AI 生成按钮
+  .btn-ai-editorial {
+    margin-left: auto;
+  }
+
+  .editorial-wrapper {
+    display: block;
+    width: 100%;
+  }
+
   .question-form {
     :deep(.el-form-item) {
       margin-bottom: 20px;

@@ -18,6 +18,14 @@ export function getQuestionTagsApi() {
   })
 }
 
+// 查询题目官方题解（没有题解时返回空；题目正被进行中的竞赛使用时后端拒绝）
+export function getQuestionEditorialApi(questionId) {
+  return request({
+    url: `/friend/question/${questionId}/editorial`,
+    method: 'get'
+  })
+}
+
 // 题库总题数与当前用户已攻克、尝试中题数
 export function getQuestionStatsApi() {
   return request({

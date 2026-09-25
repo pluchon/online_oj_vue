@@ -77,64 +77,106 @@
             </div>
           </div>
 
-          <!-- 1. 题目描述 -->
-          <div class="problem-section-block">
-            <div class="description-text" v-html="formattedDescriptionHtml"></div>
+          <!-- 题目描述 / 题解 切换（竞赛答题中不提供题解） -->
+          <div v-if="!isContestMode" class="spec-tab-bar">
+            <button
+              type="button"
+              class="spec-tab"
+              :class="{ active: specTab === 'description' }"
+              @click="specTab = 'description'"
+            >
+              题目描述
+            </button>
+            <button
+              type="button"
+              class="spec-tab"
+              :class="{ active: specTab === 'editorial' }"
+              @click="openEditorialTab"
+            >
+              题解
+            </button>
           </div>
 
-          <!-- 2. 示例卡片 -->
-          <div class="problem-section-block" v-if="displayExamples.length > 0">
-            <h3 class="section-title">示例</h3>
-            <div class="examples-grid">
-              <div
-                v-for="(item, eIdx) in displayExamples"
-                :key="eIdx"
-                class="example-card"
-                :class="{ 'is-wide': isLongExample(item) }"
-              >
-                <div class="example-card-header">示例 {{ eIdx + 1 }}</div>
-                <div class="example-card-row">
-                  <span class="row-label">输入</span>
-                  <pre class="row-code">{{ item.input }}</pre>
-                </div>
-                <div class="example-card-row">
-                  <span class="row-label">输出</span>
-                  <pre class="row-code">{{ item.output }}</pre>
-                </div>
-                <div class="example-card-row" v-if="item.explain">
-                  <span class="row-label">解释</span>
-                  <span class="row-explain">{{ item.explain }}</span>
+          <!-- 题解面板：加载中、加载失败、暂无题解、正文 -->
+          <div
+            v-if="specTab === 'editorial' && !isContestMode"
+            v-loading="editorialLoading"
+            class="problem-section-block editorial-panel"
+          >
+            <div v-if="editorialError" class="editorial-state">
+              <span>{{ editorialError }}</span>
+              <button type="button" class="btn-editorial-retry" @click="loadEditorial">重试</button>
+            </div>
+            <div v-else-if="!editorialLoading && !editorial" class="editorial-state">
+              <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂无题解" class="editorial-empty-img" />
+              <span>这道题还没有官方题解</span>
+            </div>
+            <template v-else-if="editorial">
+              <div class="description-text editorial-text" v-html="editorialHtml"></div>
+              <div class="editorial-meta">更新于 {{ editorial.updateTime }}</div>
+            </template>
+          </div>
+
+          <template v-else>
+            <!-- 1. 题目描述 -->
+            <div class="problem-section-block">
+              <div class="description-text" v-html="formattedDescriptionHtml"></div>
+            </div>
+
+            <!-- 2. 示例卡片 -->
+            <div class="problem-section-block" v-if="displayExamples.length > 0">
+              <h3 class="section-title">示例</h3>
+              <div class="examples-grid">
+                <div
+                  v-for="(item, eIdx) in displayExamples"
+                  :key="eIdx"
+                  class="example-card"
+                  :class="{ 'is-wide': isLongExample(item) }"
+                >
+                  <div class="example-card-header">示例 {{ eIdx + 1 }}</div>
+                  <div class="example-card-row">
+                    <span class="row-label">输入</span>
+                    <pre class="row-code">{{ item.input }}</pre>
+                  </div>
+                  <div class="example-card-row">
+                    <span class="row-label">输出</span>
+                    <pre class="row-code">{{ item.output }}</pre>
+                  </div>
+                  <div class="example-card-row" v-if="item.explain">
+                    <span class="row-label">解释</span>
+                    <span class="row-explain">{{ item.explain }}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- 3. 相似题推荐（登录且非竞赛模式，无结果时不显示） -->
-          <div class="problem-section-block" v-if="similarQuestions.length > 0">
-            <h3 class="section-title">你可能还想做</h3>
-            <div class="similar-list">
-              <button
-                v-for="item in similarQuestions"
-                :key="item.questionId"
-                type="button"
-                class="similar-item"
-                @click="switchQuestion(item.questionId)"
-              >
-                <span class="diff-badge" :class="'diff-' + (item.difficulty || 1)">
-                  {{ item.difficultyDesc || getDiffText(item.difficulty || 1) }}
-                </span>
-                <span class="similar-title">{{ item.title }}</span>
-              </button>
+            <!-- 3. 相似题推荐（登录且非竞赛模式，无结果时不显示） -->
+            <div class="problem-section-block" v-if="similarQuestions.length > 0">
+              <h3 class="section-title">你可能还想做</h3>
+              <div class="similar-list">
+                <button
+                  v-for="item in similarQuestions"
+                  :key="item.questionId"
+                  type="button"
+                  class="similar-item"
+                  @click="switchQuestion(item.questionId)"
+                >
+                  <span class="diff-badge" :class="'diff-' + (item.difficulty || 1)">
+                    {{ item.difficultyDesc || getDiffText(item.difficulty || 1) }}
+                  </span>
+                  <span class="similar-title">{{ item.title }}</span>
+                </button>
+              </div>
             </div>
-          </div>
 
-          <!-- 4. 提示与约束 -->
-          <div class="problem-section-block" v-if="displayHints.length > 0">
-            <h3 class="section-title">提示</h3>
-            <ul class="hints-list">
-              <li v-for="(hint, hIdx) in displayHints" :key="hIdx">{{ hint }}</li>
-            </ul>
-          </div>
+            <!-- 4. 提示与约束 -->
+            <div class="problem-section-block" v-if="displayHints.length > 0">
+              <h3 class="section-title">提示</h3>
+              <ul class="hints-list">
+                <li v-for="(hint, hIdx) in displayHints" :key="hIdx">{{ hint }}</li>
+              </ul>
+            </div>
+          </template>
         </div>
 
         <!-- 赛中倒计时栏（固定在题目卡片底部，赛后练习不显示） -->
