@@ -317,6 +317,119 @@
           }
         }
 
+        // 题目描述 / 题解 页签
+        .spec-tab-bar {
+          display: flex;
+          gap: 4px;
+          margin-bottom: 18px;
+          border-bottom: 1px solid rgba(195, 182, 164, 0.5);
+
+          .spec-tab {
+            position: relative;
+            height: 34px;
+            padding: 0 14px;
+            border: none;
+            background: transparent;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-size: 14px;
+            color: #7d6f5e;
+            cursor: pointer;
+            transition: color 0.2s ease;
+
+            &:hover {
+              color: #221f1c;
+            }
+
+            &.active {
+              color: #221f1c;
+              font-weight: 700;
+
+              &::after {
+                content: '';
+                position: absolute;
+                left: 10px;
+                right: 10px;
+                bottom: -1px;
+                height: 2px;
+                border-radius: 1px;
+                background-color: #354435;
+              }
+            }
+          }
+        }
+
+        // 题解面板
+        .editorial-panel {
+          min-height: 220px;
+
+          .editorial-state {
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            font-size: 14px;
+            color: #7d6f5e;
+            text-align: center;
+
+            .editorial-empty-img {
+              width: 150px;
+              opacity: 0.9;
+            }
+
+            .btn-editorial-retry {
+              height: 30px;
+              padding: 0 16px;
+              border-radius: 15px;
+              border: 1px solid rgba(195, 180, 160, 0.75);
+              background: rgba(255, 255, 255, 0.75);
+              color: #4a4035;
+              font-family: 'Songti SC', 'SimSun', serif;
+              font-size: 13px;
+              cursor: pointer;
+
+              &:hover {
+                border-color: #354435;
+                color: #354435;
+              }
+            }
+          }
+
+          // 题解正文的小标题（思路、复杂度、代码）
+          .editorial-text {
+            :deep(h2) {
+              margin: 18px 0 10px;
+              padding-left: 10px;
+              border-left: 3px solid #354435;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-size: 15px;
+              font-weight: 700;
+              line-height: 1.2;
+              color: #221f1c;
+
+              &:first-child {
+                margin-top: 0;
+              }
+            }
+
+            :deep(h3) {
+              margin: 14px 0 8px;
+              font-size: 14.5px;
+              font-weight: 700;
+              color: #221f1c;
+            }
+          }
+
+          .editorial-meta {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #a89b88;
+            text-align: right;
+          }
+        }
+
         .problem-section-block {
           margin-bottom: 24px;
 

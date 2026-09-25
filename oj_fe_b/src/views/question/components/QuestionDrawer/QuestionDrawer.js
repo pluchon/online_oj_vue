@@ -2,7 +2,13 @@
 import { defineComponent, ref, reactive, computed, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete, MagicStick, Loading } from '@element-plus/icons-vue'
-import { addQuestionApi, editQuestionApi, getQuestionDetailApi, generateQuestionSolutionApi } from '@/api/question'
+import {
+  addQuestionApi,
+  editQuestionApi,
+  getQuestionDetailApi,
+  generateQuestionSolutionApi,
+  generateQuestionEditorialApi
+} from '@/api/question'
 import { CASE_TYPE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import QuestionTagSelect from '@/components/QuestionTagSelect'
@@ -30,6 +36,9 @@ const DEFAULT_MAIN_FUNC = [
 
 // 单题最多用例组数（与后端 QuestionAddDTO 校验一致）
 const MAX_CASES = 50
+
+// 题解最大长度（与后端 QuestionAddDTO 校验一致）
+const MAX_EDITORIAL_LENGTH = 10000
 
 // 生成一组空用例
 const createCase = (isSample = CASE_TYPE.SAMPLE) => ({
@@ -113,6 +122,7 @@ export default defineComponent({
       defaultCode: DEFAULT_CODE,
       mainFunc: DEFAULT_MAIN_FUNC,
       tagIds: [],
+      editorial: '',
     })
 
     // 表单响应式数据
@@ -189,6 +199,9 @@ export default defineComponent({
         { required: true, message: 'Main函数不能为空', trigger: 'blur' },
         { max: 5000, message: 'Main函数长度不能超过5000个字符', trigger: 'blur' },
       ],
+      editorial: [
+        { max: MAX_EDITORIAL_LENGTH, message: `题解长度不能超过${MAX_EDITORIAL_LENGTH}个字符`, trigger: 'blur' },
+      ],
     }
 
     // 初始表单内容快照，用于对比判断内容是否发生修改
@@ -206,6 +219,7 @@ export default defineComponent({
         defaultCode: (formData.defaultCode || '').trim(),
         mainFunc: (formData.mainFunc || '').trim(),
         tagIds: [...(formData.tagIds || [])],
+        editorial: (formData.editorial || '').trim(),
       })
     }
 
@@ -339,6 +353,42 @@ export default defineComponent({
       activeCodeTab.value = 'aiSolution'
     }
 
+    // AI 题解生成中
+    const editorialLoading = ref(false)
+
+    // 生成 AI 题解草稿：已有题解时先确认覆盖；有 AI 解法示例时作为参考解法
+    const generateEditorial = async () => {
+      if (!ensureAiFields(SOLUTION_FIELDS)) return
+      if ((formData.editorial || '').trim()) {
+        try {
+          await ElMessageBox.confirm('将用 AI 草稿覆盖当前的题解，确认吗？', '提示', {
+            confirmButtonText: '覆盖',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+        } catch (err) {
+          return
+        }
+      }
+      editorialLoading.value = true
+      try {
+        const result = await generateQuestionEditorialApi({
+          title: formData.title.trim(),
+          content: formData.content,
+          defaultCode: formData.defaultCode,
+          referenceCode: aiSolution.value || null,
+        })
+        if (result?.content) {
+          formData.editorial = result.content
+          ElMessage.success('题解草稿已填入，请检查后随题目一起保存')
+        }
+      } catch (err) {
+        // 错误提示已由请求拦截器统一给出
+      } finally {
+        editorialLoading.value = false
+      }
+    }
+
     // 打开 AI 生成用例弹窗（需先有标题、描述、代码模板与 Main 函数；已有解法示例时作为标程）
     const openCaseDialog = () => {
       if (!ensureAiFields(CASE_FIELDS)) return
@@ -404,6 +454,7 @@ export default defineComponent({
               defaultCode: formData.defaultCode,
               mainFunc: formData.mainFunc,
               tagIds: formData.tagIds,
+              editorial: formData.editorial,
             }
             await addQuestionApi(addPayload)
             ElMessage.success('新增题目成功')
@@ -421,6 +472,7 @@ export default defineComponent({
               defaultCode: formData.defaultCode,
               mainFunc: formData.mainFunc,
               tagIds: formData.tagIds,
+              editorial: formData.editorial,
             }
             await editQuestionApi(editPayload)
             ElMessage.success('修改题目成功')
@@ -485,6 +537,8 @@ export default defineComponent({
       appendAiCases,
       generateSolution,
       rememberSolution,
+      editorialLoading,
+      generateEditorial,
       open,
       handleSubmit,
       handleBeforeClose,

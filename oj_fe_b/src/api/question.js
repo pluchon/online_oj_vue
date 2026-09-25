@@ -67,6 +67,16 @@ export function generateQuestionSolutionApi(data) {
   })
 }
 
+// AI 生成题解草稿（有 AI 解法示例时作为参考解法；只回填编辑框，随题目保存）
+export function generateQuestionEditorialApi(data) {
+  return request({
+    url: '/system/question/ai/editorial',
+    method: 'post',
+    data,
+    timeout: AI_REQUEST_TIMEOUT_MS
+  })
+}
+
 // 删除题目接口
 export function deleteQuestionApi(questionId) {
   return request({
