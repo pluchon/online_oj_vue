@@ -46,6 +46,72 @@
               </button>
             </div>
           </div>
+
+          <!-- 第二行：标签筛选（左）与做题状态分段（右，登录后可用） -->
+          <div class="filter-sub-bar">
+            <!-- 标签分类 + 该分类下的标签（只选分类时看该分类下全部题目） -->
+            <div class="tag-filter-group">
+              <el-select
+                v-model="tagCategoryValue"
+                class="tag-select category-select"
+                popper-class="oj-select-popper"
+                @change="handleCategoryChange"
+              >
+                <el-option label="全部分类" :value="ALL" />
+                <el-option
+                  v-for="item in categoryOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+              <el-select
+                v-model="tagValue"
+                class="tag-select"
+                popper-class="oj-select-popper"
+                filterable
+                :loading="tagLoading"
+                @change="handleSearch"
+              >
+                <el-option label="全部标签" :value="ALL" />
+                <template v-if="tagCategoryValue === ALL">
+                  <el-option-group
+                    v-for="group in tagGroups"
+                    :key="group.value"
+                    :label="group.label"
+                  >
+                    <el-option
+                      v-for="tag in group.tags"
+                      :key="tag.tagId"
+                      :label="tag.tagName"
+                      :value="tag.tagId"
+                    />
+                  </el-option-group>
+                </template>
+                <template v-else>
+                  <el-option
+                    v-for="tag in visibleTags"
+                    :key="tag.tagId"
+                    :label="tag.tagName"
+                    :value="tag.tagId"
+                  />
+                </template>
+              </el-select>
+            </div>
+
+            <div v-if="isLogin" class="difficulty-segment status-segment">
+              <button
+                v-for="item in statusOptions"
+                :key="item.value ?? 'all'"
+                type="button"
+                class="segment-btn"
+                :class="{ active: queryParams.userStatus === item.value }"
+                @click="selectStatus(item.value)"
+              >
+                {{ item.label }}
+              </button>
+            </div>
+          </div>
         </section>
 
         <!-- 题目列表长卷（固定承载区，不足10条时留白，无数据时居中铺满展示小蒙插画） -->
@@ -64,6 +130,11 @@
                 <!-- 左侧：纯粹题目标题（彻底剔除无意义题目ID） -->
                 <div class="card-left">
                   <span class="question-title">{{ row.title }}</span>
+                  <span
+                    v-for="tag in row.tags || []"
+                    :key="tag.tagId"
+                    class="topic-tag"
+                  >{{ tag.tagName }}</span>
                 </div>
 
                 <!-- 中间：题目难度标签（置于攻克状态左侧） + 月相天文隐喻答题状态 + 时空限制 -->
@@ -177,6 +248,11 @@
             <el-icon class="tag-icon"><Cpu /></el-icon>
             <span>空间限制: {{ currentQuestion.spaceLimit }} MB</span>
           </span>
+          <span
+            v-for="tag in currentQuestion.tags || []"
+            :key="tag.tagId"
+            class="meta-tag topic-meta-tag"
+          >{{ tag.tagName }}</span>
         </div>
         <div class="dialog-content-box">
           <div class="content-text markdown-body" v-html="currentContentHtml"></div>

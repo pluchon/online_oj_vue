@@ -12,6 +12,17 @@
           @change="handleSearch"
         />
 
+        <!-- 题目标签筛选 -->
+        <span class="filter-label">题目标签</span>
+        <question-tag-select
+          v-model="queryParams.tagId"
+          v-model:category="queryParams.tagCategory"
+          :options="tagOptions"
+          :loading="tagLoading"
+          class="filter-tag-select"
+          @change="handleSearch"
+        />
+
         <!-- 题目标题搜索 -->
         <span class="filter-label">题目标题</span>
         <el-input
@@ -25,6 +36,10 @@
 
       <!-- 右侧筛选操作按钮组（添加按钮已移至表格左下角） -->
       <div class="filter-right">
+        <button class="btn-reset" @click="openTagManage">
+          <el-icon class="btn-icon"><CollectionTag /></el-icon>
+          <span>标签管理</span>
+        </button>
         <button class="btn-search" @click="handleSearch">
           <el-icon class="btn-icon"><Search /></el-icon>
           <span>搜索</span>
@@ -79,6 +94,23 @@
         >
           <template #default="{ row }">
             <difficulty-tag :difficulty="row.difficulty" :desc="row.difficultyDesc" />
+          </template>
+        </el-table-column>
+
+        <!-- 题目标签 -->
+        <el-table-column
+          label="标签"
+          min-width="180"
+        >
+          <template #default="{ row }">
+            <div v-if="row.tags && row.tags.length" class="tag-chip-list">
+              <span
+                v-for="tag in row.tags"
+                :key="tag.tagId"
+                class="tag-chip"
+              >{{ tag.tagName }}</span>
+            </div>
+            <span v-else class="tag-empty">—</span>
           </template>
         </el-table-column>
 
@@ -163,8 +195,12 @@
 
     <QuestionDrawer
       ref="questionDrawerRef"
+      :tag-options="tagOptions"
       @success="handleDrawerSuccess"
     />
+
+    <!-- 标签管理弹窗 -->
+    <TagManageDialog ref="tagManageRef" @changed="handleTagsChanged" />
   </div>
 </template>
 

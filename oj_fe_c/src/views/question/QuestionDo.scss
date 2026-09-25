@@ -302,6 +302,18 @@
                 color: #a89b88;
               }
             }
+
+            // 题目标签
+            .topic-tag {
+              padding: 1px 8px;
+              border-radius: 10px;
+              background-color: rgba(243, 237, 227, 0.9);
+              border: 1px solid rgba(195, 182, 164, 0.55);
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-size: 11.5px;
+              line-height: 18px;
+              color: #6b5e4f;
+            }
           }
         }
 

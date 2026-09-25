@@ -71,6 +71,15 @@
           </el-col>
         </el-row>
 
+        <!-- 题目标签（可选，最多 5 个） -->
+        <el-form-item label="题目标签" prop="tagIds">
+          <QuestionTagSelect
+            v-model="formData.tagIds"
+            :options="tagOptions"
+            multiple
+          />
+        </el-form-item>
+
         <!-- 题目描述：轻量级 Markdown 左右分栏编辑器（左侧编辑，右侧实时排版） -->
         <el-form-item label="题目描述" prop="content">
           <MarkdownEditor

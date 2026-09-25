@@ -1,7 +1,10 @@
 // AI 题面草稿弹窗样式
 @use '@/styles/variables' as *;
 
+// 主题色覆盖（输入框聚焦不用默认蓝色）
 .ai-draft-body {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-9: #{$primary-light};
   display: flex;
   flex-direction: column;
   gap: 10px;

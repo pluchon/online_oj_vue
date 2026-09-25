@@ -2,15 +2,18 @@
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, RefreshRight, Timer, Cpu } from '@element-plus/icons-vue'
-import { getQuestionListApi, getQuestionDetailApi, getQuestionStatsApi } from '@/api/question'
+import { getQuestionListApi, getQuestionDetailApi, getQuestionStatsApi, getQuestionTagsApi } from '@/api/question'
 import { useUserStore } from '@/store/user'
-import { DIFFICULTY_OPTIONS, USER_QUESTION_STATUS } from '@/constants'
+import { DIFFICULTY_OPTIONS, USER_QUESTION_STATUS, TAG_CATEGORY_OPTIONS } from '@/constants'
 import { renderMarkdown } from '@/utils/markdown'
 import AppNavbar from '@/components/AppNavbar'
 import OjDialog from '@/components/OjDialog'
 
 // 每页题目数
 const PAGE_SIZE = 10
+
+// 分类、标签下拉中"全部"选项的内部取值
+const ALL = 'ALL'
 
 // 做题状态展示（月相符号、文案、样式）
 const STATUS_DISPLAY = {
@@ -41,12 +44,13 @@ export default defineComponent({
     const questionList = ref([])
     const total = ref(0)
 
-    // 当前用户在全题库的已攻克、尝试中题数（登录后加载）
+    // 当前用户在全题库的已攻克、尝试中题数（登录后加载；按全题库计算，不随筛选变化）
     const stats = reactive({
+      totalCount: 0,
       solvedCount: 0,
       inProgressCount: 0
     })
-    const untouchedCount = computed(() => Math.max(0, total.value - stats.solvedCount - stats.inProgressCount))
+    const untouchedCount = computed(() => Math.max(0, stats.totalCount - stats.solvedCount - stats.inProgressCount))
 
     // 题目详情弹窗
     const detailVisible = ref(false)
@@ -56,12 +60,60 @@ export default defineComponent({
     // 难度筛选（含"全部"）
     const difficultyOptions = [{ label: '全部', value: null }, ...DIFFICULTY_OPTIONS]
 
+    // 做题状态筛选（含"全部"，登录后可用）
+    const statusOptions = [
+      { label: '全部', value: null },
+      { label: '已攻克', value: USER_QUESTION_STATUS.SOLVED },
+      { label: '尝试中', value: USER_QUESTION_STATUS.IN_PROGRESS },
+      { label: '未尝试', value: USER_QUESTION_STATUS.UNTOUCHED }
+    ]
+
+    // 标签选项（按分类分组，空分类不展示）
+    const tagOptions = ref([])
+    const tagLoading = ref(false)
+    const tagGroups = computed(() => TAG_CATEGORY_OPTIONS
+      .map(category => ({
+        value: category.value,
+        label: category.label,
+        tags: tagOptions.value.filter(tag => tag.category === category.value)
+      }))
+      .filter(group => group.tags.length > 0))
+
     // 查询条件
     const queryParams = reactive({
       pageNum: 1,
       keyword: '',
-      difficulty: null
+      difficulty: null,
+      tagCategory: null,
+      tagId: null,
+      userStatus: null
     })
+
+    // 分类与标签下拉的内部取值（"全部"对外统一为 null）
+    const tagCategoryValue = computed({
+      get: () => queryParams.tagCategory ?? ALL,
+      set: (val) => {
+        queryParams.tagCategory = val === ALL ? null : val
+      }
+    })
+    const tagValue = computed({
+      get: () => queryParams.tagId ?? ALL,
+      set: (val) => {
+        queryParams.tagId = val === ALL ? null : val
+      }
+    })
+
+    // 当前分类下的标签
+    const visibleTags = computed(() => tagOptions.value.filter(tag => tag.category === queryParams.tagCategory))
+
+    // 切换分类：已选标签不属于新分类时清空，再重新查询
+    const handleCategoryChange = () => {
+      const current = tagOptions.value.find(tag => tag.tagId === queryParams.tagId)
+      if (queryParams.tagCategory !== null && current?.category !== queryParams.tagCategory) {
+        queryParams.tagId = null
+      }
+      handleSearch()
+    }
 
     // 请求题目列表
     const fetchQuestionList = async () => {
@@ -72,7 +124,10 @@ export default defineComponent({
           pageNum: queryParams.pageNum,
           pageSize: PAGE_SIZE,
           keyword: queryParams.keyword.trim() || undefined,
-          difficulty: queryParams.difficulty ?? undefined
+          difficulty: queryParams.difficulty ?? undefined,
+          tagCategory: queryParams.tagCategory ?? undefined,
+          tagId: queryParams.tagId || undefined,
+          userStatus: isLogin.value ? (queryParams.userStatus ?? undefined) : undefined
         })
         questionList.value = res.rows
         total.value = res.total
@@ -91,10 +146,24 @@ export default defineComponent({
       if (!isLogin.value) return
       try {
         const data = await getQuestionStatsApi()
+        stats.totalCount = Number(data.totalCount) || 0
         stats.solvedCount = Number(data.solvedCount) || 0
         stats.inProgressCount = Number(data.inProgressCount) || 0
       } catch (err) {
         // 统计失败不影响列表浏览
+      }
+    }
+
+    // 加载标签选项（失败时筛选框为空，不影响列表浏览）
+    const fetchTags = async () => {
+      tagLoading.value = true
+      try {
+        const list = await getQuestionTagsApi()
+        tagOptions.value = Array.isArray(list) ? list : []
+      } catch (err) {
+        tagOptions.value = []
+      } finally {
+        tagLoading.value = false
       }
     }
 
@@ -114,6 +183,15 @@ export default defineComponent({
     const handleReset = () => {
       queryParams.keyword = ''
       queryParams.difficulty = null
+      queryParams.tagCategory = null
+      queryParams.tagId = null
+      queryParams.userStatus = null
+      handleSearch()
+    }
+
+    // 切换做题状态（再次点击当前状态取消筛选）
+    const selectStatus = (val) => {
+      queryParams.userStatus = queryParams.userStatus === val ? null : val
       handleSearch()
     }
 
@@ -158,6 +236,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
+      fetchTags()
       fetchQuestionList()
       fetchStats()
     })
@@ -179,11 +258,21 @@ export default defineComponent({
       currentQuestion,
       currentContentHtml,
       difficultyOptions,
+      statusOptions,
+      ALL,
+      categoryOptions: TAG_CATEGORY_OPTIONS,
+      tagGroups,
+      visibleTags,
+      tagCategoryValue,
+      tagValue,
+      tagLoading,
+      handleCategoryChange,
       queryParams,
       handleSearch,
       clearKeyword,
       handleReset,
       selectDifficulty,
+      selectStatus,
       handlePageChange,
       getDifficultyClass,
       getDifficultyText,

@@ -157,39 +157,92 @@
               }
             }
           }
+        }
 
-          // 右侧：难度分段控制器
-          .difficulty-segment {
+        // 分段控制器（第一行右侧难度、第二行右侧做题状态）
+        .difficulty-segment {
+          display: flex;
+          align-items: center;
+          background-color: rgba(243, 237, 227, 0.75);
+          border: 1px solid rgba(195, 182, 164, 0.6);
+          border-radius: 18px;
+          padding: 2px;
+
+          .segment-btn {
+            height: 28px;
+            padding: 0 14px;
+            border-radius: 14px;
+            border: none;
+            background: transparent;
+            color: #635749;
+            font-size: 13px;
+            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              color: #221f1c;
+            }
+
+            &.active {
+              background-color: #354435;
+              color: #faf7f2;
+              font-weight: 600;
+              box-shadow: 0 2px 6px rgba(53, 68, 53, 0.2);
+            }
+          }
+        }
+
+        // 第二行：标签筛选与做题状态
+        .filter-sub-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          margin-top: 12px;
+
+          .tag-filter-group {
             display: flex;
             align-items: center;
-            background-color: rgba(243, 237, 227, 0.75);
-            border: 1px solid rgba(195, 182, 164, 0.6);
-            border-radius: 18px;
-            padding: 2px;
+            gap: 10px;
+          }
 
-            .segment-btn {
-              height: 28px;
-              padding: 0 14px;
-              border-radius: 14px;
-              border: none;
-              background: transparent;
-              color: #635749;
-              font-size: 13px;
+          .tag-select {
+            width: 180px;
+
+            &.category-select {
+              width: 124px;
+            }
+
+            :deep(.el-select__wrapper) {
+              height: 36px;
+              border-radius: 18px;
+              background-color: rgba(255, 255, 255, 0.75);
+              box-shadow: 0 0 0 1px rgba(186, 172, 154, 0.65) inset;
               font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
-              cursor: pointer;
+              font-size: 13px;
+              color: #221f1c;
+              padding: 0 14px;
               transition: all 0.2s ease;
 
               &:hover {
-                color: #221f1c;
+                box-shadow: 0 0 0 1px #7b6f60 inset;
               }
 
-              &.active {
-                background-color: #354435;
-                color: #faf7f2;
-                font-weight: 600;
-                box-shadow: 0 2px 6px rgba(53, 68, 53, 0.2);
+              &.is-focused {
+                box-shadow: 0 0 0 1px #354435 inset, 0 2px 8px rgba(53, 68, 53, 0.08);
+                background-color: #ffffff;
+              }
+
+              .el-select__placeholder {
+                color: #4a4035;
+                font-weight: 500;
               }
             }
+          }
+
+          .status-segment {
+            margin-left: auto;
           }
         }
       }
@@ -243,6 +296,9 @@
             display: flex;
             align-items: center;
             flex: 1;
+            min-width: 0;
+            gap: 8px;
+            overflow: hidden;
 
             .question-title {
               font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
@@ -250,6 +306,22 @@
               font-weight: 600;
               color: #221f1c;
               letter-spacing: 0.5px;
+              white-space: nowrap;
+              margin-right: 4px;
+            }
+
+            // 题目标签小签（跟在标题后，空间不够时被截断）
+            .topic-tag {
+              flex-shrink: 0;
+              padding: 1px 8px;
+              border-radius: 10px;
+              background-color: rgba(243, 237, 227, 0.9);
+              border: 1px solid rgba(195, 182, 164, 0.55);
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-size: 11.5px;
+              line-height: 18px;
+              color: #6b5e4f;
+              white-space: nowrap;
             }
           }
 
@@ -624,6 +696,14 @@
         color: #635749;
         background-color: rgba(240, 234, 222, 0.85);
         border: 1px solid rgba(195, 180, 160, 0.75);
+      }
+
+      // 题目标签徽章
+      &.topic-meta-tag {
+        color: #6b5e4f;
+        background-color: rgba(243, 237, 227, 0.9);
+        border: 1px solid rgba(195, 182, 164, 0.55);
+        border-radius: 10px;
       }
     }
   }

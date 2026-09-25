@@ -49,6 +49,10 @@
         }
       }
 
+      .filter-tag-select {
+        width: 300px;
+      }
+
       .filter-input {
         width: 220px;
 
@@ -240,6 +244,30 @@
         text-decoration: underline;
         text-underline-offset: 3px;
       }
+    }
+
+    // 题目标签小签
+    .tag-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .tag-chip {
+      display: inline-block;
+      padding: 1px 8px;
+      border: 1px solid rgba(188, 172, 154, 0.7);
+      border-radius: 3px;
+      background-color: rgba(238, 230, 218, 0.6);
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 12px;
+      line-height: 18px;
+      color: #4a4033;
+      white-space: nowrap;
+    }
+
+    .tag-empty {
+      color: #b3a795;
     }
 
     .action-cell {

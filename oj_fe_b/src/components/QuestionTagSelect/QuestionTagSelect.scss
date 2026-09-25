@@ -1,0 +1,94 @@
+// 题目标签选择器样式（分类 + 标签两段，与难度选择器保持同一质感）
+.tag-cascade {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.cascade-category {
+  width: 112px;
+  flex-shrink: 0;
+}
+
+.cascade-tag-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.cascade-tag {
+  width: 100%;
+}
+
+.cascade-category,
+.cascade-tag {
+  :deep(.el-select__wrapper) {
+    background-color: rgba(246, 241, 233, 0.85) !important;
+    border: 1px solid rgba(188, 172, 154, 0.65) !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    min-height: 36px;
+    padding: 0 12px;
+    transition: all 0.2s ease;
+
+    &.is-focused {
+      border-color: #24201c !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 1px #24201c inset !important;
+    }
+  }
+
+  :deep(.el-select__selected-item),
+  :deep(.el-select__placeholder) {
+    color: #24201c;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  :deep(.el-select__placeholder.is-transparent) {
+    color: #a39784;
+    font-weight: 400;
+  }
+
+  :deep(.el-select__caret) {
+    color: #7b6f60 !important;
+  }
+}
+
+// 多选：已选标签的小签；只给标签区右侧留出计数位置，下拉箭头保持原位
+.is-multiple {
+  .cascade-tag :deep(.el-select__selection) {
+    padding-right: 46px;
+  }
+
+  .cascade-tag :deep(.el-tag) {
+    background-color: rgba(230, 219, 203, 0.8);
+    border: 1px solid rgba(188, 172, 154, 0.7);
+    color: #3d352b;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12.5px;
+
+    .el-tag__close {
+      color: #7b6f60;
+
+      &:hover {
+        background-color: #8c7e6c;
+        color: #fbf8f2;
+      }
+    }
+  }
+}
+
+// 已选数量 / 上限（位于下拉箭头左侧）
+.tag-count {
+  position: absolute;
+  top: 18px;
+  right: 36px;
+  transform: translateY(-50%);
+  font-family: 'Courier New', Courier, monospace, serif;
+  font-size: 12px;
+  color: #8c7e6c;
+  pointer-events: none;
+}

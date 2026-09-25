@@ -25,6 +25,11 @@
               <el-icon><Coin /></el-icon>
               {{ question.spaceLimit ?? '--' }} MB
             </span>
+            <span
+              v-for="tag in question.tags || []"
+              :key="tag.tagId"
+              class="topic-tag"
+            >{{ tag.tagName }}</span>
           </div>
         </div>
 

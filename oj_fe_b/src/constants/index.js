@@ -26,6 +26,20 @@ export const EXAM_STATUS = {
   PUBLISHED: 1
 }
 
+// 标签分类（后端 TagCategory）
+export const TAG_CATEGORY_OPTIONS = [
+  { value: 1, label: '数据结构' },
+  { value: 2, label: '算法' },
+  { value: 3, label: '数学' },
+  { value: 4, label: '其他' }
+]
+
+// 每道题最多标签数（与后端 QuestionAddDTO 校验一致）
+export const MAX_QUESTION_TAGS = 5
+
+// 标签名称最大长度（与后端 TagSaveDTO 校验一致）
+export const MAX_TAG_NAME_LENGTH = 20
+
 // 题目用例类型（后端 QuestionCaseType）
 export const CASE_TYPE = {
   HIDDEN: 0,

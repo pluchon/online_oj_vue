@@ -5,6 +5,7 @@ import { Plus, Delete, MagicStick, Loading } from '@element-plus/icons-vue'
 import { addQuestionApi, editQuestionApi, getQuestionDetailApi, generateQuestionSolutionApi } from '@/api/question'
 import { CASE_TYPE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
+import QuestionTagSelect from '@/components/QuestionTagSelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import CodeEditor from '@/components/CodeEditor'
 import AiGlowBorder from '@/components/AiGlowBorder'
@@ -47,6 +48,7 @@ export default defineComponent({
   name: 'QuestionDrawer',
   components: {
     QuestionDifficultySelect,
+    QuestionTagSelect,
     MarkdownEditor,
     CodeEditor,
     AiGlowBorder,
@@ -56,6 +58,13 @@ export default defineComponent({
     Delete,
     MagicStick,
     Loading,
+  },
+  props: {
+    // 标签选项（由题目管理页加载后传入）
+    tagOptions: {
+      type: Array,
+      default: () => []
+    },
   },
   emits: ['success'],
   setup(props, { emit }) {
@@ -103,6 +112,7 @@ export default defineComponent({
       content: '',
       defaultCode: DEFAULT_CODE,
       mainFunc: DEFAULT_MAIN_FUNC,
+      tagIds: [],
     })
 
     // 表单响应式数据
@@ -195,6 +205,7 @@ export default defineComponent({
         testCases: JSON.stringify(testCaseList.value),
         defaultCode: (formData.defaultCode || '').trim(),
         mainFunc: (formData.mainFunc || '').trim(),
+        tagIds: [...(formData.tagIds || [])],
       })
     }
 
@@ -219,6 +230,7 @@ export default defineComponent({
           }
         })
         testCaseList.value = toEditableCases(detail.cases)
+        formData.tagIds = (detail.tags || []).map(tag => tag.tagId)
         recordSnapshot()
       } catch (err) {
         // 错误提示已由请求拦截器统一给出
@@ -255,7 +267,7 @@ export default defineComponent({
     const applyDraft = async (draft) => {
       if ((formData.title || '').trim() || (formData.content || '').trim()) {
         try {
-          await ElMessageBox.confirm('将用 AI 草稿覆盖当前的标题、描述、限制与代码模板，确认吗？', '提示', {
+          await ElMessageBox.confirm('将用 AI 草稿覆盖当前的标题、描述、限制、代码模板与标签，确认吗？', '提示', {
             confirmButtonText: '覆盖',
             cancelButtonText: '取消',
             type: 'warning',
@@ -270,6 +282,12 @@ export default defineComponent({
           formData[key] = draft[key]
         }
       })
+      // 建议标签只保留当前仍存在的标签
+      const suggestedTagIds = (draft.tagIds || [])
+        .filter(tagId => props.tagOptions.some(tag => tag.tagId === tagId))
+      if (suggestedTagIds.length) {
+        formData.tagIds = suggestedTagIds
+      }
       nextTick(() => {
         formRef.value?.clearValidate()
       })
@@ -385,6 +403,7 @@ export default defineComponent({
               cases,
               defaultCode: formData.defaultCode,
               mainFunc: formData.mainFunc,
+              tagIds: formData.tagIds,
             }
             await addQuestionApi(addPayload)
             ElMessage.success('新增题目成功')
@@ -401,6 +420,7 @@ export default defineComponent({
               cases,
               defaultCode: formData.defaultCode,
               mainFunc: formData.mainFunc,
+              tagIds: formData.tagIds,
             }
             await editQuestionApi(editPayload)
             ElMessage.success('修改题目成功')
