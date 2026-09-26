@@ -2,7 +2,7 @@
 import { defineComponent, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { User, SwitchButton, Document, Trophy } from '@element-plus/icons-vue'
+import { User, SwitchButton, Document, Trophy, Tickets } from '@element-plus/icons-vue'
 import { logoutApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
 
@@ -12,7 +12,8 @@ export default defineComponent({
     User,
     SwitchButton,
     Document,
-    Trophy
+    Trophy,
+    Tickets
   },
   setup() {
     const router = useRouter()

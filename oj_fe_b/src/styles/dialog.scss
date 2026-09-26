@@ -279,3 +279,40 @@
     letter-spacing: 0.5px !important;
   }
 }
+
+// 重判确认框：列出影响范围，内容左对齐
+.el-message-box.rejudge-message-box {
+  width: 500px !important;
+  max-width: calc(100vw - 32px) !important;
+
+  .el-message-box__content,
+  .el-message-box__message,
+  .el-message-box__message p {
+    text-align: left !important;
+  }
+
+  .rejudge-confirm {
+    font-size: 14px;
+    line-height: 1.7;
+
+    strong {
+      color: #1f1c19;
+    }
+  }
+
+  .rejudge-list {
+    margin: 6px 0 10px !important;
+    padding-left: 20px !important;
+    color: #3d352b;
+  }
+
+  .rejudge-skip {
+    color: #7a6e60;
+  }
+
+  .rejudge-tip {
+    margin-top: 6px !important;
+    font-size: 13px;
+    color: #8b352a;
+  }
+}

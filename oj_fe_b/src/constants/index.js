@@ -58,6 +58,28 @@ export const CASE_TYPE = {
   SAMPLE: 1
 }
 
+// 提交记录通过状态（后端 SubmitPassEnum）
+export const SUBMIT_PASS = {
+  NOT_PASS: 0,
+  PASS: 1,
+  JUDGING: 2
+}
+
+// 判题结论（后端 JudgeStatusEnum），tone 决定列表里的颜色
+export const JUDGE_STATUS_OPTIONS = [
+  { value: 1, label: '运行通过', tone: 'pass' },
+  { value: 2, label: '答案错误', tone: 'fail' },
+  { value: 3, label: '运行超时', tone: 'warn' },
+  { value: 4, label: '内存超限', tone: 'warn' },
+  { value: 5, label: '编译错误', tone: 'muted' },
+  { value: 6, label: '运行异常', tone: 'fail' },
+  { value: 7, label: '输出超限', tone: 'warn' },
+  { value: 8, label: '系统错误', tone: 'muted' }
+]
+
+// 提交来源筛选里「练习」选项的取值（其余选项为竞赛ID）
+export const SUBMIT_SOURCE_PRACTICE = 'practice'
+
 // AI 接口请求超时（模型生成与标程运行耗时较长）
 export const AI_REQUEST_TIMEOUT_MS = 120000
 

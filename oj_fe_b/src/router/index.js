@@ -43,6 +43,12 @@ const router = createRouter({
           component: () => import('../views/exam/ExamManage.vue'),
           meta: { title: '竞赛管理' },
         },
+        {
+          path: 'submit',
+          name: 'SubmitManage',
+          component: () => import('../views/submit/SubmitManage.vue'),
+          meta: { title: '提交管理' },
+        },
       ],
     },
     {

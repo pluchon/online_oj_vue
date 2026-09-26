@@ -30,6 +30,11 @@
             <el-icon class="menu-icon"><Trophy /></el-icon>
             <span class="menu-text">竞赛管理</span>
           </el-menu-item>
+
+          <el-menu-item index="/system/submit">
+            <el-icon class="menu-icon"><Tickets /></el-icon>
+            <span class="menu-text">提交管理</span>
+          </el-menu-item>
         </el-menu>
       </div>
     </el-aside>

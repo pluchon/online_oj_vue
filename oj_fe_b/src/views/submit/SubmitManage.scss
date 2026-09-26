@@ -1,0 +1,322 @@
+// 提交管理页面样式（沿用用户管理与题目管理的画卷展台风格）
+.submit-manage-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 106px);
+  background-color: rgba(253, 250, 244, 0.9);
+  border: 1px solid rgba(195, 180, 160, 0.55);
+  border-radius: 6px;
+  box-shadow:
+    0 12px 36px -10px rgba(50, 42, 32, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  padding: 24px 32px 20px;
+  box-sizing: border-box;
+
+  // 检索筛选横栏
+  .filter-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .filter-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+
+      .filter-label {
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #3d352b;
+        letter-spacing: 1px;
+      }
+
+      .filter-select {
+        :deep(.el-select__wrapper) {
+          background-color: rgba(246, 241, 233, 0.85) !important;
+          border: 1px solid rgba(188, 172, 154, 0.65) !important;
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          min-height: 36px;
+
+          &.is-focused {
+            border-color: #24201c !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 1px #24201c inset !important;
+          }
+        }
+      }
+
+      .filter-question {
+        width: 220px;
+      }
+
+      .filter-verdict {
+        width: 120px;
+      }
+
+      .filter-source {
+        width: 190px;
+      }
+
+      .filter-input {
+        width: 150px;
+
+        :deep(.el-input__wrapper) {
+          background-color: rgba(246, 241, 233, 0.85) !important;
+          border: 1px solid rgba(188, 172, 154, 0.65) !important;
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          height: 36px;
+          padding: 0 12px;
+          transition: all 0.2s ease;
+
+          &.is-focus {
+            border-color: #24201c !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 1px #24201c inset !important;
+          }
+        }
+
+        :deep(.el-input__inner) {
+          color: #24201c;
+          font-size: 13.5px;
+        }
+      }
+    }
+
+    .filter-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .btn-search,
+      .btn-reset {
+        height: 36px;
+        padding: 0 20px;
+        border-radius: 4px;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 13.5px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        .btn-icon {
+          font-size: 14px;
+        }
+      }
+
+      .btn-search {
+        background-color: #272f26;
+        border: 1px solid #272f26;
+        color: #f7f4ee;
+
+        &:hover {
+          background-color: #171c16;
+          border-color: #171c16;
+          transform: translateY(-1px);
+        }
+      }
+
+      .btn-reset {
+        background-color: rgba(246, 241, 233, 0.85);
+        border: 1px solid rgba(188, 172, 154, 0.7);
+        color: #3d352b;
+
+        &:hover {
+          background-color: #eee7db;
+          border-color: #8c7e6c;
+          color: #1f1c19;
+        }
+      }
+    }
+  }
+
+  // 左下角按题重判按钮
+  .rejudge-wrap {
+    display: inline-flex;
+  }
+
+  .btn-rejudge {
+    height: 34px;
+    padding: 0 20px;
+    background-color: #8b352a;
+    border: 1px solid #8b352a;
+    color: #f7f4ee;
+    border-radius: 4px;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .btn-icon {
+      font-size: 14px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #6e251c;
+      border-color: #6e251c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 53, 42, 0.18);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  // 表格展示区
+  .table-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    border-radius: 4px;
+
+    :deep(.el-table) {
+      background: transparent !important;
+
+      &::before {
+        display: none !important;
+      }
+
+      .el-table__inner-wrapper::before {
+        display: none !important;
+      }
+
+      th.editorial-table-header {
+        background-color: #ebe1d1 !important;
+        color: #26221d !important;
+        font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        height: 44px;
+        border: none !important;
+        border-bottom: 1px solid rgba(195, 180, 160, 0.7) !important;
+      }
+
+      .editorial-table-row {
+        height: 50px;
+        background-color: transparent !important;
+        transition: background-color 0.2s ease;
+
+        &:hover > td.el-table__cell {
+          background-color: rgba(238, 230, 218, 0.45) !important;
+        }
+      }
+
+      .el-table__cell {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(215, 202, 185, 0.45) !important;
+      }
+    }
+
+    .tabular-text {
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 13px;
+      color: #383025;
+      letter-spacing: 0.5px;
+    }
+
+    .user-nickname-text {
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #201d1a;
+    }
+
+    .muted-text {
+      color: #8a7d6e;
+    }
+
+    .source-practice {
+      font-size: 13px;
+      color: #5b6b5e;
+    }
+
+    .source-exam {
+      font-size: 13px;
+      color: #6b4f2a;
+    }
+
+    // 判题结论配色
+    .verdict-text {
+      font-size: 13px;
+      font-weight: 600;
+
+      &.verdict-pass {
+        color: #2e8b57;
+      }
+
+      &.verdict-fail {
+        color: #c0392b;
+      }
+
+      &.verdict-warn {
+        color: #b9770e;
+      }
+
+      &.verdict-muted {
+        color: #7a6e60;
+      }
+
+      &.verdict-judging {
+        color: #2f6a9e;
+      }
+    }
+
+    .action-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .action-btn {
+        width: 72px;
+        height: 26px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+        user-select: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+        &.btn-action-view {
+          background-color: #344a3e;
+          border-color: #344a3e;
+          color: #ffffff;
+
+          &:hover {
+            background-color: #24352b;
+            border-color: #24352b;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(52, 74, 62, 0.28);
+          }
+        }
+      }
+    }
+  }
+}
