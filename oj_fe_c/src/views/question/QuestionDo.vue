@@ -50,7 +50,7 @@
         </div>
 
         <!-- 题目内部可滚动内容区 -->
-        <div class="spec-scroll-body">
+        <div class="spec-scroll-body" :class="{ 'is-editorial': specTab === 'editorial' && !isContestMode }">
           <!-- 标题与属性区 -->
           <div class="problem-header-area">
             <h1 class="problem-main-title">{{ question?.title }}</h1>
@@ -66,14 +66,14 @@
                 <el-icon><Coin /></el-icon>
                 {{ question?.spaceLimit ?? '--' }} MB
               </span>
-              <!-- 标签会提示解法，竞赛答题中不展示 -->
-              <template v-if="!isContestMode">
+              <!-- 标签靠这一行最右侧；标签会提示解法，竞赛答题中不展示 -->
+              <div v-if="!isContestMode && question?.tags?.length" class="topic-tag-group">
                 <span
-                  v-for="tag in question?.tags || []"
+                  v-for="tag in question.tags"
                   :key="tag.tagId"
                   class="topic-tag"
                 >{{ tag.tagName }}</span>
-              </template>
+              </div>
             </div>
           </div>
 
@@ -95,6 +95,21 @@
             >
               题解
             </button>
+            <!-- 右侧：题解的更新时间；加载失败或被竞赛拦住时换成刷新按钮 -->
+            <div v-if="specTab === 'editorial'" class="spec-tab-extra">
+              <button
+                v-if="editorialError"
+                type="button"
+                class="btn-editorial-refresh"
+                title="刷新"
+                aria-label="刷新题解"
+                :disabled="editorialLoading"
+                @click="loadEditorial"
+              >
+                <el-icon :class="{ 'is-loading': editorialLoading }"><RefreshRight /></el-icon>
+              </button>
+              <span v-else-if="editorial" class="editorial-update-time">更新于 {{ editorial.updateTime }}</span>
+            </div>
           </div>
 
           <!-- 题解面板：加载中、加载失败、暂无题解、正文 -->
@@ -104,17 +119,20 @@
             class="problem-section-block editorial-panel"
           >
             <div v-if="editorialError" class="editorial-state">
+              <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂时无法查看题解" class="editorial-empty-img" />
               <span>{{ editorialError }}</span>
-              <button type="button" class="btn-editorial-retry" @click="loadEditorial">重试</button>
             </div>
             <div v-else-if="!editorialLoading && !editorial" class="editorial-state">
               <img src="@/assets/images/c_not_data_xiaomeng.png" alt="暂无题解" class="editorial-empty-img" />
               <span>这道题还没有官方题解</span>
             </div>
-            <template v-else-if="editorial">
-              <div class="description-text editorial-text" v-html="editorialHtml"></div>
-              <div class="editorial-meta">更新于 {{ editorial.updateTime }}</div>
-            </template>
+            <div
+              v-else-if="editorial"
+              ref="editorialRef"
+              class="description-text editorial-text"
+              @click="handleCopyClick"
+              v-html="editorialHtml"
+            ></div>
           </div>
 
           <template v-else>

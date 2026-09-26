@@ -3,6 +3,7 @@ import { ElMessage } from 'element-plus'
 import { ref, shallowRef, computed, watch, defineComponent, onBeforeUnmount } from 'vue'
 import * as monaco from 'monaco-editor'
 import { VueMonacoEditor, loader } from '@guolao/vue-monaco-editor'
+import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 
 // 配置使用本地安装的 monaco-editor 依赖，保障离线与内网稳定运行
 loader.config({ monaco })
@@ -10,7 +11,9 @@ loader.config({ monaco })
 export default defineComponent({
   name: 'CodeEditor',
   components: {
-    VueMonacoEditor
+    VueMonacoEditor,
+    ArrowDown,
+    ArrowUp
   },
   props: {
     // 是否显示复制按钮
@@ -43,10 +46,20 @@ export default defineComponent({
       type: String,
       default: ''
     },
-    // 编辑器区域高度
+    // 编辑器区域高度（可折叠时为收起状态的高度）
     height: {
       type: String,
       default: '280px'
+    },
+    // 代码超出高度时是否提供「展开 / 收起」（展开后按内容增高，不超过 maxHeight，再多则在编辑器内滚动）
+    collapsible: {
+      type: Boolean,
+      default: false
+    },
+    // 展开后的最大高度
+    maxHeight: {
+      type: String,
+      default: '560px'
     },
     // 是否只读
     readOnly: {
@@ -77,6 +90,32 @@ export default defineComponent({
 
     // ResizeObserver 实例引用，保障尺寸变化与标签切换时自动重新计算布局
     let resizeObserver = null
+
+    // 代码内容高度、行数与是否展开（用于折叠）
+    const contentHeight = ref(0)
+    const lineCount = ref(0)
+    const expanded = ref(false)
+
+    // 把 '260px' 这类高度转成数字
+    const toPx = (value) => parseInt(value, 10) || 0
+
+    // 代码是否超出收起高度（超出才显示展开按钮）
+    const canExpand = computed(() => props.collapsible && contentHeight.value > toPx(props.height) + 1)
+
+    // 编辑器实际高度：展开时按内容增高，不超过最大高度
+    const bodyHeight = computed(() => {
+      if (!props.collapsible || !expanded.value) return props.height
+      const target = Math.min(Math.max(contentHeight.value, toPx(props.height)), toPx(props.maxHeight))
+      return `${target}px`
+    })
+
+    // 是否处于折叠状态（可折叠且没有展开）
+    const isCollapsed = computed(() => props.collapsible && !expanded.value)
+
+    // 展开 / 收起
+    const toggleExpanded = () => {
+      expanded.value = !expanded.value
+    }
 
     // 生成或指定 Monaco 内存模型唯一路径
     const editorPath = computed(() => {
@@ -109,10 +148,14 @@ export default defineComponent({
         renderWhitespace: 'selection',
         contextmenu: true,
         scrollbar: {
-          vertical: 'visible',
+          // 折叠状态下代码区不滚动（不响应滚轮、隐藏竖向滚动条），滚轮直接滚动页面；展开后才在代码区内滚动
+          vertical: isCollapsed.value ? 'hidden' : 'visible',
           horizontal: 'visible',
           verticalScrollbarSize: 8,
-          horizontalScrollbarSize: 8
+          horizontalScrollbarSize: 8,
+          handleMouseWheel: !isCollapsed.value,
+          // 编辑器滚到头或内容不需要滚动时，把滚轮交给页面，避免鼠标停在代码区时页面滑不动
+          alwaysConsumeMouseWheel: false
         },
         ...props.options
       }
@@ -122,6 +165,14 @@ export default defineComponent({
     const handleEditorMount = (editor, monacoInstance) => {
       editorRef.value = editor
       monacoRef.value = monacoInstance
+
+      // 记录内容高度与行数，决定是否显示展开按钮
+      const syncContentSize = () => {
+        contentHeight.value = editor.getContentHeight()
+        lineCount.value = editor.getModel()?.getLineCount() || 0
+      }
+      syncContentSize()
+      editor.onDidContentSizeChange(syncContentSize)
 
       // 监听容器尺寸变化（应对 el-tabs 切换、抽屉打开动画完成等时刻），即时自动重排
       if (typeof window !== 'undefined' && window.ResizeObserver) {
@@ -212,7 +263,12 @@ export default defineComponent({
       handleLanguageChange,
       toggleTheme,
       copyCode,
-      handleFormatCode
+      handleFormatCode,
+      bodyHeight,
+      canExpand,
+      expanded,
+      lineCount,
+      toggleExpanded
     }
   }
 })

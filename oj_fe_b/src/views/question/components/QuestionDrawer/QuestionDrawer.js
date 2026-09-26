@@ -200,6 +200,7 @@ export default defineComponent({
         { max: 5000, message: 'Main函数长度不能超过5000个字符', trigger: 'blur' },
       ],
       editorial: [
+        { required: true, whitespace: true, message: '官方题解不能为空', trigger: ['blur', 'change'] },
         { max: MAX_EDITORIAL_LENGTH, message: `题解长度不能超过${MAX_EDITORIAL_LENGTH}个字符`, trigger: 'blur' },
       ],
     }

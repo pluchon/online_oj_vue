@@ -13,7 +13,10 @@
           class="editor-textarea"
           @input="handleInput"
           @keydown="handleKeydown"
+          @scroll="syncPreviewScroll"
         />
+        <!-- 隐藏的镜像层：与输入框同宽同字体，用来量出每一行源文本（含自动换行）的位置 -->
+        <div ref="mirrorRef" class="editor-mirror" aria-hidden="true" />
       </div>
     </div>
 
@@ -22,7 +25,7 @@
       <div class="half-header">
         <span class="header-title">实时排版预览</span>
       </div>
-      <div class="half-body preview-scroll">
+      <div ref="previewRef" class="half-body preview-scroll">
         <div v-if="htmlContent" class="markdown-body" v-html="htmlContent" />
         <div v-else class="preview-placeholder">
           <span>（预览区域）</span>

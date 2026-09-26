@@ -9,7 +9,7 @@
         <!-- 典雅一体化筛选工具栏 -->
         <section class="filter-panel">
           <div class="filter-top-bar">
-            <!-- 搜索与重置操作组合区（搜索框在最左侧且内部带放大镜图标，搜索按钮在右侧，重置按钮在搜索按钮右侧） -->
+            <!-- 左：搜索框、搜索与重置 -->
             <div class="search-action-group">
               <div class="search-box">
                 <el-icon class="search-icon"><Search /></el-icon>
@@ -32,84 +32,50 @@
               </button>
             </div>
 
-            <!-- 右侧：难度分段控制器 -->
-            <div class="difficulty-segment">
-              <button
-                v-for="item in difficultyOptions"
-                :key="item.value ?? 'all'"
-                type="button"
-                class="segment-btn"
-                :class="{ active: queryParams.difficulty === item.value }"
-                @click="selectDifficulty(item.value)"
-              >
-                {{ item.label }}
-              </button>
-            </div>
-          </div>
-
-          <!-- 第二行：标签筛选（左）与做题状态分段（右，登录后可用） -->
-          <div class="filter-sub-bar">
-            <!-- 标签分类 + 该分类下的标签（只选分类时看该分类下全部题目） -->
-            <div class="tag-filter-group">
+            <!-- 右：难度、标签（分类 → 标签）、做题状态（登录后可用），选中非"全部"时高亮 -->
+            <div class="filter-select-group">
               <el-select
-                v-model="tagCategoryValue"
-                class="tag-select category-select"
+                v-model="difficultyValue"
+                class="pill-select"
+                :class="{ 'is-active': queryParams.difficulty !== null }"
                 popper-class="oj-select-popper"
-                @change="handleCategoryChange"
+                @change="handleSearch"
               >
-                <el-option label="全部分类" :value="ALL" />
+                <el-option label="全部难度" :value="ALL" />
                 <el-option
-                  v-for="item in categoryOptions"
+                  v-for="item in difficultyOptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 />
               </el-select>
-              <el-select
-                v-model="tagValue"
-                class="tag-select"
-                popper-class="oj-select-popper"
+              <el-cascader
+                v-model="tagPath"
+                :options="tagCascaderOptions"
+                :show-all-levels="false"
+                class="pill-select pill-cascader"
+                :class="{ 'is-active': queryParams.tagCategory !== null || queryParams.tagId !== null }"
+                popper-class="oj-cascader-popper"
+                placeholder="全部标签"
                 filterable
-                :loading="tagLoading"
+                @change="handleSearch"
+              />
+              <el-select
+                v-if="isLogin"
+                v-model="statusValue"
+                class="pill-select"
+                :class="{ 'is-active': queryParams.userStatus !== null }"
+                popper-class="oj-select-popper"
                 @change="handleSearch"
               >
-                <el-option label="全部标签" :value="ALL" />
-                <template v-if="tagCategoryValue === ALL">
-                  <el-option-group
-                    v-for="group in tagGroups"
-                    :key="group.value"
-                    :label="group.label"
-                  >
-                    <el-option
-                      v-for="tag in group.tags"
-                      :key="tag.tagId"
-                      :label="tag.tagName"
-                      :value="tag.tagId"
-                    />
-                  </el-option-group>
-                </template>
-                <template v-else>
-                  <el-option
-                    v-for="tag in visibleTags"
-                    :key="tag.tagId"
-                    :label="tag.tagName"
-                    :value="tag.tagId"
-                  />
-                </template>
+                <el-option label="全部状态" :value="ALL" />
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
-            </div>
-
-            <div v-if="isLogin" class="difficulty-segment status-segment">
-              <button
-                v-for="item in statusOptions"
-                :key="item.value ?? 'all'"
-                type="button"
-                class="segment-btn"
-                :class="{ active: queryParams.userStatus === item.value }"
-                @click="selectStatus(item.value)"
-              >
-                {{ item.label }}
-              </button>
             </div>
           </div>
         </section>
@@ -235,25 +201,6 @@
       @confirm="goToQuestionDo(currentQuestion)"
     >
       <div v-if="currentQuestion" class="detail-body">
-        <!-- 弹窗元数据标签行（难度、时间限制、空间限制均做成标签徽章） -->
-        <div class="dialog-meta-row">
-          <span class="meta-tag diff-tag" :class="getDifficultyClass(currentQuestion.difficulty)">
-            {{ currentQuestion.difficultyDesc || getDifficultyText(currentQuestion.difficulty) }}
-          </span>
-          <span class="meta-tag limit-tag">
-            <el-icon class="tag-icon"><Timer /></el-icon>
-            <span>时间限制: {{ currentQuestion.timeLimit }} ms</span>
-          </span>
-          <span class="meta-tag limit-tag">
-            <el-icon class="tag-icon"><Cpu /></el-icon>
-            <span>空间限制: {{ currentQuestion.spaceLimit }} MB</span>
-          </span>
-          <span
-            v-for="tag in currentQuestion.tags || []"
-            :key="tag.tagId"
-            class="meta-tag topic-meta-tag"
-          >{{ tag.tagName }}</span>
-        </div>
         <div class="dialog-content-box">
           <div class="content-text markdown-body" v-html="currentContentHtml"></div>
         </div>

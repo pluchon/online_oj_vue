@@ -87,3 +87,57 @@
     }
   }
 }
+
+// 级联下拉（题库「分类 → 标签」筛选）：与下拉菜单同一套羊皮纸配色，去掉默认蓝色
+.oj-cascader-popper.el-popper {
+  --el-color-primary: #354435;
+  --el-color-primary-light-9: #eef3ee;
+  background: #fcfaf6 !important;
+  border: 1px solid rgba(195, 180, 160, 0.75) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 28px -4px rgba(45, 38, 30, 0.14), 0 2px 8px rgba(45, 38, 30, 0.05) !important;
+  overflow: hidden;
+
+  .el-popper__arrow {
+    display: none !important;
+  }
+
+  .el-cascader-menu {
+    min-width: 132px;
+    border-right: 1px solid rgba(195, 180, 160, 0.45);
+  }
+
+  .el-cascader-node {
+    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'STSong', 'Noto Serif SC', serif;
+    font-size: 13px;
+    color: #4a4035;
+    margin: 2px 6px;
+    border-radius: 6px;
+
+    &:not(.is-disabled):hover,
+    &:not(.is-disabled):focus {
+      background-color: rgba(240, 234, 222, 0.85);
+      color: #221f1c;
+    }
+
+    &.in-active-path,
+    &.is-active {
+      color: #354435;
+      font-weight: 600;
+      background-color: rgba(53, 68, 53, 0.08);
+    }
+  }
+
+  // 可搜索时的候选列表
+  .el-cascader__suggestion-item {
+    font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+    font-size: 13px;
+    color: #4a4035;
+
+    &:hover,
+    &.is-checked {
+      color: #354435;
+      background-color: rgba(53, 68, 53, 0.08);
+    }
+  }
+}

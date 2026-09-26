@@ -36,10 +36,6 @@
 
       <!-- 右侧筛选操作按钮组（添加按钮已移至表格左下角） -->
       <div class="filter-right">
-        <button class="btn-reset" @click="openTagManage">
-          <el-icon class="btn-icon"><CollectionTag /></el-icon>
-          <span>标签管理</span>
-        </button>
         <button class="btn-search" @click="handleSearch">
           <el-icon class="btn-icon"><Search /></el-icon>
           <span>搜索</span>
@@ -182,10 +178,17 @@
       @pagination="loadQuestionList"
     >
       <template #left>
-        <button class="btn-add-bottom" @click="handleAddQuestion">
-          <el-icon class="btn-icon"><Plus /></el-icon>
-          <span>添加题目</span>
-        </button>
+        <!-- 左下角功能区：新增与各类管理入口 -->
+        <div class="bottom-actions">
+          <button class="btn-add-bottom" @click="handleAddQuestion">
+            <el-icon class="btn-icon"><Plus /></el-icon>
+            <span>添加题目</span>
+          </button>
+          <button class="btn-manage-bottom" @click="openTagManage">
+            <el-icon class="btn-icon"><CollectionTag /></el-icon>
+            <span>标签管理</span>
+          </button>
+        </div>
       </template>
     </pagination>
 

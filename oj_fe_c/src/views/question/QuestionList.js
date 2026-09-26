@@ -1,4 +1,4 @@
-// C 端题库列表：检索、难度筛选、做题状态与详情预览
+// C 端题库列表：检索、难度 / 标签 / 做题状态筛选与详情预览
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, RefreshRight, Timer, Cpu } from '@element-plus/icons-vue'
@@ -57,27 +57,36 @@ export default defineComponent({
     const currentQuestion = ref(null)
     const currentContentHtml = computed(() => renderMarkdown(currentQuestion.value?.content))
 
-    // 难度筛选（含"全部"）
-    const difficultyOptions = [{ label: '全部', value: null }, ...DIFFICULTY_OPTIONS]
+    // 难度筛选选项（"全部难度"在模板中单独列出）
+    const difficultyOptions = DIFFICULTY_OPTIONS
 
-    // 做题状态筛选（含"全部"，登录后可用）
+    // 做题状态筛选选项（登录后可用，"全部状态"在模板中单独列出）
     const statusOptions = [
-      { label: '全部', value: null },
       { label: '已攻克', value: USER_QUESTION_STATUS.SOLVED },
       { label: '尝试中', value: USER_QUESTION_STATUS.IN_PROGRESS },
       { label: '未尝试', value: USER_QUESTION_STATUS.UNTOUCHED }
     ]
 
-    // 标签选项（按分类分组，空分类不展示）
+    // 标签选项
     const tagOptions = ref([])
-    const tagLoading = ref(false)
-    const tagGroups = computed(() => TAG_CATEGORY_OPTIONS
-      .map(category => ({
-        value: category.value,
-        label: category.label,
-        tags: tagOptions.value.filter(tag => tag.category === category.value)
-      }))
-      .filter(group => group.tags.length > 0))
+
+    // 标签级联选项：第一级为分类（空分类不展示），第二级为"全部该分类"与该分类下的标签
+    const tagCascaderOptions = computed(() => [
+      { value: ALL, label: '全部标签' },
+      ...TAG_CATEGORY_OPTIONS
+        .map(category => ({
+          value: category.value,
+          label: category.label,
+          children: tagOptions.value
+            .filter(tag => tag.category === category.value)
+            .map(tag => ({ value: tag.tagId, label: tag.tagName }))
+        }))
+        .filter(group => group.children.length > 0)
+        .map(group => ({
+          ...group,
+          children: [{ value: ALL, label: `全部${group.label}` }, ...group.children]
+        }))
+    ])
 
     // 查询条件
     const queryParams = reactive({
@@ -89,31 +98,39 @@ export default defineComponent({
       userStatus: null
     })
 
-    // 分类与标签下拉的内部取值（"全部"对外统一为 null）
-    const tagCategoryValue = computed({
-      get: () => queryParams.tagCategory ?? ALL,
+    // 下拉框的内部取值："全部"对外统一为 null
+    const toSelectValue = (val) => (val === null || val === undefined ? ALL : val)
+    const fromSelectValue = (val) => (val === ALL ? null : val)
+    const difficultyValue = computed({
+      get: () => toSelectValue(queryParams.difficulty),
       set: (val) => {
-        queryParams.tagCategory = val === ALL ? null : val
+        queryParams.difficulty = fromSelectValue(val)
       }
     })
-    const tagValue = computed({
-      get: () => queryParams.tagId ?? ALL,
+    const statusValue = computed({
+      get: () => toSelectValue(queryParams.userStatus),
       set: (val) => {
-        queryParams.tagId = val === ALL ? null : val
+        queryParams.userStatus = fromSelectValue(val)
       }
     })
 
-    // 当前分类下的标签
-    const visibleTags = computed(() => tagOptions.value.filter(tag => tag.category === queryParams.tagCategory))
-
-    // 切换分类：已选标签不属于新分类时清空，再重新查询
-    const handleCategoryChange = () => {
-      const current = tagOptions.value.find(tag => tag.tagId === queryParams.tagId)
-      if (queryParams.tagCategory !== null && current?.category !== queryParams.tagCategory) {
-        queryParams.tagId = null
+    // 标签级联的取值：['ALL'] 全部标签；[分类, 'ALL'] 只按分类；[分类, 标签ID] 按标签
+    const tagPath = computed({
+      get: () => {
+        if (queryParams.tagCategory === null) return [ALL]
+        return [queryParams.tagCategory, queryParams.tagId ?? ALL]
+      },
+      set: (path) => {
+        const [category, tagId] = path || []
+        if (category === undefined || category === ALL) {
+          queryParams.tagCategory = null
+          queryParams.tagId = null
+          return
+        }
+        queryParams.tagCategory = category
+        queryParams.tagId = tagId === undefined || tagId === ALL ? null : tagId
       }
-      handleSearch()
-    }
+    })
 
     // 请求题目列表
     const fetchQuestionList = async () => {
@@ -154,16 +171,13 @@ export default defineComponent({
       }
     }
 
-    // 加载标签选项（失败时筛选框为空，不影响列表浏览）
+    // 加载标签选项（失败时只剩"全部标签"，不影响列表浏览）
     const fetchTags = async () => {
-      tagLoading.value = true
       try {
         const list = await getQuestionTagsApi()
         tagOptions.value = Array.isArray(list) ? list : []
       } catch (err) {
         tagOptions.value = []
-      } finally {
-        tagLoading.value = false
       }
     }
 
@@ -186,18 +200,6 @@ export default defineComponent({
       queryParams.tagCategory = null
       queryParams.tagId = null
       queryParams.userStatus = null
-      handleSearch()
-    }
-
-    // 切换做题状态（再次点击当前状态取消筛选）
-    const selectStatus = (val) => {
-      queryParams.userStatus = queryParams.userStatus === val ? null : val
-      handleSearch()
-    }
-
-    // 切换难度（再次点击当前难度取消筛选）
-    const selectDifficulty = (val) => {
-      queryParams.difficulty = queryParams.difficulty === val ? null : val
       handleSearch()
     }
 
@@ -260,19 +262,14 @@ export default defineComponent({
       difficultyOptions,
       statusOptions,
       ALL,
-      categoryOptions: TAG_CATEGORY_OPTIONS,
-      tagGroups,
-      visibleTags,
-      tagCategoryValue,
-      tagValue,
-      tagLoading,
-      handleCategoryChange,
+      difficultyValue,
+      statusValue,
+      tagPath,
+      tagCascaderOptions,
       queryParams,
       handleSearch,
       clearKeyword,
       handleReset,
-      selectDifficulty,
-      selectStatus,
       handlePageChange,
       getDifficultyClass,
       getDifficultyText,

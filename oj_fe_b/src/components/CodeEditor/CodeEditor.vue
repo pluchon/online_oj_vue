@@ -62,7 +62,7 @@
     </div>
 
     <!-- Monaco 代码编辑器核心挂载容器 -->
-    <div class="code-editor-body" :style="{ height: height }">
+    <div class="code-editor-body" :style="{ height: bodyHeight }">
       <VueMonacoEditor
         :value="modelValue"
         :path="editorPath"
@@ -73,6 +73,17 @@
         @mount="handleEditorMount"
       />
     </div>
+
+    <!-- 代码超出收起高度时的展开 / 收起 -->
+    <button
+      v-if="canExpand"
+      type="button"
+      class="code-editor-toggle"
+      @click="toggleExpanded"
+    >
+      <el-icon class="toggle-icon"><ArrowUp v-if="expanded" /><ArrowDown v-else /></el-icon>
+      <span>{{ expanded ? '收起' : `展开（共 ${lineCount} 行）` }}</span>
+    </button>
   </div>
 </template>
 

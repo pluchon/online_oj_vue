@@ -161,6 +161,46 @@
     width: 100%;
     overflow: hidden;
     background-color: #ffffff;
+    transition: height 0.2s ease;
+  }
+
+  // 展开 / 收起条（位于代码区下方）
+  .code-editor-toggle {
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-top: 1px solid rgba(188, 172, 154, 0.5);
+    background-color: #f3ece0;
+    color: #6b5f50;
+    font-family: 'Songti SC', 'SimSun', serif;
+    font-size: 12.5px;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .toggle-icon {
+      font-size: 12px;
+    }
+
+    &:hover {
+      color: #24201c;
+      background-color: #ebe1d1;
+    }
+  }
+
+  &.is-dark .code-editor-toggle {
+    background-color: #252320;
+    border-top-color: #38322c;
+    color: #b0a495;
+
+    &:hover {
+      color: #f7f4ee;
+      background-color: #2e2a26;
+    }
   }
 }
 

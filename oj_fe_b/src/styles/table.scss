@@ -200,8 +200,11 @@
       background-color: $table-fixed-bg !important;
     }
 
-    .el-table__body tr:hover > td.el-table__cell.el-table-fixed-column--left,
-    .el-table__body tr:hover > td.el-table__cell.el-table-fixed-column--right {
+    // 悬浮行：各页面的行悬浮规则（半透明底色）选择器更长，这里多写几级让固定列仍然不透明
+    .el-table__body-wrapper .el-table__body tr.el-table__row:hover > td.el-table__cell.el-table-fixed-column--left,
+    .el-table__body-wrapper .el-table__body tr.el-table__row:hover > td.el-table__cell.el-table-fixed-column--right,
+    .el-table__body-wrapper .el-table__body tr.el-table__row.hover-row > td.el-table__cell.el-table-fixed-column--left,
+    .el-table__body-wrapper .el-table__body tr.el-table__row.hover-row > td.el-table__cell.el-table-fixed-column--right {
       background-color: $table-fixed-hover-bg !important;
     }
   }

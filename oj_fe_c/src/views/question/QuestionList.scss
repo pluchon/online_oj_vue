@@ -38,7 +38,8 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 20px;
+          flex-wrap: wrap;
+          gap: 14px 20px;
 
           // 搜索与重置操作组合区（输入框在左带放大镜，搜索按钮在其右侧，重置按钮在搜索右侧）
           .search-action-group {
@@ -159,62 +160,19 @@
           }
         }
 
-        // 分段控制器（第一行右侧难度、第二行右侧做题状态）
-        .difficulty-segment {
+        // 右侧筛选下拉：难度、标签（分类 → 标签）、做题状态
+        .filter-select-group {
           display: flex;
           align-items: center;
-          background-color: rgba(243, 237, 227, 0.75);
-          border: 1px solid rgba(195, 182, 164, 0.6);
-          border-radius: 18px;
-          padding: 2px;
+          gap: 10px;
+          flex-shrink: 0;
 
-          .segment-btn {
-            height: 28px;
-            padding: 0 14px;
-            border-radius: 14px;
-            border: none;
-            background: transparent;
-            color: #635749;
-            font-size: 13px;
-            font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
-            cursor: pointer;
-            transition: all 0.2s ease;
+          // el-cascader 的根节点不带本组件的 scoped 属性，所以 :deep 要包在 .pill-select 上
+          :deep(.pill-select) {
+            width: 116px;
 
-            &:hover {
-              color: #221f1c;
-            }
-
-            &.active {
-              background-color: #354435;
-              color: #faf7f2;
-              font-weight: 600;
-              box-shadow: 0 2px 6px rgba(53, 68, 53, 0.2);
-            }
-          }
-        }
-
-        // 第二行：标签筛选与做题状态
-        .filter-sub-bar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          margin-top: 12px;
-
-          .tag-filter-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-          }
-
-          .tag-select {
-            width: 180px;
-
-            &.category-select {
-              width: 124px;
-            }
-
-            :deep(.el-select__wrapper) {
+            .el-select__wrapper,
+            .el-input__wrapper {
               height: 36px;
               border-radius: 18px;
               background-color: rgba(255, 255, 255, 0.75);
@@ -229,20 +187,44 @@
                 box-shadow: 0 0 0 1px #7b6f60 inset;
               }
 
-              &.is-focused {
+              &.is-focused,
+              &.is-focus {
                 box-shadow: 0 0 0 1px #354435 inset, 0 2px 8px rgba(53, 68, 53, 0.08);
                 background-color: #ffffff;
               }
-
-              .el-select__placeholder {
-                color: #4a4035;
-                font-weight: 500;
-              }
             }
+
+            .el-select__placeholder,
+            .el-select__selected-item,
+            .el-input__inner {
+              color: #4a4035;
+              font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+              font-weight: 500;
+            }
+
+            .el-input__inner::placeholder {
+              color: #4a4035;
+            }
+
           }
 
-          .status-segment {
-            margin-left: auto;
+          :deep(.pill-select.pill-cascader) {
+            width: 168px;
+          }
+
+          // 选了非"全部"的条件时用墨绿描边提示，一眼看出哪些筛选在生效
+          :deep(.pill-select.is-active) {
+            .el-select__wrapper,
+            .el-input__wrapper {
+              background-color: rgba(53, 68, 53, 0.06);
+              box-shadow: 0 0 0 1px rgba(53, 68, 53, 0.55) inset;
+            }
+
+            .el-select__selected-item,
+            .el-input__inner {
+              color: #354435;
+              font-weight: 600;
+            }
           }
         }
       }
@@ -643,71 +625,6 @@
 
 // 弹窗内部详情样式
 .detail-body {
-  .dialog-meta-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-
-    .meta-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
-      letter-spacing: 0.5px;
-
-      .tag-icon {
-        font-size: 13px;
-      }
-
-      &.diff-tag {
-        font-weight: 600;
-
-        &.diff-easy {
-          color: #2f7255;
-          background-color: rgba(47, 114, 85, 0.1);
-          border: 1px solid rgba(47, 114, 85, 0.25);
-        }
-
-        &.diff-medium {
-          color: #a66b24;
-          background-color: rgba(166, 107, 36, 0.1);
-          border: 1px solid rgba(166, 107, 36, 0.25);
-        }
-
-        &.diff-hard {
-          color: #9c3838;
-          background-color: rgba(156, 56, 56, 0.1);
-          border: 1px solid rgba(156, 56, 56, 0.25);
-        }
-
-        &.diff-default {
-          color: #7d7060;
-          background-color: rgba(125, 112, 96, 0.1);
-        }
-      }
-
-      // 时空限制徽章
-      &.limit-tag {
-        color: #635749;
-        background-color: rgba(240, 234, 222, 0.85);
-        border: 1px solid rgba(195, 180, 160, 0.75);
-      }
-
-      // 题目标签徽章
-      &.topic-meta-tag {
-        color: #6b5e4f;
-        background-color: rgba(243, 237, 227, 0.9);
-        border: 1px solid rgba(195, 182, 164, 0.55);
-        border-radius: 10px;
-      }
-    }
-  }
-
   .dialog-content-box {
     background-color: rgba(247, 243, 235, 0.6);
     border: 1px solid rgba(210, 198, 182, 0.6);

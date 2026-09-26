@@ -228,6 +228,12 @@
         padding: 22px 26px 28px;
         min-height: 0;
 
+        // 题解页签：纵向排布，题解面板撑满剩余高度，空状态能垂直居中
+        &.is-editorial {
+          display: flex;
+          flex-direction: column;
+        }
+
         &::-webkit-scrollbar {
           width: 5px;
         }
@@ -303,6 +309,15 @@
               }
             }
 
+            // 题目标签组：靠这一行最右侧
+            .topic-tag-group {
+              margin-left: auto;
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: flex-end;
+              gap: 6px;
+            }
+
             // 题目标签
             .topic-tag {
               padding: 1px 8px;
@@ -320,6 +335,7 @@
         // 题目描述 / 题解 页签
         .spec-tab-bar {
           display: flex;
+          align-items: center;
           gap: 4px;
           margin-bottom: 18px;
           border-bottom: 1px solid rgba(195, 182, 164, 0.5);
@@ -356,13 +372,53 @@
               }
             }
           }
+
+          .spec-tab-extra {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+
+            .editorial-update-time {
+              font-size: 12px;
+              color: #a89b88;
+              letter-spacing: 0.5px;
+            }
+
+            .btn-editorial-refresh {
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              border: 1px solid rgba(195, 180, 160, 0.75);
+              background: rgba(255, 255, 255, 0.75);
+              color: #6b5e4f;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              transition: all 0.2s ease;
+
+              &:hover:not(:disabled) {
+                border-color: #354435;
+                color: #354435;
+              }
+
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+              }
+            }
+          }
         }
 
         // 题解面板
         .editorial-panel {
+          flex: 1;
           min-height: 220px;
+          display: flex;
+          flex-direction: column;
 
           .editorial-state {
+            flex: 1;
             min-height: 220px;
             display: flex;
             flex-direction: column;
@@ -377,23 +433,6 @@
             .editorial-empty-img {
               width: 150px;
               opacity: 0.9;
-            }
-
-            .btn-editorial-retry {
-              height: 30px;
-              padding: 0 16px;
-              border-radius: 15px;
-              border: 1px solid rgba(195, 180, 160, 0.75);
-              background: rgba(255, 255, 255, 0.75);
-              color: #4a4035;
-              font-family: 'Songti SC', 'SimSun', serif;
-              font-size: 13px;
-              cursor: pointer;
-
-              &:hover {
-                border-color: #354435;
-                color: #354435;
-              }
             }
           }
 
@@ -420,13 +459,46 @@
               font-weight: 700;
               color: #221f1c;
             }
-          }
 
-          .editorial-meta {
-            margin-top: 16px;
-            font-size: 12px;
-            color: #a89b88;
-            text-align: right;
+            // 代码块右上角的复制按钮（按钮由脚本插入，需要 :deep）
+            :deep(pre) {
+              position: relative;
+              padding-right: 44px;
+            }
+
+            :deep(.code-copy-btn) {
+              position: absolute;
+              top: 8px;
+              right: 8px;
+              width: 28px;
+              height: 28px;
+              padding: 5px;
+              border-radius: 6px;
+              border: 1px solid rgba(195, 182, 164, 0.6);
+              background: rgba(255, 253, 249, 0.9);
+              color: #7d6f5e;
+              cursor: pointer;
+              opacity: 0.75;
+              transition: all 0.2s ease;
+
+              svg {
+                width: 100%;
+                height: 100%;
+                display: block;
+              }
+
+              &:hover {
+                opacity: 1;
+                color: #354435;
+                border-color: #354435;
+              }
+
+              &.is-done {
+                opacity: 1;
+                color: #2f7255;
+                border-color: rgba(47, 114, 85, 0.5);
+              }
+            }
           }
         }
 
@@ -486,6 +558,16 @@
               font-family: 'Fira Code', monospace;
               font-size: 13px;
               margin: 8px 0;
+            }
+
+            // 代码块内的 code 直接渲染，不再叠加行内代码的底色、边框和内边距
+            :deep(pre code) {
+              background: transparent;
+              border: none;
+              padding: 0;
+              border-radius: 0;
+              font-size: inherit;
+              color: inherit;
             }
           }
 

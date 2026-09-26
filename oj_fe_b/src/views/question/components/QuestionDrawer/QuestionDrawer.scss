@@ -173,9 +173,11 @@
 
   // 题目用例标题与操作栏（标题左侧，添加用例按钮在这一行最右侧）
   .case-form-item {
+    // 标签行横向排布：必填星号与标题同一行，标题行占满剩余宽度（右侧按钮靠最右）
     :deep(.el-form-item__label) {
       width: 100% !important;
-      display: block !important;
+      display: flex !important;
+      align-items: center;
       padding-bottom: 8px !important;
     }
 
@@ -183,7 +185,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
+      flex: 1;
+      min-width: 0;
 
       .case-header-title {
         font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;

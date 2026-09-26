@@ -38,7 +38,7 @@ export const TAG_CATEGORY_OPTIONS = [
 export const MAX_QUESTION_TAGS = 5
 
 // 标签名称最大长度（与后端 TagSaveDTO 校验一致）
-export const MAX_TAG_NAME_LENGTH = 20
+export const MAX_TAG_NAME_LENGTH = 10
 
 // 题目用例类型（后端 QuestionCaseType）
 export const CASE_TYPE = {

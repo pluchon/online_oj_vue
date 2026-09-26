@@ -55,10 +55,13 @@ service.interceptors.response.use(
       const errorMsg = res.msg || '业务操作失败'
       if (res.code === UNAUTHORIZED_CODE) {
         handleUnauthorized(errorMsg)
-      } else {
+      } else if (!response.config?.silent) {
+        // 请求带 silent 时由页面自己展示错误，不弹提示
         ElMessage.error(errorMsg)
       }
-      return Promise.reject(new Error(errorMsg))
+      const error = new Error(errorMsg)
+      error.code = res.code
+      return Promise.reject(error)
     }
     // 分页结果（TableDataResult）直接返回 rows 与 total
     if (res.rows !== undefined) {

@@ -214,6 +214,7 @@
                   v-model="formData.defaultCode"
                   path="inmemory://question/defaultCode.java"
                   height="260px"
+                  collapsible
                 />
               </el-form-item>
             </el-tab-pane>
@@ -224,6 +225,7 @@
                   v-model="formData.mainFunc"
                   path="inmemory://question/mainFunc.java"
                   height="260px"
+                  collapsible
                 />
               </el-form-item>
             </el-tab-pane>
@@ -233,6 +235,7 @@
                 v-model="aiSolution"
                 path="inmemory://question/aiSolution.java"
                 height="260px"
+                collapsible
                 :read-only="true"
                 copyable
               />
@@ -240,11 +243,11 @@
           </el-tabs>
         </AiGlowBorder>
 
-        <!-- 官方题解（选填，随题目一起保存；左写右看） -->
-        <el-form-item prop="editorial" class="editorial-form-item">
+        <!-- 官方题解（必填，随题目一起保存；左写右看） -->
+        <el-form-item prop="editorial" class="case-form-item editorial-form-item">
           <template #label>
             <div class="case-header-row">
-              <span class="case-header-title">官方题解 · 选填</span>
+              <span class="case-header-title">官方题解</span>
               <button
                 type="button"
                 class="btn-ai btn-ai-editorial"

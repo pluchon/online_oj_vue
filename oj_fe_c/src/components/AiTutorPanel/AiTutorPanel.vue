@@ -25,7 +25,8 @@
       <button type="button" class="btn-text" @click="loadSession">重试</button>
     </div>
     <div v-else-if="session && !session.available" class="tutor-unavailable">
-      <img :src="unavailableImage" alt="竞赛进行中，AI 辅导暂不可用" class="unavailable-img" />
+      <img :src="unavailableImage" alt="该题目已经添加为竞赛题，目前暂不可用 AI 辅导" class="unavailable-img" />
+      <span class="unavailable-text">该题目已经添加为竞赛题，目前暂不可用 AI 辅导</span>
     </div>
 
     <template v-else-if="session">

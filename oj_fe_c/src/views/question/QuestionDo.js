@@ -1,5 +1,5 @@
 // 沉浸式学者答题工作台业务交互逻辑
-import { defineComponent, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { defineComponent, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useConfirmDialog } from '@/utils/confirmDialog'
@@ -16,7 +16,8 @@ import {
   Upload,
   Timer,
   Coin,
-  DocumentChecked
+  DocumentChecked,
+  RefreshRight
 } from '@element-plus/icons-vue'
 import AppNavbar from '@/components/AppNavbar'
 import CodeEditor from '@/components/CodeEditor'
@@ -25,6 +26,7 @@ import AiTutorPanel from '@/components/AiTutorPanel'
 import submitSuccessImage from '@/assets/images/c_submit_success_background.png'
 import { setPageTitle } from '@/utils/title'
 import { renderMarkdown } from '@/utils/markdown'
+import { addCopyButtons, handleCopyClick } from '@/utils/codeCopy'
 import { useUserStore } from '@/store/user'
 import {
   DIFFICULTY_OPTIONS,
@@ -77,7 +79,8 @@ export default defineComponent({
     Upload,
     Timer,
     Coin,
-    DocumentChecked
+    DocumentChecked,
+    RefreshRight
   },
   setup() {
     // 确认弹窗（离开未保存、登录引导等）
@@ -425,6 +428,12 @@ export default defineComponent({
     let editorialLoadedFor = null
     let editorialConfirmedFor = null
     const editorialHtml = computed(() => renderMarkdown(editorial.value?.content))
+
+    // 题解正文容器：内容变化或切回题解页签（容器会重新创建）后给代码块加上复制按钮
+    const editorialRef = ref(null)
+    watch([editorialHtml, specTab], () => {
+      nextTick(() => addCopyButtons(editorialRef.value))
+    })
 
     // 切题时回到题目描述并清空题解
     const resetEditorial = () => {
@@ -834,6 +843,8 @@ export default defineComponent({
       editorialHtml,
       openEditorialTab,
       loadEditorial,
+      editorialRef,
+      handleCopyClick,
       isLongExample,
       editorTheme,
       isEditorFullscreen,

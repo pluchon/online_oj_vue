@@ -18,11 +18,12 @@ export function getQuestionTagsApi() {
   })
 }
 
-// 查询题目官方题解（没有题解时返回空；题目正被进行中的竞赛使用时后端拒绝）
+// 查询题目官方题解（没有题解时返回空；题目正被进行中的竞赛使用时后端拒绝，错误由题解面板展示，不弹提示）
 export function getQuestionEditorialApi(questionId) {
   return request({
     url: `/friend/question/${questionId}/editorial`,
-    method: 'get'
+    method: 'get',
+    silent: true
   })
 }
 
