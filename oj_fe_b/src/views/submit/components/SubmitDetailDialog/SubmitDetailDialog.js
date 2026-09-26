@@ -1,7 +1,8 @@
 // 提交详情弹窗逻辑（代码、逐用例结果、执行回显与首个未通过用例）
 import { defineComponent, ref, computed } from 'vue'
 import { getSubmitDetailApi } from '@/api/submit'
-import { JUDGE_STATUS_OPTIONS, SUBMIT_PASS } from '@/constants'
+import { SUBMIT_PASS } from '@/constants'
+import { isJudging, verdictLabel as toVerdictLabel, verdictClass as toVerdictClass } from '@/utils/submitVerdict'
 import OjDialog from '@/components/OjDialog'
 import OjEmpty from '@/components/OjEmpty'
 import CodeEditor from '@/components/CodeEditor'
@@ -44,21 +45,11 @@ export default defineComponent({
     let requestSeq = 0
 
     // 是否评测中
-    const judging = computed(() => detail.value?.pass === SUBMIT_PASS.JUDGING)
+    const judging = computed(() => isJudging(detail.value))
 
-    // 结论文案
-    const verdictLabel = computed(() => {
-      if (!detail.value) return '-'
-      if (judging.value) return '评测中'
-      return JUDGE_STATUS_OPTIONS.find((item) => item.value === detail.value.judgeStatus)?.label || '-'
-    })
-
-    // 结论颜色
-    const verdictClass = computed(() => {
-      if (judging.value) return 'verdict-judging'
-      const tone = JUDGE_STATUS_OPTIONS.find((item) => item.value === detail.value?.judgeStatus)?.tone
-      return tone ? `verdict-${tone}` : 'verdict-muted'
-    })
+    // 结论文案与颜色
+    const verdictLabel = computed(() => toVerdictLabel(detail.value))
+    const verdictClass = computed(() => toVerdictClass(detail.value))
 
     // 逐用例状态拆成数组
     const caseStates = computed(() => (judging.value || !detail.value?.caseStates ? [] : detail.value.caseStates.split('')))

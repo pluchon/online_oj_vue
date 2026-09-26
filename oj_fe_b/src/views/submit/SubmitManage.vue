@@ -141,7 +141,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="提交时间" width="170" align="center">
+        <el-table-column label="提交时间" width="185" align="center">
           <template #default="{ row }">
             <span class="tabular-text">{{ row.createTime || '-' }}</span>
           </template>
@@ -188,7 +188,7 @@
               @click="handleRejudge"
             >
               <el-icon class="btn-icon"><RefreshRight /></el-icon>
-              <span>{{ rejudging ? '重判中...' : '重判本题' }}</span>
+              <span>{{ rejudgeSubmitting ? '重判中...' : '重判本题' }}</span>
             </button>
           </span>
         </el-tooltip>

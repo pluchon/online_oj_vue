@@ -5,12 +5,8 @@ import { Search, Refresh, RefreshRight } from '@element-plus/icons-vue'
 import { getSubmitListApi, getRejudgePreviewApi, rejudgeQuestionApi } from '@/api/submit'
 import { getQuestionListApi } from '@/api/question'
 import { getExamListApi } from '@/api/exam'
-import {
-  JUDGE_STATUS_OPTIONS,
-  SUBMIT_PASS,
-  SUBMIT_SOURCE_PRACTICE,
-  PAGE_SIZE,
-} from '@/constants'
+import { JUDGE_STATUS_OPTIONS, SUBMIT_SOURCE_PRACTICE, PAGE_SIZE } from '@/constants'
+import { isJudging, verdictLabel, verdictClass } from '@/utils/submitVerdict'
 import Pagination from '@/components/Pagination'
 import OjEmpty from '@/components/OjEmpty'
 import SubmitDetailDialog from './components/SubmitDetailDialog'
@@ -47,8 +43,11 @@ export default defineComponent({
     // 当前列表实际使用的题目筛选（重判按它进行）
     const appliedQuestionId = ref('')
 
-    // 重判进行中（预览与投递期间禁用按钮）
+    // 重判流程进行中（加载预览、等待确认与投递期间禁用按钮）
     const rejudging = ref(false)
+
+    // 已确认、正在投递（按钮显示「重判中...」）
+    const rejudgeSubmitting = ref(false)
 
     // 题目与竞赛下拉选项
     const questionOptions = ref([])
@@ -180,22 +179,6 @@ export default defineComponent({
       loadSubmitList()
     }
 
-    // 是否评测中
-    const isJudging = (row) => row.pass === SUBMIT_PASS.JUDGING
-
-    // 结论文案
-    const verdictLabel = (row) => {
-      if (isJudging(row)) return '评测中'
-      return JUDGE_STATUS_OPTIONS.find((item) => item.value === row.judgeStatus)?.label || '-'
-    }
-
-    // 结论颜色
-    const verdictClass = (row) => {
-      if (isJudging(row)) return 'verdict-judging'
-      const tone = JUDGE_STATUS_OPTIONS.find((item) => item.value === row.judgeStatus)?.tone
-      return tone ? `verdict-${tone}` : 'verdict-muted'
-    }
-
     // 打开提交详情
     const openDetail = (row) => {
       detailDialogRef.value?.open(row.submitId)
@@ -261,6 +244,7 @@ export default defineComponent({
             }
             instance.confirmButtonLoading = true
             instance.showCancelButton = false
+            rejudgeSubmitting.value = true
             try {
               const queued = await rejudgeQuestionApi(questionId)
               ElMessage.success(`已重新投递 ${queued} 条提交，结论出来后点搜索即可看到`)
@@ -270,6 +254,7 @@ export default defineComponent({
               loadSubmitList()
             } finally {
               instance.confirmButtonLoading = false
+              rejudgeSubmitting.value = false
               done()
             }
           },
@@ -297,6 +282,7 @@ export default defineComponent({
       queryParams,
       appliedQuestionId,
       rejudging,
+      rejudgeSubmitting,
       questionOptions,
       questionSearching,
       examOptions,

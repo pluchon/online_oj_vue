@@ -19,7 +19,7 @@
   - oj_ai 只负责计算，不写库。
 - 建表与测试数据：`../online_oj/deploy/db_sql/oj_init.sql`。
 - 构建：前端在 `oj_fe_b` 和 `oj_fe_c` 下各跑一次 `npm run build`；后端用 IDEA 自带的 Maven（`C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.1\plugins\maven-plugin\lib\maven3\bin\mvn.cmd`，本机 PATH 上没有 mvn），用 pwsh 调用。
-- 测试：编译或构建通过就汇报；重启服务和联调由用户来做。
+- 测试：编译或构建通过后，自己把能测的都测完（重启受影响的服务、脚本调接口并与数据库对照、内置浏览器验证页面交互），只把必须人工确认的部分留给用户；测试数据带标记并在测完后清理，登录只用 `oj_init.sql` 里的本地测试账号。
 - 本地运行：见 README 的「本地运行指南」。
 
 ## 不要碰的东西
