@@ -490,7 +490,7 @@ export default defineComponent({
       if (!questionId) return
       pageLoading.value = true
       try {
-        const data = await getQuestionDetailApi(questionId)
+        const data = await getQuestionDetailApi(questionId, currentExamId.value)
         question.value = data
         resetEditorial()
         setPageTitle(data.title || '做题')

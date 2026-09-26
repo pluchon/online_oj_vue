@@ -9,7 +9,7 @@ import {
   generateQuestionSolutionApi,
   generateQuestionEditorialApi
 } from '@/api/question'
-import { CASE_TYPE } from '@/constants'
+import { CASE_TYPE, QUESTION_PURPOSE, QUESTION_PURPOSE_OPTIONS } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import QuestionTagSelect from '@/components/QuestionTagSelect'
 import MarkdownEditor from '@/components/MarkdownEditor'
@@ -116,6 +116,7 @@ export default defineComponent({
       questionId: null,
       title: '',
       difficulty: 1,
+      purpose: QUESTION_PURPOSE.PRACTICE,
       timeLimit: 1000,
       spaceLimit: 128,
       content: '',
@@ -127,6 +128,10 @@ export default defineComponent({
 
     // 表单响应式数据
     const formData = reactive(getInitialFormData())
+
+    // 编辑前的题目用途：原本是刷题题时用途不可再改（只允许竞赛题改为刷题）
+    const originalPurpose = ref(null)
+    const purposeLocked = computed(() => mode.value === 'edit' && originalPurpose.value === QUESTION_PURPOSE.PRACTICE)
 
     // 抽屉动态标题
     const drawerTitle = computed(() => {
@@ -181,6 +186,9 @@ export default defineComponent({
       difficulty: [
         { required: true, message: '请选择题目难度', trigger: 'change' },
       ],
+      purpose: [
+        { required: true, message: '请选择题目用途', trigger: 'change' },
+      ],
       timeLimit: [
         { required: true, message: '时间限制不能为空', trigger: 'blur' },
       ],
@@ -213,6 +221,7 @@ export default defineComponent({
       return JSON.stringify({
         title: (formData.title || '').trim(),
         difficulty: Number(formData.difficulty || 1),
+        purpose: Number(formData.purpose || QUESTION_PURPOSE.PRACTICE),
         timeLimit: Number(formData.timeLimit || 1000),
         spaceLimit: Number(formData.spaceLimit || 128),
         content: (formData.content || '').trim(),
@@ -246,6 +255,7 @@ export default defineComponent({
         })
         testCaseList.value = toEditableCases(detail.cases)
         formData.tagIds = (detail.tags || []).map(tag => tag.tagId)
+        originalPurpose.value = detail.purpose ?? QUESTION_PURPOSE.PRACTICE
         recordSnapshot()
       } catch (err) {
         // 错误提示已由请求拦截器统一给出
@@ -262,6 +272,7 @@ export default defineComponent({
       activeCodeTab.value = 'defaultCode'
 
       Object.assign(formData, getInitialFormData())
+      originalPurpose.value = null
       testCaseList.value = [createCase()]
       aiSolution.value = ''
       recordSnapshot()
@@ -448,6 +459,7 @@ export default defineComponent({
             const addPayload = {
               title: formData.title.trim(),
               difficulty: formData.difficulty,
+              purpose: formData.purpose,
               timeLimit: formData.timeLimit,
               spaceLimit: formData.spaceLimit,
               content: formData.content,
@@ -466,6 +478,7 @@ export default defineComponent({
               questionId: formData.questionId,
               title: formData.title.trim(),
               difficulty: formData.difficulty,
+              purpose: formData.purpose,
               timeLimit: formData.timeLimit,
               spaceLimit: formData.spaceLimit,
               content: formData.content,
@@ -530,6 +543,8 @@ export default defineComponent({
       solutionLoading,
       MAX_CASES,
       CASE_TYPE,
+      QUESTION_PURPOSE_OPTIONS,
+      purposeLocked,
       handleAddTestCase,
       handleRemoveTestCase,
       openDraftDialog,

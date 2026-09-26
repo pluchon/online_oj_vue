@@ -2,7 +2,7 @@
 import { defineComponent, ref, reactive, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getQuestionListApi } from '@/api/question'
-import { PAGE_SIZE } from '@/constants'
+import { PAGE_SIZE, QUESTION_PURPOSE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import DifficultyTag from '@/components/DifficultyTag'
 import OjDialog from '@/components/OjDialog'
@@ -41,9 +41,11 @@ export default defineComponent({
     const selectedRows = ref([])
 
     // 查询过滤参数
+    // 竞赛只能添加竞赛题，purpose 固定为竞赛
     const queryParams = reactive({
       pageNum: 1,
       pageSize: PAGE_SIZE,
+      purpose: QUESTION_PURPOSE.CONTEST,
       difficulty: null,
       title: ''
     })
@@ -81,9 +83,9 @@ export default defineComponent({
       loadQuestionList()
     }
 
-    // 判断某行题目是否可选（未绑定的题目才允许勾选）
+    // 判断某行题目是否可选（未绑定、且没在结束的竞赛中公开过的题目才允许勾选）
     const isRowSelectable = (row) => {
-      return !boundQuestionIds.value.includes(row.questionId)
+      return !boundQuestionIds.value.includes(row.questionId) && !row.published
     }
 
     // 判断题目是否已被当前竞赛绑定

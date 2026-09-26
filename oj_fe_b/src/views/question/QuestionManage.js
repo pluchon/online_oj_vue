@@ -4,7 +4,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus, CollectionTag } from '@element-plus/icons-vue'
 import { getQuestionListApi, deleteQuestionApi } from '@/api/question'
 import { getTagListApi } from '@/api/tag'
-import { PAGE_SIZE } from '@/constants'
+import { PAGE_SIZE, QUESTION_PURPOSE } from '@/constants'
 import QuestionDifficultySelect from '@/components/QuestionDifficultySelect'
 import QuestionTagSelect from '@/components/QuestionTagSelect'
 import DifficultyTag from '@/components/DifficultyTag'
@@ -208,6 +208,7 @@ export default defineComponent({
       queryParams,
       tagOptions,
       tagLoading,
+      QUESTION_PURPOSE,
       questionDrawerRef,
       previewRef,
       tagManageRef,

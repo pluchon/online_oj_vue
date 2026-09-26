@@ -281,6 +281,28 @@
       }
     }
 
+    // 题目用途标识
+    .purpose-tag {
+      display: inline-block;
+      padding: 1px 10px;
+      border-radius: 3px;
+      font-family: 'Songti SC', 'SimSun', serif;
+      font-size: 12px;
+      line-height: 20px;
+
+      &.is-practice {
+        color: #2d6a4f;
+        background-color: rgba(45, 106, 79, 0.08);
+        border: 1px solid rgba(45, 106, 79, 0.3);
+      }
+
+      &.is-contest {
+        color: #8a5a1c;
+        background-color: rgba(179, 116, 36, 0.1);
+        border: 1px solid rgba(179, 116, 36, 0.35);
+      }
+    }
+
     // 题目标签小签
     .tag-chip-list {
       display: flex;

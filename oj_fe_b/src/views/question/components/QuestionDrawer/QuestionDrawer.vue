@@ -35,9 +35,9 @@
           />
         </el-form-item>
 
-        <!-- 基础配置行：难度、时空限制（响应式三列布局） -->
+        <!-- 基础配置行：难度、时空限制、题目用途（响应式四列布局） -->
         <el-row :gutter="16">
-          <el-col :xs="24" :sm="8">
+          <el-col :xs="24" :sm="6">
             <el-form-item label="题目难度" prop="difficulty">
               <QuestionDifficultySelect
                 v-model="formData.difficulty"
@@ -45,7 +45,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="8">
+          <el-col :xs="24" :sm="6">
             <el-form-item label="时间限制（毫秒）" prop="timeLimit">
               <el-input-number
                 v-model="formData.timeLimit"
@@ -57,7 +57,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="8">
+          <el-col :xs="24" :sm="6">
             <el-form-item label="空间限制（MB）" prop="spaceLimit">
               <el-input-number
                 v-model="formData.spaceLimit"
@@ -67,6 +67,29 @@
                 controls-position="right"
                 class="full-width-number"
               />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="6">
+            <el-form-item label="题目用途" prop="purpose">
+              <!-- 刷题题不能改为竞赛题：编辑刷题题时不可选 -->
+              <el-tooltip
+                content="刷题题目不能改为竞赛题"
+                placement="top"
+                :disabled="!purposeLocked"
+              >
+                <el-select
+                  v-model="formData.purpose"
+                  :disabled="purposeLocked"
+                  class="purpose-select"
+                >
+                  <el-option
+                    v-for="item in QUESTION_PURPOSE_OPTIONS"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-tooltip>
             </el-form-item>
           </el-col>
         </el-row>

@@ -36,10 +36,12 @@ export function getQuestionStatsApi() {
 }
 
 // 查询题目详情
-export function getQuestionDetailApi(questionId) {
+export function getQuestionDetailApi(questionId, examId) {
   return request({
     url: `/friend/question/${questionId}`,
-    method: 'get'
+    method: 'get',
+    // 竞赛题只能从竞赛进入，需带竞赛ID
+    params: examId ? { examId } : undefined
   })
 }
 

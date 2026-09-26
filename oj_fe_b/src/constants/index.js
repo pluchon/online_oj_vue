@@ -26,6 +26,18 @@ export const EXAM_STATUS = {
   PUBLISHED: 1
 }
 
+// 题目用途（后端 QuestionPurpose）：刷题题出现在学员端题库，竞赛题只能从竞赛进入
+export const QUESTION_PURPOSE = {
+  PRACTICE: 1,
+  CONTEST: 2
+}
+
+// 题目用途选项
+export const QUESTION_PURPOSE_OPTIONS = [
+  { value: QUESTION_PURPOSE.PRACTICE, label: '刷题' },
+  { value: QUESTION_PURPOSE.CONTEST, label: '竞赛' }
+]
+
 // 标签分类（后端 TagCategory）
 export const TAG_CATEGORY_OPTIONS = [
   { value: 1, label: '数据结构' },

@@ -89,6 +89,14 @@
               >
                 已添加
               </span>
+              <!-- 已在结束的竞赛中公开过，不能再用于新竞赛 -->
+              <el-tooltip
+                v-else-if="row.published"
+                content="该题已在结束的竞赛中公开，不能再用于新竞赛"
+                placement="top"
+              >
+                <span class="bound-badge published-badge">已公开</span>
+              </el-tooltip>
             </template>
           </el-table-column>
 
@@ -107,8 +115,8 @@
           <!-- 空状态：采用小蒙定制插画与针对性文案 -->
           <template #empty>
             <OjEmpty
-              text="暂无题目可供选择"
-              sub-text="未检索到符合条件的题目，可调整难度或关键词后重试"
+              text="暂无竞赛题可供选择"
+              sub-text="竞赛只能添加竞赛题，可在题目管理中把题目用途设为竞赛，或调整难度与关键词后重试"
               :image-size="125"
             />
           </template>

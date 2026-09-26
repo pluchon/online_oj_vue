@@ -93,6 +93,21 @@
           </template>
         </el-table-column>
 
+        <!-- 题目用途（刷题题出现在学员端题库，竞赛题只能从竞赛进入） -->
+        <el-table-column
+          prop="purpose"
+          label="题目用途"
+          width="100"
+          align="center"
+        >
+          <template #default="{ row }">
+            <span
+              class="purpose-tag"
+              :class="row.purpose === QUESTION_PURPOSE.CONTEST ? 'is-contest' : 'is-practice'"
+            >{{ row.purposeDesc || '刷题' }}</span>
+          </template>
+        </el-table-column>
+
         <!-- 题目标签 -->
         <el-table-column
           label="标签"

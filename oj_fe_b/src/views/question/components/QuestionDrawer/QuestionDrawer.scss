@@ -140,6 +140,42 @@
       }
     }
 
+    // 题目用途下拉（与难度下拉同一质感；刷题题编辑时禁用）
+    .purpose-select {
+      width: 100%;
+
+      :deep(.el-select__wrapper) {
+        background-color: rgba(246, 241, 233, 0.85) !important;
+        border: 1px solid rgba(188, 172, 154, 0.65) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        height: 36px;
+        padding: 0 12px;
+
+        &.is-focused {
+          border-color: #24201c !important;
+          background-color: #ffffff !important;
+          box-shadow: 0 0 0 1px #24201c inset !important;
+        }
+
+        &.is-disabled {
+          background-color: rgba(235, 228, 216, 0.7) !important;
+          cursor: not-allowed;
+        }
+      }
+
+      :deep(.el-select__selected-item) {
+        color: #24201c;
+        font-family: 'Songti SC', 'SimSun', serif;
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+
+      :deep(.el-select__wrapper.is-disabled .el-select__selected-item) {
+        color: #8c7e6c;
+      }
+    }
+
     .full-width-number {
       width: 100%;
 
