@@ -1,0 +1,272 @@
+// 赛后复盘弹窗样式（羊皮纸色系，与竞赛排名弹窗一致）
+.review-body {
+  min-height: 200px;
+  font-family: 'Songti SC', 'SimSun', serif;
+  color: #221f1c;
+}
+
+// 加载、生成中与失败
+.review-state {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #8a7b68;
+  font-size: 14px;
+  letter-spacing: 1px;
+
+  .btn-retry {
+    border: none;
+    background: transparent;
+    color: #354435;
+    font-family: inherit;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.review-result {
+  // 与弹窗主体的最大高度一致，只让这一层滚动
+  max-height: 60vh;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
+  // 可以滚动，但不显示滚动条
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // 重新生成中：旧复盘变淡
+  &.is-stale {
+    opacity: 0.55;
+  }
+}
+
+// 成绩概览：三格，每格「名称 数值」一行
+.overview-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.overview-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 8px;
+  background-color: rgba(246, 241, 233, 0.8);
+  border: 1px solid rgba(195, 182, 164, 0.5);
+  border-radius: 8px;
+}
+
+.overview-label {
+  font-size: 13.5px;
+  color: #8a7b68;
+  letter-spacing: 2px;
+}
+
+.overview-value {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #354435;
+
+  small {
+    font-size: 13px;
+    font-weight: 500;
+    color: #8a7b68;
+  }
+}
+
+// AI 整体总结
+.summary-note {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.75;
+  background-color: rgba(53, 68, 53, 0.05);
+  border: 1px solid rgba(53, 68, 53, 0.14);
+  border-radius: 8px;
+}
+
+// 区块标题：左侧图标与名称，右侧统计标签
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.section-icon {
+  font-size: 17px;
+  color: #354435;
+}
+
+.title-tags {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  letter-spacing: 0;
+}
+
+// 逐题：序号、题名、难度，右侧统计标签；下一行点评
+.question-row {
+  padding: 11px 0;
+  border-bottom: 1px dashed rgba(195, 182, 164, 0.5);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.question-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+// 序号按结果着色：绿色已通过、红色未通过、黄色未提交
+.question-no {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #faf7f2;
+  border-radius: 50%;
+  cursor: default;
+
+  &.is-pass {
+    background-color: #2d7a4c;
+  }
+
+  &.is-fail {
+    background-color: #a8382b;
+  }
+
+  &.is-unsubmitted {
+    background-color: #c9962e;
+  }
+}
+
+.question-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.question-tags {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.diff-easy {
+    color: #2d7a4c;
+    background-color: rgba(45, 122, 76, 0.12);
+  }
+
+  &.diff-medium {
+    color: #b37424;
+    background-color: rgba(179, 116, 36, 0.13);
+  }
+
+  &.diff-hard {
+    color: #a8382b;
+    background-color: rgba(168, 56, 43, 0.12);
+  }
+
+  &.tone-pass {
+    color: #2d7a4c;
+    background-color: rgba(45, 122, 76, 0.1);
+  }
+
+  &.tone-fail {
+    color: #a8382b;
+    background-color: rgba(168, 56, 43, 0.1);
+  }
+
+  &.tone-warning {
+    color: #a87a1f;
+    background-color: rgba(201, 150, 46, 0.14);
+  }
+
+  &.tone-muted {
+    color: #7d6f5e;
+    background-color: rgba(138, 123, 104, 0.12);
+  }
+}
+
+.question-comment {
+  margin: 6px 0 0 32px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #4a4239;
+}
+
+// 底部：左侧生成时间，右侧重新生成
+.footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(195, 182, 164, 0.4);
+}
+
+.generated-time {
+  font-size: 12.5px;
+  color: #a89b88;
+}
+
+.btn-regenerate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid rgba(53, 68, 53, 0.35);
+  border-radius: 14px;
+  background-color: transparent;
+  color: #354435;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #354435;
+    color: #faf7f2;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

@@ -2,13 +2,14 @@
 import { defineComponent, ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Search, RefreshRight, Clock, User, Document } from '@element-plus/icons-vue'
+import { Search, RefreshRight, Clock, User, Document, MagicStick } from '@element-plus/icons-vue'
 import { getExamListApi, getMyExamListApi, enrollExamApi, getExamStatsApi } from '@/api/exam'
 import { useUserStore } from '@/store/user'
 import { EXAM_CONTEST_STATUS, EXAM_LIST_TYPE } from '@/constants'
 import AppNavbar from '@/components/AppNavbar'
 import OjDialog from '@/components/OjDialog'
 import ExamRankDialog from './components/ExamRankDialog'
+import ExamReviewDialog from './components/ExamReviewDialog'
 
 // 每页竞赛数（一行 4 场，两行）
 const PAGE_SIZE = 8
@@ -73,11 +74,13 @@ export default defineComponent({
     AppNavbar,
     OjDialog,
     ExamRankDialog,
+    ExamReviewDialog,
     Search,
     RefreshRight,
     Clock,
     User,
-    Document
+    Document,
+    MagicStick
   },
   props: {
     // 是否为"我的竞赛"
@@ -319,6 +322,14 @@ export default defineComponent({
     }
 
     // 查看排名
+    // 赛后复盘弹窗
+    const reviewDialogRef = ref(null)
+
+    // 打开赛后复盘
+    const handleReview = (item) => {
+      reviewDialogRef.value?.open(item)
+    }
+
     const handleRank = (item) => {
       Object.assign(rankDialog, { examId: item.examId, title: item.title, visible: true })
     }
@@ -367,7 +378,9 @@ export default defineComponent({
       handlePageChange,
       handleActionClick,
       handlePractice,
-      handleRank
+      handleRank,
+      reviewDialogRef,
+      handleReview
     }
   }
 })

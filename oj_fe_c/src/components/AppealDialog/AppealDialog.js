@@ -1,4 +1,4 @@
-// 提交申诉弹窗逻辑：AI 初审 → 放行后填写理由提交（规则见 D-017；给学员看的文案由后端决定，不含用例内容）
+// 提交申诉弹窗逻辑：AI 初审 → 放行后填写理由提交（给学员看的文案由后端决定，不含用例内容）
 import { defineComponent, ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getAppealQuotaApi, reviewAppealApi, createAppealApi } from '@/api/appeal'

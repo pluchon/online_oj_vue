@@ -1,4 +1,4 @@
-// 数据概览业务逻辑（统计口径见 D-016、D-019；进入页面即重新加载，不提供手动刷新）
+// 数据概览业务逻辑（通过率分母为已出结论的提交；进入页面即重新加载，不提供手动刷新）
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { QuestionFilled, MagicStick } from '@element-plus/icons-vue'
 import { getOverviewApi } from '@/api/overview'

@@ -76,7 +76,17 @@
             >
               <!-- 封面图（使用官方规范默认竞赛图） -->
               <div class="card-cover">
-                <img src="../../assets/images/c_competition_picture.jpg" alt="竞赛" class="cover-img" />
+                <img src="../../assets/images/c_competition_picture.png" alt="竞赛" class="cover-img" />
+                <!-- 我的竞赛：已完赛且有提交时，右上角可以看赛后复盘 -->
+                <button
+                  v-if="mine && item.reviewable"
+                  type="button"
+                  class="review-tag"
+                  @click="handleReview(item)"
+                >
+                  <el-icon><MagicStick /></el-icon>
+                  <span>赛后复盘</span>
+                </button>
               </div>
 
               <!-- 竞赛信息与行动 -->
@@ -199,6 +209,9 @@
       :exam-id="rankDialog.examId"
       :exam-title="rankDialog.title"
     />
+
+    <!-- 赛后复盘弹窗 -->
+    <exam-review-dialog ref="reviewDialogRef" />
 
     <!-- 通用确认弹窗 -->
     <oj-dialog

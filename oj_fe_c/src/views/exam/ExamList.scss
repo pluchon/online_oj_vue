@@ -267,9 +267,39 @@
             }
 
             .card-cover {
+              position: relative;
               height: 110px;
               background-color: #f2ece1;
               overflow: hidden;
+
+              // 右上角「赛后复盘」标签按钮
+              .review-tag {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                height: 26px;
+                padding: 0 11px;
+                border: 1px solid rgba(53, 68, 53, 0.35);
+                border-radius: 13px;
+                background-color: rgba(251, 248, 242, 0.92);
+                color: #354435;
+                font-family: 'Songti SC', 'SimSun', serif;
+                font-size: 12.5px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(45, 38, 28, 0.12);
+                transition: all 0.2s ease;
+
+                &:hover {
+                  background-color: #354435;
+                  border-color: #354435;
+                  color: #faf7f2;
+                }
+              }
 
               .cover-img {
                 width: 100%;

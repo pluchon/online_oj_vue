@@ -1,177 +1,218 @@
-# 墨衡在线 OJ · 前端工程仓库 (online_oj_vue)
+# 墨衡 OJ · 前端工程（online_oj_vue）
 
-> 本仓库包含“墨衡 OJ”系统的多端前端工程：**B 端后台管理系统 (`oj_fe_b`)** 与 **C 端学员前台 (`oj_fe_c`)**。后端微服务位于独立仓库，本文只描述前端。
+> 墨衡 OJ 是一个微服务在线判题平台：学员在学员端刷题、参加竞赛，用 AI 辅导解题、赛后复盘；管理员在管理端管理题目、竞赛、用户与申诉，用 AI 辅助出题、帮建竞赛、分析难题。
+>
+> 本仓库只包含两个前端工程：**管理端 `oj_fe_b`** 与 **学员端 `oj_fe_c`**。后端微服务（网关、C 端、B 端、判题、定时任务、AI）在独立仓库 `online_oj`。
 
 ```mermaid
 graph TD
-    Repo["online_oj_vue 根仓库"]
-    Repo --> B_End["oj_fe_b: 管理端前端"]
-    Repo --> C_End["oj_fe_c: 学员端前台"]
-
-    B_End --> Design["墨衡古籍画卷 / Claude Editorial 视觉系统"]
-    C_End --> Design
-    B_End --> Modules["用户管理 / 题目管理 / 竞赛管理 / AI 出题与帮建 / 登录画卷"]
-    C_End --> CModules["题库 / 做题工作台 / AI 辅导 / 竞赛与排名 / 消息 / 个人中心"]
+    Repo["online_oj_vue"] --> B["oj_fe_b 管理端 :5173"]
+    Repo --> C["oj_fe_c 学员端 :5174"]
+    B --> BM["数据概览 · 难题分析 / 用户 / 题目与标签 / 竞赛 / 申诉"]
+    C --> CM["题库 / 做题工作台 · AI 辅导 / 竞赛 · 赛后复盘 / 消息 / 个人中心"]
+    B -- "Vite 代理 /dev-api" --> GW["网关 127.0.0.1:19090"]
+    C -- "Vite 代理 /friend" --> GW
 ```
 
 ---
 
-## 一、 管理端 (oj_fe_b) 架构与路由流转
+## 一、功能一览
 
-```mermaid
-flowchart TD
-    App["App.vue 根挂载点"] --> Router["Vue Router 路由控制"]
-    
-    Router --> Login["/login 登录入口"]
-    Login --> Form["左侧：管理员登录凭证表单"]
-    Login --> Masonry["右侧：三通道独立专属算法画卷瀑布流（零重复）"]
+### 管理端（oj_fe_b）
 
-    Router --> AuthGuard{"Token 鉴权守卫"}
-    AuthGuard --"未登录"--> Login
-    AuthGuard --"已鉴权"--> Layout["/system 主工作台布局"]
+| 模块 | 功能 |
+|---|---|
+| 数据概览 | 今日与近 7 天的提交数、活跃用户；提交趋势（近 7 天 / 14 天 / 一个月按天，近半年按周，近一年按半月）；最近竞赛的报名与参赛统计；难题榜 |
+| 难题分析 | 对提交满 5 条的题做整体分析：出题质量提醒（失败集中在单个用例或申诉成立的题）、按标签的通过率最低 / 最高饼图、主要错误类型；数字由 SQL 统计，文字结论由 AI 归纳，结果缓存，手动重新分析 |
+| 用户管理 | 学员列表检索、资料查看、拉黑与解禁 |
+| 题目管理 | 题目增删改查、标签管理、题目预览（与学员端题面一致）；Markdown 题面、Monaco 代码模板、结构化用例、官方题解；AI 出题、AI 生成用例（标程在判题沙箱实跑得到输出）、AI 解法示例、AI 生成题解；修改用例后可按题重判 |
+| 竞赛管理 | 竞赛创建、选题、发布与撤销；AI 帮建（按描述、难度倾向与题量挑题） |
+| 申诉管理 | 查看学员申诉（申诉理由、AI 初审分析、代码与逐用例输入 / 预期 / 实际输出），裁定为存疑、通过（改判为通过并通知学员）或不通过 |
 
-    Layout --> Header["顶栏：品牌标识 / 管理员昵称 / 退出登录"]
-    Layout --> Sidebar["侧边栏：竖向墨线标尺导航"]
-    Layout --> Workspace["核心业务视窗 (Router-View)"]
+### 学员端（oj_fe_c）
 
-    Workspace --> UserView["/user 用户管理"]
-    UserView --> UserDialog["UserEditDialog 用户资料弹窗"]
-    
-    Workspace --> QuestionView["/question 题目管理"]
-    QuestionView --> QuestionPreview["QuestionPreview 题目详情预览（点击标题，与学员端题面一致）"]
-    QuestionView --> QuestionDrawer["QuestionDrawer 题目抽屉"]
-    QuestionDrawer --> AiDraft["AI 出题 / AI 生成用例 / AI 解法示例"]
-    QuestionDrawer --> MdEditor["Markdown 实时分栏编辑器"]
-    QuestionDrawer --> MonacoEditor["Monaco 代码模板编辑器"]
-    QuestionDrawer --> CaseBuilder["题目测试用例结构化构建器"]
-
-    Workspace --> ExamView["/exam 竞赛管理"]
-    ExamView --> ExamDrawer["ExamDrawer 竞赛抽屉"]
-    ExamDrawer --> ExamQDialog["ExamQuestionDialog 题目勾选弹窗"]
-    ExamDrawer --> ExamAiPlan["ExamAiPlanDialog AI 帮建（描述 + 难度倾向 + 题目数量）"]
-    ExamDrawer --> QuestionPreview
-```
+| 模块 | 功能 |
+|---|---|
+| 登录 | 手机号验证码登录，未注册自动建号 |
+| 题库 | 难度、标签、关键词筛选；关键词无结果时给出语义推荐，长句检索融合关键词与语义结果；做题统计 |
+| 做题工作台 | 题面与官方题解、Monaco 编辑器、运行示例、提交判题、逐用例结果、提交记录与载回代码、跨设备代码草稿；对判错有异议时可提交申诉（先经 AI 初审） |
+| AI 辅导 | 指点迷津、优化思路、分析最近一次提交、解释编译错误、点评代码与自由提问，SSE 流式输出，只给思路不给完整代码 |
+| 竞赛 | 竞赛列表、报名、赛中答题（倒计时、计入排名）、赛后练习、排名榜 |
+| 赛后复盘 | 「我的竞赛」中已结束且有提交的竞赛，封面右上角打开复盘：成绩概览、AI 总结、逐题回顾与点评；每场可重新生成 3 次 |
+| 消息中心 | 系统通知、竞赛通知（战报）、审核通知（申诉结果），已读未读 |
+| 个人中心 | 资料编辑、头像、做题统计与能力雷达 |
 
 ---
 
-## 二、 管理端界面展示与视觉空间
+## 二、界面展示
 
-### 1. 登录页与算法画卷瀑布流
+### 管理端
 
-![image-20260920131015391](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260920131015578.png)
+#### 登录
 
-### 2. 用户管理主界面
+![image-20260927231124354](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231124597.png)
 
-![image-20260922230705903](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230706124.png)
+#### 数据概览
 
-### 3. 题目管理主界面
+![image-20260927231207113](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231241823.png)
 
-![image-20260922230716698](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230716764.png)
+#### 难题分析
 
-### 4. 题目编辑抽屉与双栏工作区
+![image-20260927231307548](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231307604.png)
 
-![image-20260922230738473](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230738537.png)
+#### 用户管理
 
-![image-20260922230800282](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230800342.png)
+![image-20260927231324730](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231324792.png)
 
-![image-20260922230823340](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230823418.png)
+#### 题目管理
 
-### 5. 竞赛管理主界面与状态操作
+![image-20260927231337067](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231337120.png)
 
-![image-20260922230837667](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230837760.png)
+#### 题目编辑与 AI 出题
 
-![image-20260922230854024](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230854103.png)
+![image-20260927231353110](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231353183.png)
 
----
+#### 竞赛管理与 AI 帮建
 
-## 三、 管理端核心业务流转闭环
+![image-20260927231451814](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231451883.png)
 
-### 1. 竞赛与题目关联闭环
+#### 申诉管理
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Admin as 管理员
-    participant ExamView as 竞赛管理
-    participant ExamDrawer as 竞赛抽屉
-    participant QDialog as 选择题目弹窗
-    participant QuestionStore as 题目数据池
+![image-20260927231524164](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231524228.png)
 
-    Admin->>ExamView: 点击 "+ 添加竞赛" 或 "编辑"
-    ExamView->>ExamDrawer: 打开抽屉并加载基础信息
-    Admin->>ExamDrawer: 保存竞赛基础信息
-    Admin->>ExamDrawer: 点击 "+ 添加题目"
-    ExamDrawer->>QDialog: 打开选题弹窗 (透传已有绑定题目ID)
-    QDialog->>QuestionStore: 条件检索可选题目列表
-    QDialog-->>Admin: 表格渲染 (已绑定题目禁用复选框)
-    Admin->>QDialog: 勾选目标题目并点击 "确认"
-    QDialog-->>ExamDrawer: 批量同步选中的题目对象
-    Admin->>ExamDrawer: 点击 "保存题目"
-    ExamDrawer->>ExamView: 提交关联关系，关闭抽屉并刷新列表
-```
+![image-20260927231534530](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231534607.png)
 
-### 2. 题目编辑与测试用例录入闭环
+### 学员端
 
-```mermaid
-flowchart LR
-    Start["打开题目抽屉"] --> Base["录入标题、难度、时空限制"]
-    Base --> MD["编辑 Markdown 题目描述 (左写右看)"]
-    MD --> Code["选择编程语言与编写默认代码模板 (Monaco)"]
-    Code --> Cases["添加题目测试用例 (输入/输出/删除)"]
-    Cases --> Save["点击保存题目"]
-    Save --> Verify{"前置表单项校验"}
-    Verify --"未通过"--> Highlight["标红提示并描边高亮失败控件"]
-    Verify --"通过"--> Submit["触发保存并刷新题目管理列表"]
-```
+#### 登录
 
-### 3. AI 辅助出题
+![image-20260927231600624](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231600674.png)
 
-题目抽屉标题栏右侧的「AI出题」、用例区的「AI 生成用例」与代码区的「AI 解法示例」只回填表单，保存仍走原有流程；生成中弹窗或区域边框播放彩色光效。
+#### 题库
 
-```mermaid
-flowchart LR
-    Desc["一句话描述"] --> Draft["AI 生成题面草稿"]
-    Draft --> Fill["回填标题、难度、限制、描述、代码模板与 Main 函数"]
-    Fill --> Gen["一键生成用例：AI 先出解法与用例输入"]
-    Gen --> Run["解法在判题沙箱中运行得到预期输出"]
-    Run --> Preview["预览并勾选"]
-    Preview --> Append["加入用例列表（默认隐藏用例，可设为公开示例）"]
-    Append --> Save["检查后保存题目"]
-```
+![image-20260927231629603](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231629693.png)
 
-### 4. AI 帮建竞赛
+#### 做题工作台与 AI 辅导
 
-竞赛抽屉标题栏右侧的「AI帮建」：写好描述并选好难度倾向（新手友好 / 一般大众 / 高手过招）与题目数量（少量 / 适中 / 偏多 / 超多）后才调用模型；生成完成后弹窗自动关闭，抽屉回填竞赛名称与题目列表（由易到难），管理员设置竞赛周期后保存，新建竞赛时选出的题目随竞赛一起保存。
+![image-20260927231708043](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231708093.png)
 
-```mermaid
-flowchart LR
-    Input["描述 + 难度倾向 + 题目数量"] --> Plan["POST /system/exam/ai/plan"]
-    Plan --> Intent["模型理解需求：名称、主题、题数"]
-    Intent --> Recall["按难度配比混合检索候选（向量 + 关键词）"]
-    Recall --> Pick["模型挑题，后端校验并补齐"]
-    Pick --> Fill["回填名称与题目（不落库）"]
-    Fill --> Save["设置周期后保存"]
-```
+#### 提交申诉
 
-### 5. 题目详情预览
+![image-20260927231731801](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231731867.png)
 
-题目管理列表与竞赛抽屉的题目表格中点击标题，弹出与学员端做题页一致的题面：标题、难度与时空限制、Markdown 描述、示例（优先从描述解析，否则取公开示例用例）与提示；隐藏用例不展示。
+#### 竞赛与排名
+
+![image-20260927231749970](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231750032.png)
+
+![image-20260927231759641](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231759716.png)
+
+#### 赛后复盘
+
+![image-20260927231846525](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231846581.png)
+
+#### 个人中心
+
+![image-20260927231926061](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260927231926142.png)
 
 ---
 
-## 四、 学员端 (oj_fe_c) 架构与路由流转
+## 三、管理端架构
 
 ### 1. 路由与页面
 
 ```mermaid
 flowchart TD
-    App["App.vue 根挂载点"] --> Router["Vue Router 路由控制"]
-    Router --> Guard{"Token 路由守卫"}
-    Router --> Title["afterEach：同步标签页标题<br/>「页面名 · 墨衡 OJ」"]
+    Router["Vue Router"] --> Guard{"Token 路由守卫"}
+    Guard --"未登录"--> Login["/login 登录"]
+    Guard --"已登录"--> Layout["/system 工作台（顶栏 + 侧边栏）"]
 
-    Guard --"白名单（免登录）"--> Public
-    Guard --"需登录"--> Private
-    Guard --"未登录访问受保护页"--> Login["/login 登录"]
+    Layout --> Overview["/overview 数据概览"]
+    Overview --> Trend["TrendPanel 提交趋势"]
+    Overview --> ExamPanel["ExamPanel 最近竞赛"]
+    Overview --> Hard["难题榜 → HardAnalysisDialog 难题分析"]
+
+    Layout --> User["/user 用户管理 → UserEditDialog"]
+
+    Layout --> Question["/question 题目管理"]
+    Question --> Tag["TagManageDialog 标签管理"]
+    Question --> Preview["QuestionPreview 题目预览"]
+    Question --> Drawer["QuestionDrawer 题目抽屉"]
+    Drawer --> AiDraft["QuestionAiDraftDialog AI 出题"]
+    Drawer --> AiCase["QuestionAiCaseDialog AI 生成用例"]
+
+    Layout --> Exam["/exam 竞赛管理 → ExamDrawer"]
+    Exam --> ExamQ["ExamQuestionDialog 选题"]
+    Exam --> AiPlan["ExamAiPlanDialog AI 帮建"]
+
+    Layout --> Appeal["/appeal 申诉管理 → AppealDetailDialog"]
+```
+
+### 2. AI 辅助出题
+
+题目抽屉里的「AI 出题」「AI 生成用例」「AI 解法示例」「AI 生成题解」只回填表单，保存仍走原有流程；生成中弹窗或区域边框播放流光。
+
+```mermaid
+flowchart LR
+    Desc["一句话描述"] --> Draft["AI 生成题面草稿"]
+    Draft --> Fill["回填标题、难度、限制、描述、代码模板与 main 函数"]
+    Fill --> Gen["AI 给出解法与用例输入"]
+    Gen --> Run["解法在判题沙箱实跑得到预期输出"]
+    Run --> Pick["预览并勾选，加入用例列表"]
+    Pick --> Save["保存题目；改过用例时提示按题重判"]
+```
+
+### 3. AI 帮建竞赛
+
+```mermaid
+flowchart LR
+    Input["描述 + 难度倾向 + 题目数量"] --> Intent["AI 理解需求：名称、主题、题数"]
+    Intent --> Recall["按难度配比混合检索候选（向量 + 关键词）"]
+    Recall --> Pick["AI 挑题，后端校验并补齐"]
+    Pick --> Fill["回填名称与题目，设置周期后保存"]
+```
+
+### 4. 申诉处理
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor S as 学员
+    participant C as 学员端
+    participant AI as AI 初审
+    actor A as 管理员
+    participant B as 申诉管理
+
+    S->>C: 对未通过的提交发起申诉
+    C->>AI: 核对题面、用例与代码
+    AI-->>C: 认为可能判错才放行
+    S->>C: 填写理由，提交申诉
+    A->>B: 查看理由、AI 分析、逐用例输入 / 预期 / 实际输出
+    A->>B: 裁定：存疑 / 通过 / 不通过（可改判）
+    B-->>S: 审核通知；通过时该提交改判为通过
+```
+
+### 5. 难题分析
+
+```mermaid
+flowchart LR
+    Open["难题榜「AI 分析」"] --> Cache{"有上次结果？"}
+    Cache --"有"--> Show["直接显示，底部可重新分析"]
+    Cache --"没有"--> Stat["统计提交满 5 条的题：单题、按标签、按判题结论"]
+    Stat --> Suspect["挑出可疑题并抽查失败代码"]
+    Suspect --> AI["AI 归纳薄弱点、错误类型并判断可疑题"]
+    AI --> Save["缓存结果并显示"]
+```
+
+---
+
+## 四、学员端架构
+
+### 1. 路由与页面
+
+```mermaid
+flowchart TD
+    Router["Vue Router"] --> Guard{"Token 路由守卫"}
+    Router --> Title["afterEach：标签页标题「页面名 · 墨衡 OJ」"]
 
     subgraph Public["免登录可访问"]
         QList["/question 题库"]
@@ -180,18 +221,23 @@ flowchart TD
     end
 
     subgraph Private["登录后可访问"]
-        MyExam["/my-exam 我的竞赛（与竞赛页共用 ExamList，mine 模式）"]
-        Msg["/message 消息"]
+        MyExam["/my-exam 我的竞赛"]
+        Msg["/message 消息中心"]
         Profile["/user/profile 个人中心"]
     end
 
-    Login --> LoginForm["左：手机号 + 验证码表单"]
-    Login --> LoginArt["右：博物学插画"]
-    QList --"开始做题"--> QDo
-    EList --"开始答题（计入排名） / 竞赛练习（赛后）"--> QDo
+    Guard --> Public
+    Guard --> Private
+    Guard --"未登录访问受保护页"--> Login["/login 登录"]
+
+    QList --> QDo
+    EList --"开始答题 / 竞赛练习"--> QDo
     MyExam --"开始答题 / 竞赛练习"--> QDo
-    EList --> ERank["ExamRankDialog 排名弹窗"]
-    MyExam --> ERank
+    EList --> Rank["ExamRankDialog 排名"]
+    MyExam --> Rank
+    MyExam --"已结束且有提交"--> Review["ExamReviewDialog 赛后复盘"]
+    QDo --> Tutor["AiTutorPanel AI 辅导"]
+    QDo --> AppealDlg["AppealDialog 提交申诉"]
 ```
 
 ### 2. 工程分层
@@ -202,116 +248,25 @@ flowchart LR
         Pages["页面组件"]
     end
     subgraph Comp["components"]
-        AppNavbar["AppNavbar<br/>全局导航栏 · 用户资料同步 · 退出登录"]
-        CodeEditor["CodeEditor<br/>Monaco 编辑器封装"]
-        OjDialog["OjDialog<br/>统一确认/详情弹窗"]
-        RankDialog["ExamRankDialog<br/>赛后排名弹窗（基于 OjDialog）"]
+        Navbar["AppNavbar 全局导航"]
+        Editor["CodeEditor Monaco 封装"]
+        Dialog["OjDialog 统一弹窗"]
+        Glow["AiGlowBorder AI 流光边框"]
     end
     subgraph Data["数据层"]
-        Store["store/user<br/>登录态与用户信息"]
-        Api["api/*<br/>question / exam / message / user"]
-        Request["utils/request<br/>Token 注入 · 统一错误提示 · 响应脱壳"]
-        Consts["constants<br/>与后端枚举对齐的业务常量"]
+        Store["store/user 登录态与用户信息"]
+        Api["api/* 按业务拆分的接口"]
+        Request["utils/request 令牌注入 · 统一错误提示 · 响应脱壳"]
+        Sse["utils/sse AI 辅导流式读取"]
     end
-
     Pages --> Comp
     Pages --"Actions"--> Store
-    Pages --> Api
-    Api --> Request
-    Request --"Vite 代理 /friend/**"--> Gateway["网关 :19090"]
+    Pages --> Api --> Request
+    Pages --> Sse
+    Request --"Vite 代理"--> Gateway["网关 :19090"]
 ```
 
-### 3. 做题工作台布局
-
-```mermaid
-flowchart LR
-    subgraph Left["左侧：题目卡片"]
-        Nav["返回 / AI 辅导 / 上一题 / 下一题"]
-        Desc["标题 · 难度 · 时空限制<br/>题目描述"]
-        Samples["公开示例卡片（长内容自动独占整行）"]
-    end
-    subgraph Right["右侧工作区"]
-        Editor["编辑器卡片<br/>Java · 重置 · 格式化 · 主题 · 全屏 · 保存 · 运行 · 提交"]
-        subgraph Console["控制台卡片"]
-            TabCase["测试用例"]
-            TabResult["执行结果<br/>通过时绿色描边 + 庆祝插画"]
-            TabHistory["提交记录（提交后出现，后端分页）"]
-        end
-    end
-    subgraph Tutor["最右侧：AI 辅导卡片（需登录，竞赛答题中禁用）"]
-        Quick["快捷操作：指点迷津 / 帮我优化代码思路 / 分析最近一次提交 / 解释编译错误 / 点评代码"]
-        Chat["对话区：SSE 流式渲染 Markdown，可停止；剩余次数不超过 5 次时以红色标签提示"]
-    end
-    Editor --> Console
-```
-
-题库关键词无匹配时，后端返回语义推荐结果（`semantic` 标记），列表顶部提示"以下为相关推荐"；做题页题目卡片在登录且非竞赛模式时展示"你可能还想做"。
-
-AI 辅导走 `src/utils/sse.js`（fetch 读取 SSE，携带令牌；校验失败时后端直接返回 JSON 错误）。快捷操作按本题最近一次提交的判题状态出现，提交完成后自动刷新。
-
-代码草稿跨设备保存（`GET|PUT /friend/question/{id}/draft`）：编辑器有未保存修改时保存按钮高亮，切题、离开页面或关闭标签页前提示；「帮我优化代码思路」读取已保存的代码，未保存时先自动保存。
-
----
-
-## 五、 学员端界面展示与视觉空间
-
-### 1. 登录页
-
-![image-20260921153901581](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921153901740.png)
-
-### 2. 题库
-
-![image-20260922230951685](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922230951766.png)
-
-### 3. 做题工作台
-
-![image-20260922231009097](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922231009174.png)
-
-### 4. 提交记录
-
-![image-20260922231208879](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922231208971.png)
-
-### 5. 竞赛列表
-
-![image-20260922231635062](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260922231635155.png)
-
-### 6. 我的竞赛
-
-![image-20260921171628869](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171628938.png)
-
-### 7. 消息
-
-![image-20260921171638616](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171638674.png)
-
-### 8. 个人中心
-
-![image-20260921171648586](https://zlhimage.oss-cn-guangzhou.aliyuncs.com/20260921171648637.png)
-
----
-
-## 六、 学员端核心业务流转闭环
-
-### 1. 手机号验证码登录
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as 学员
-    participant Login as 登录页
-    participant Store as 用户 Store
-    participant API as 网关 /friend
-
-    U->>Login: 输入手机号，点击获取验证码
-    Login->>API: POST /user/send-code
-    API-->>Login: 发送成功，按钮进入倒计时
-    U->>Login: 输入验证码并登录
-    Login->>API: POST /user/login（未注册手机号自动建号）
-    API-->>Login: 返回 Token
-    Login->>Store: 保存 Token 与用户信息
-    Login-->>U: 跳回 redirect 页面，默认进入题库
-```
-
-### 2. 运行与提交
+### 3. 运行与提交
 
 ```mermaid
 sequenceDiagram
@@ -320,95 +275,81 @@ sequenceDiagram
     participant Do as 做题工作台
     participant API as 网关 /friend
 
-    U->>Do: 点击 运行 / 提交
-    Do->>Do: 前置校验：题目已加载、代码非空、已登录（未登录弹 OjDialog）
-
-    alt 运行（仅公开示例，不计分）
+    U->>Do: 运行 / 提交
+    alt 运行（只跑公开示例，不计分）
         Do->>API: POST /question/{questionId}/run
-        API-->>Do: 结论 + 逐用例 输入 / 输出 / 预期
-        Do-->>U: 执行结果页：用例标签圆点标记通过与否，错误输出标红
+        API-->>Do: 结论 + 逐用例输入 / 输出 / 预期
     else 提交（全部用例）
         Do->>API: POST /question/{questionId}/submissions
         API-->>Do: submitId（评测中）
-        loop 每 500ms 轮询，直到出结论
+        loop 轮询直到出结论
             Do->>API: GET /question/submissions/{submitId}
         end
         API-->>Do: 结论 · 通过数 · 得分 · 逐用例状态 · 首个未通过用例
-        Do-->>U: 结论行右侧用例色块，下方展示首个未通过用例
-        Do->>API: GET /question/{questionId}/submissions（第 1 页）
-        Do-->>U: 出现「提交记录」页签
     end
 ```
 
-### 3. 执行结果状态
-
-```mermaid
-stateDiagram-v2
-    [*] --> 暂无结果
-    暂无结果 --> 评测中: 运行 / 提交
-    评测中 --> 通过: 全部用例通过
-    评测中 --> 未通过: 解答错误 / 超时 / 超内存 / 运行错误
-    评测中 --> 编译错误
-    评测中 --> 系统错误
-    通过 --> 评测中: 再次运行 / 提交
-    未通过 --> 评测中
-    编译错误 --> 评测中
-    系统错误 --> 评测中
-
-    note right of 通过: 控制台绿色描边 + 居中庆祝插画
-    note right of 未通过: 用例色块红格定位 + 首个未通过用例对比
-```
-
-### 4. 提交记录与载回代码
-
-```mermaid
-flowchart LR
-    Tab["提交记录页签"] --> Load["GET /question/{questionId}/submissions<br/>pageNum · pageSize=6"]
-    Load --> List["列表区可滚动<br/>结论 · 通过数 · 耗时 · 时间"]
-    Load --> Pager["翻页器固定在卡片底部"]
-    Pager --"翻页"--> Load
-    List --"点击某条"--> Confirm{"OjDialog 确认覆盖当前代码"}
-    Confirm --"载入"--> Editor["代码写回编辑器"]
-```
-
-### 5. 竞赛报名、参赛与赛后练习
+### 4. 竞赛与赛后复盘
 
 ```mermaid
 flowchart TD
-    List["竞赛列表 / 我的竞赛"] --> Phase{"竞赛阶段"}
-
-    Phase --"未开赛"--> Enroll{"报名"}
-    Enroll --"未登录"--> Login["OjDialog 引导登录"]
-    Enroll --"已登录"--> Confirm["OjDialog 确认报名"] --> Enrolled["已报名"]
-
-    Phase --"进行中且已报名"--> Contest["做题工作台 · 赛中模式<br/>题目卡片底部：竞赛名 + 倒计时（赛中不公布排名）<br/>提交携带竞赛 ID，计入排名"]
-    Phase --"已结束"--> Practice["做题工作台 · 练习模式<br/>与普通做题界面一致<br/>提交不带竞赛 ID，不影响排名"]
-    Phase --"已结束"--> Rank["ExamRankDialog<br/>名次 · 昵称 · 得分，分页榜单"]
-
-    Contest --"倒计时归零"--> Practice
+    List["竞赛 / 我的竞赛"] --> Phase{"竞赛阶段"}
+    Phase --"未开赛"--> Enroll["报名（未登录先引导登录）"]
+    Phase --"进行中且已报名"--> Contest["赛中答题：倒计时，提交计入排名"]
+    Phase --"已结束"--> Practice["竞赛练习：提交不影响排名"]
+    Phase --"已结束"--> Rank["排名榜"]
+    Phase --"已结束、已结算且本人有提交"--> Review["赛后复盘"]
+    Review --> First{"已有复盘且提交结果没变？"}
+    First --"是"--> Show["直接显示"]
+    First --"否"--> Gen["统计成绩与逐题情况，AI 写点评与总结"]
+    Show --> Regen["不满意可重新生成（每场 3 次）"]
 ```
 
 ---
 
-## 七、 本地运行指南
+## 五、目录结构
+
+```text
+online_oj_vue
+├── oj_fe_b                 管理端
+│   └── src
+│       ├── api             按业务拆分的接口（overview、question、exam、appeal …）
+│       ├── components      通用组件（OjDialog、CodeEditor、MarkdownEditor、AiGlowBorder …）
+│       ├── constants       与后端枚举对齐的业务常量
+│       ├── styles          全局样式与变量
+│       └── views           页面（overview、user、question、exam、appeal）
+└── oj_fe_c                 学员端
+    └── src
+        ├── api
+        ├── components      AppNavbar、AiTutorPanel、AppealDialog …
+        ├── constants
+        ├── store           登录态
+        ├── utils           request、sse、题面解析 …
+        └── views           页面（question、exam、message、user）
+```
+
+组件统一拆成 `.vue` / `.js` / `.scss` 三个文件；页面通过 `src/api/` 发请求，不直接调用 Axios。
+
+---
+
+## 六、本地运行
 
 ```bash
-# 管理端（默认端口 5173）
+# 管理端（http://localhost:5173）
 cd oj_fe_b
 npm install
 npm run dev
 
-# 学员端（默认端口 5174，/friend 请求代理到网关 127.0.0.1:19090）
+# 学员端（http://localhost:5174）
 cd oj_fe_c
 npm install
 npm run dev
 
-# 生产环境打包（两端相同）
+# 生产环境打包（两端相同，产物在各自的 dist/）
 npm run build
 ```
 
-- 两端都经 Vite 代理访问网关 `127.0.0.1:19090`，后端启动方式见后端仓库 README。
-- 后端初始化脚本自带测试数据：管理端 `admin / 123456`；学员端手机号 `13800000001` ~ `13800000007`，本地为模拟发码，验证码输出在 oj-friend 控制台。
-- `src/assets` 为图片素材，随仓库提供；`oj_fe_b/src/assets/images/raw/` 为登录页背景的高清原图。
-
-服务启动后访问：管理端 `http://localhost:5173`，学员端 `http://localhost:5174`。
+- 两端都经 Vite 代理访问网关 `127.0.0.1:19090`，后端的启动方式见后端仓库 README。
+- 后端初始化脚本 `deploy/db_sql/oj_init.sql` 自带演示数据：20 个学员、30 道题（含用例、标签与题解）、6 场不同状态的竞赛、近一年约 780 条提交、若干申诉与站内消息。
+- 测试账号：管理端 `admin / 123456`；学员端手机号 `13800000001` ~ `13800000020`（`13800000008` 为拉黑账号）。本地为模拟发码，验证码输出在 oj-friend 控制台。
+- `src/assets` 为图片素材，随仓库提供。

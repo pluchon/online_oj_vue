@@ -58,6 +58,9 @@ export const APPEAL_STATUS_META = {
 // 申诉 AI 初审耗时较长，单独放宽请求超时
 export const APPEAL_REVIEW_TIMEOUT_MS = 70000
 
+// 生成赛后复盘的请求超时（毫秒，AI 要点评整场所有题，比后端调用 AI 的 120 秒稍长）
+export const EXAM_REVIEW_TIMEOUT_MS = 130000
+
 // 申诉理由最大长度（与后端 AppealCreateDTO 校验一致）
 export const APPEAL_REASON_MAX_LENGTH = 100
 

@@ -1,4 +1,4 @@
-// 申诉管理业务逻辑（学员经 AI 初审放行后提交的申诉，管理员逐条裁定；规则见 D-017）
+// 申诉管理业务逻辑（学员经 AI 初审放行后提交的申诉，管理员逐条裁定）
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
