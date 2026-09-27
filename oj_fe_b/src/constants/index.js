@@ -96,6 +96,25 @@ export const APPEAL_DAYS_OPTIONS = [
   { value: 365, label: '近一年' }
 ]
 
+// 数据概览趋势图的时间范围（天，后端上限 30）
+export const OVERVIEW_TREND_DAYS_OPTIONS = [
+  { value: 7, label: '近七天' },
+  { value: 14, label: '近十四天' },
+  { value: 30, label: '近一个月' }
+]
+
+// 数据概览最近竞赛的时间段（天，含今日）
+export const OVERVIEW_EXAM_DAYS_OPTIONS = [
+  { value: 1, label: '今日' },
+  { value: 3, label: '近三天' },
+  { value: 7, label: '近七天' },
+  { value: 14, label: '近十四天' },
+  { value: 30, label: '近三十天' }
+]
+
+// 数据概览最近竞赛每页场数（与难题榜 5 道等高）
+export const OVERVIEW_EXAM_PAGE_SIZE = 5
+
 // 语言类型（后端 ProgramTypeEnum）
 export const PROGRAM_TYPE_LABELS = {
   0: 'Java'

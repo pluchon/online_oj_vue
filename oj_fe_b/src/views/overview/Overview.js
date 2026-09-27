@@ -1,33 +1,33 @@
-// 数据概览业务逻辑（统计口径见 D-016）
+// 数据概览业务逻辑（统计口径见 D-016、D-019；进入页面即重新加载，不提供手动刷新）
 import { defineComponent, ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Refresh } from '@element-plus/icons-vue'
+import { QuestionFilled } from '@element-plus/icons-vue'
 import { getOverviewApi } from '@/api/overview'
+import { DIFFICULTY_OPTIONS } from '@/constants'
 import OjEmpty from '@/components/OjEmpty'
-import TrendChart from './components/TrendChart'
+import TrendPanel from './components/TrendPanel'
+import ExamPanel from './components/ExamPanel'
 
 // 通过率文案（没有已出结论的提交时显示 -）
 function formatRate(rate) {
   return rate == null ? '-' : `${rate}%`
 }
 
-// 当前时间（时:分:秒）
-function nowTime() {
-  return new Date().toTimeString().slice(0, 8)
+// 难度标签样式
+function difficultyClass(difficulty) {
+  return DIFFICULTY_OPTIONS.find((item) => item.value === difficulty)?.tagClass || ''
 }
 
 export default defineComponent({
   name: 'Overview',
   components: {
-    Refresh,
+    QuestionFilled,
     OjEmpty,
-    TrendChart,
+    TrendPanel,
+    ExamPanel,
   },
   setup() {
-    const router = useRouter()
-
-    // 加载状态
-    const loading = ref(false)
+    // 加载状态（初始为加载中，数据回来前不显示空状态）
+    const loading = ref(true)
 
     // 最近一次加载是否失败
     const loadError = ref(false)
@@ -35,36 +35,27 @@ export default defineComponent({
     // 概览数据
     const overview = ref(null)
 
-    // 最近一次成功加载的时间
-    const updatedAt = ref('')
+    // 难题榜
+    const hardQuestions = computed(() => overview.value?.hardQuestions || [])
 
-    // 最近竞赛
-    const exam = computed(() => overview.value?.latestExam || null)
-
-    // 统计卡片
+    // 统计卡片（未加载或加载失败时显示 -）
     const statCards = computed(() => {
-      const { today, week } = overview.value
+      const today = overview.value?.today
+      const week = overview.value?.week
       return [
-        { label: '今日提交', value: today.submitCount, sub: `通过 ${today.passCount} · 通过率 ${formatRate(today.passRate)}` },
-        { label: '今日活跃用户', value: today.activeUsers, sub: '今天交过代码的人数' },
-        { label: '近 7 天提交', value: week.submitCount, sub: `通过 ${week.passCount} · 通过率 ${formatRate(week.passRate)}` },
-        { label: '近 7 天活跃用户', value: week.activeUsers, sub: '近 7 天交过代码的人数' },
+        { label: '今日提交', value: today ? today.submitCount : '-', unit: '次' },
+        { label: '今日活跃用户', value: today ? today.activeUsers : '-', unit: '人' },
+        { label: '近 7 天提交', value: week ? week.submitCount : '-', unit: '次' },
+        { label: '近 7 天活跃用户', value: week ? week.activeUsers : '-', unit: '人' },
       ]
     })
 
-    // 参赛率：实际参赛 ÷ 报名
-    const participationRate = computed(() => {
-      if (!exam.value || !exam.value.enrollCount) return '-'
-      return `${Math.round((exam.value.participantCount * 100) / exam.value.enrollCount)}%`
-    })
-
-    // 加载概览（失败时保留上次的数据）
+    // 加载概览
     const loadOverview = async () => {
       loading.value = true
       loadError.value = false
       try {
         overview.value = await getOverviewApi()
-        updatedAt.value = nowTime()
       } catch (err) {
         // 错误提示已由请求拦截器统一给出
         loadError.value = true
@@ -73,24 +64,15 @@ export default defineComponent({
       }
     }
 
-    // 跳到申诉管理，按这道题的名称筛选
-    const viewAppeals = (item) => {
-      router.push({ path: '/system/appeal', query: { title: item.title } })
-    }
-
     onMounted(loadOverview)
 
     return {
       loading,
       loadError,
-      overview,
-      updatedAt,
-      exam,
+      hardQuestions,
       statCards,
-      participationRate,
-      loadOverview,
-      viewAppeals,
       formatRate,
+      difficultyClass,
     }
   },
 })

@@ -1,0 +1,117 @@
+// 最近竞赛面板（高度由页面固定，列表按每页 5 场均分，数据少时行高不变）
+@use '../../card' as *;
+
+.exam-panel {
+  @include overview-card;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  // 三项汇总，每项一行
+  .exam-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+
+    .summary-item {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 10px;
+      background-color: rgba(246, 241, 233, 0.75);
+      border: 1px solid rgba(195, 180, 160, 0.4);
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .summary-label {
+      font-size: 13px;
+      color: #6b5f52;
+      letter-spacing: 1px;
+    }
+
+    .summary-value {
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: #1f1c19;
+    }
+
+    .summary-unit {
+      font-size: 12.5px;
+      color: #8a7d6e;
+    }
+  }
+
+  .exam-list-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .exam-list {
+    flex: 1;
+    display: grid;
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .exam-item {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 0 4px;
+    border-bottom: 1px solid rgba(215, 202, 185, 0.45);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .exam-status {
+    @include overview-chip;
+    justify-content: center;
+
+    &.is-ongoing {
+      color: #2e6b4a;
+      background-color: rgba(61, 122, 87, 0.12);
+    }
+
+    &.is-finished {
+      color: #7a6e60;
+      background-color: rgba(138, 125, 110, 0.14);
+    }
+  }
+
+  .exam-title {
+    font-size: 14px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .exam-time {
+    font-family: 'Courier New', Courier, monospace, serif;
+    font-size: 12.5px;
+    color: #8a7d6e;
+  }
+
+  .exam-count {
+    font-size: 12.5px;
+    color: #5c5145;
+    white-space: nowrap;
+  }
+
+  .exam-pagination {
+    justify-content: flex-end;
+    padding: 10px 0 0;
+  }
+}

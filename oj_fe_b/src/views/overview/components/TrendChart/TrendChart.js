@@ -1,4 +1,4 @@
-// 近 7 天趋势图：柱状显示每日提交数与通过数，折线显示通过率（ECharts 按需引入）
+// 提交趋势图：柱状显示每日提交数与通过数，折线显示通过率（ECharts 按需引入）
 import { defineComponent, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'

@@ -1,0 +1,32 @@
+// 分段滑块（el-segmented）的画卷风格：滑块用缓出曲线平移，切换更顺滑
+.oj-segmented.el-segmented {
+  --el-segmented-color: #6b5f52;
+  --el-segmented-bg-color: rgba(235, 226, 212, 0.7);
+  --el-segmented-padding: 3px;
+  --el-segmented-item-selected-color: #fbf8f2;
+  --el-segmented-item-selected-bg-color: #2f3a2e;
+  --el-segmented-item-hover-color: #26221d;
+  --el-segmented-item-hover-bg-color: transparent;
+  --el-segmented-item-active-bg-color: transparent;
+  --el-border-radius-base: 6px;
+  min-height: 30px;
+  font-family: 'Songti SC', 'SimSun', serif;
+  font-size: 12.5px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(195, 180, 160, 0.5);
+
+  .el-segmented__item-selected {
+    box-shadow: 0 2px 6px -2px rgba(38, 34, 29, 0.35);
+    transition:
+      transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      width 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .el-segmented__item {
+    padding: 0 12px;
+  }
+
+  .el-segmented__item-label {
+    transition: color 0.3s ease;
+  }
+}

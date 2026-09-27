@@ -1,0 +1,42 @@
+// 数据概览各区块共用的卡片外观（页面与各面板组件都是 scoped 样式，用混入各自引入）
+@mixin overview-card {
+  padding: 16px 20px;
+  background-color: rgba(255, 253, 249, 0.8);
+  border: 1px solid rgba(195, 180, 160, 0.5);
+  border-radius: 6px;
+  min-width: 0;
+  box-sizing: border-box;
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    min-height: 32px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+
+    // 标题文字不被右侧滑块挤得换行
+    > span:first-child {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+  }
+}
+
+// 圆角小标签（报名、通过率、难度等）
+@mixin overview-chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-sizing: border-box;
+}

@@ -1,0 +1,17 @@
+// 提交趋势面板
+@use '../../card' as *;
+
+.trend-panel {
+  @include overview-card;
+
+  .trend-body {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > * {
+      width: 100%;
+    }
+  }
+}
