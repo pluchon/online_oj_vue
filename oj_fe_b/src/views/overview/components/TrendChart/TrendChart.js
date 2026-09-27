@@ -1,4 +1,4 @@
-// 提交趋势图：柱状显示每日提交数与通过数，折线显示通过率（ECharts 按需引入）
+// 提交趋势图：柱状显示提交数与通过数，折线显示通过率（ECharts 按需引入）
 import { defineComponent, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
@@ -19,24 +19,29 @@ const COLORS = {
 // 统一字体
 const FONT_FAMILY = "'Songti SC', 'SimSun', serif"
 
-// 生成图表配置
+// 入场动画：柱子依次从底部长出，折线从左往右画出
+const ANIMATION = {
+  animationDuration: 900,
+  animationEasing: 'cubicOut'
+}
+
+// 生成图表配置（没有已出结论提交的点通过率按 0 画，折线不断开）
 function buildOption(data) {
-  const dates = data.map((item) => item.date.slice(5))
   return {
     color: [COLORS.submit, COLORS.pass, COLORS.rate],
     textStyle: { fontFamily: FONT_FAMILY, color: COLORS.text },
-    grid: { left: 40, right: 48, top: 40, bottom: 28 },
-    legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: COLORS.text } },
+    grid: { left: 40, right: 48, top: 24, bottom: 64 },
+    legend: { bottom: 0, left: 'center', itemWidth: 12, itemHeight: 8, itemGap: 20, textStyle: { color: COLORS.text } },
     tooltip: {
       trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-      valueFormatter: (value) => (value == null ? '-' : value)
+      axisPointer: { type: 'shadow' }
     },
     xAxis: {
       type: 'category',
-      data: dates,
+      data: data.map((item) => item.label),
       axisLine: { lineStyle: { color: COLORS.line } },
-      axisTick: { show: false }
+      axisTick: { show: false },
+      axisLabel: { hideOverlap: true }
     },
     yAxis: [
       {
@@ -53,17 +58,31 @@ function buildOption(data) {
       }
     ],
     series: [
-      { name: '提交数', type: 'bar', barMaxWidth: 18, data: data.map((item) => item.submitCount) },
-      { name: '通过数', type: 'bar', barMaxWidth: 18, data: data.map((item) => item.passCount) },
+      {
+        name: '提交数',
+        type: 'bar',
+        barMaxWidth: 18,
+        data: data.map((item) => item.submitCount),
+        ...ANIMATION,
+        animationDelay: (index) => index * 30
+      },
+      {
+        name: '通过数',
+        type: 'bar',
+        barMaxWidth: 18,
+        data: data.map((item) => item.passCount),
+        ...ANIMATION,
+        animationDelay: (index) => index * 30 + 60
+      },
       {
         name: '通过率',
         type: 'line',
         yAxisIndex: 1,
-        // 没有已出结论提交的日子通过率为空，不连线也不平滑，避免画出不存在的数据
-        connectNulls: false,
         symbolSize: 7,
-        data: data.map((item) => item.passRate),
-        tooltip: { valueFormatter: (value) => (value == null ? '-' : `${value}%`) }
+        data: data.map((item) => item.passRate ?? 0),
+        tooltip: { valueFormatter: (value) => `${value}%` },
+        ...ANIMATION,
+        animationDuration: 1200
       }
     ]
   }
@@ -72,7 +91,7 @@ function buildOption(data) {
 export default defineComponent({
   name: 'TrendChart',
   props: {
-    // 每日统计：[{ date: 'yyyy-MM-dd', submitCount, passCount, passRate }]
+    // 趋势中的各个点：[{ label, submitCount, passCount, passRate }]
     data: {
       type: Array,
       default: () => []
@@ -86,10 +105,11 @@ export default defineComponent({
     let chart = null
     let resizeObserver = null
 
-    // 按最新数据重绘
+    // 按最新数据重绘：先清空再设置，每次切换都重新播放入场动画，而不是在新旧数据之间过渡
     const render = () => {
       if (chart) {
-        chart.setOption(buildOption(props.data), true)
+        chart.clear()
+        chart.setOption(buildOption(props.data))
       }
     }
 

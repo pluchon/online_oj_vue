@@ -110,8 +110,22 @@
     white-space: nowrap;
   }
 
+  .exam-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 42px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(195, 180, 160, 0.35);
+  }
+
+  .ai-tag {
+    @include ai-placeholder-tag;
+  }
+
   .exam-pagination {
-    justify-content: flex-end;
-    padding: 10px 0 0;
+    padding: 0;
+    border-top: none;
   }
 }

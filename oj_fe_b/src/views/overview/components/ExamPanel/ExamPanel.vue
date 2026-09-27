@@ -46,14 +46,23 @@
       </ol>
     </div>
 
-    <Pagination
-      v-model:page="query.pageNum"
-      class="exam-pagination"
-      :total="total"
-      :limit="query.pageSize"
-      layout="prev, pager, next"
-      @pagination="loadExams"
-    />
+    <!-- 底部：左侧 AI 分析占位，右侧翻页 -->
+    <div class="exam-footer">
+      <el-tooltip content="即将上线" placement="top">
+        <span class="ai-tag">
+          <el-icon><MagicStick /></el-icon>
+          AI 分析
+        </span>
+      </el-tooltip>
+      <Pagination
+        v-model:page="query.pageNum"
+        class="exam-pagination"
+        :total="total"
+        :limit="query.pageSize"
+        layout="prev, pager, next"
+        @pagination="loadExams"
+      />
+    </div>
   </section>
 </template>
 

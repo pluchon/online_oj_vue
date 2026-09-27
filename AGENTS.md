@@ -16,6 +16,7 @@
   - C 端确认框统一用 `OjDialog`，不用 Element 原生 MessageBox。
 - 后端（`../online_oj`）：Spring Boot 3.5 + Spring Cloud Alibaba 2025，服务有 gateway / friend（C 端）/ system（B 端）/ judge / job / ai。
   - 分层固定为 Controller → Service → Mapper；跨服务调用走 `/{domain}/internal/**` 契约，由调用方在自己的 client 包里实现。
+  - 对象转换用 Hutool `BeanUtil`，只手写名称或类型不同的字段；计数类默认值写在字段初始化里；多路计数在 SQL 里合并，不在 Java 里拼 Map。写完用 `rg -e '\.set(\w+)\(\w+\.get\1\(\)\)' --pcre2` 自查同名手抄。
   - oj_ai 只负责计算，不写库。
 - 建表与测试数据：`../online_oj/deploy/db_sql/oj_init.sql`。
 - 构建：前端在 `oj_fe_b` 和 `oj_fe_c` 下各跑一次 `npm run build`；后端用 IDEA 自带的 Maven（`C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.1\plugins\maven-plugin\lib\maven3\bin\mvn.cmd`，本机 PATH 上没有 mvn），用 pwsh 调用。

@@ -9,12 +9,12 @@ export function getOverviewApi() {
   })
 }
 
-// 查询近 N 天的每日提交趋势
-export function getOverviewTrendApi(days) {
+// 按时间范围查询提交趋势（range 见 OVERVIEW_TREND_RANGE_OPTIONS）
+export function getOverviewTrendApi(range) {
   return request({
     url: '/system/overview/trend',
     method: 'get',
-    params: { days }
+    params: { range }
   })
 }
 

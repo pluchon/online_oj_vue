@@ -83,6 +83,10 @@
       gap: 6px;
     }
 
+    .ai-tag {
+      @include ai-placeholder-tag;
+    }
+
     .hint-icon {
       font-size: 15px;
       color: #a39584;

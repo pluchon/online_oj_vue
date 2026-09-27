@@ -1,6 +1,6 @@
 // 数据概览业务逻辑（统计口径见 D-016、D-019；进入页面即重新加载，不提供手动刷新）
 import { defineComponent, ref, computed, onMounted } from 'vue'
-import { QuestionFilled } from '@element-plus/icons-vue'
+import { QuestionFilled, MagicStick } from '@element-plus/icons-vue'
 import { getOverviewApi } from '@/api/overview'
 import { DIFFICULTY_OPTIONS } from '@/constants'
 import OjEmpty from '@/components/OjEmpty'
@@ -21,6 +21,7 @@ export default defineComponent({
   name: 'Overview',
   components: {
     QuestionFilled,
+    MagicStick,
     OjEmpty,
     TrendPanel,
     ExamPanel,

@@ -1,11 +1,11 @@
 <template>
-  <section class="overview-card trend-panel">
+  <section class="trend-panel">
     <div class="card-title">
       <span>提交趋势</span>
       <el-segmented
-        v-model="days"
+        v-model="range"
         class="oj-segmented"
-        :options="DAYS_OPTIONS"
+        :options="RANGE_OPTIONS"
         @change="loadTrend"
       />
     </div>
@@ -15,11 +15,6 @@
         v-if="loadError && !trend.length"
         text="提交趋势加载失败"
         sub-text="请稍后切换时间范围重试"
-        :image-size="100"
-      />
-      <OjEmpty
-        v-else-if="!loading && trend.length && !hasSubmit"
-        :text="`${currentLabel}没有提交`"
         :image-size="100"
       />
       <TrendChart v-else-if="trend.length" :data="trend" />

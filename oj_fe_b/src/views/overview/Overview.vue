@@ -24,6 +24,12 @@
               <el-icon class="hint-icon"><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
+          <el-tooltip content="即将上线" placement="top">
+            <span class="ai-tag">
+              <el-icon><MagicStick /></el-icon>
+              AI 分析
+            </span>
+          </el-tooltip>
         </div>
 
         <div v-loading="loading" class="hard-list-wrap">

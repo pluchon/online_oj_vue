@@ -96,11 +96,13 @@ export const APPEAL_DAYS_OPTIONS = [
   { value: 365, label: '近一年' }
 ]
 
-// 数据概览趋势图的时间范围（天，后端上限 30）
-export const OVERVIEW_TREND_DAYS_OPTIONS = [
-  { value: 7, label: '近七天' },
-  { value: 14, label: '近十四天' },
-  { value: 30, label: '近一个月' }
+// 数据概览趋势图的时间范围（后端 OverviewTrendRange：前三项按天，近半年按周，近一年按半月）
+export const OVERVIEW_TREND_RANGE_OPTIONS = [
+  { value: 'WEEK', label: '近七天' },
+  { value: 'TWO_WEEKS', label: '近十四天' },
+  { value: 'MONTH', label: '近一个月' },
+  { value: 'HALF_YEAR', label: '近半年' },
+  { value: 'YEAR', label: '近一年' }
 ]
 
 // 数据概览最近竞赛的时间段（天，含今日）
