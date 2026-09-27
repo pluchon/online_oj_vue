@@ -34,7 +34,9 @@ function buildOption(data) {
     legend: { bottom: 0, left: 'center', itemWidth: 12, itemHeight: 8, itemGap: 20, textStyle: { color: COLORS.text } },
     tooltip: {
       trigger: 'axis',
-      axisPointer: { type: 'shadow' }
+      axisPointer: { type: 'shadow' },
+      // ECharts 默认把提示框层级设得极高，打开弹窗时残留的提示框会盖在弹窗上；降到遮罩之下
+      extraCssText: 'z-index: 10;'
     },
     xAxis: {
       type: 'category',

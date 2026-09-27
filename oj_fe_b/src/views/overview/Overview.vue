@@ -24,12 +24,10 @@
               <el-icon class="hint-icon"><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
-          <el-tooltip content="即将上线" placement="top">
-            <span class="ai-tag">
-              <el-icon><MagicStick /></el-icon>
-              AI 分析
-            </span>
-          </el-tooltip>
+          <button type="button" class="ai-tag" @click="openAnalysis">
+            <el-icon><MagicStick /></el-icon>
+            AI 分析
+          </button>
         </div>
 
         <div v-loading="loading" class="hard-list-wrap">
@@ -57,6 +55,8 @@
         </div>
       </section>
     </div>
+
+    <HardAnalysisDialog ref="analysisRef" />
   </div>
 </template>
 

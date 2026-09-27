@@ -6,6 +6,7 @@ import { DIFFICULTY_OPTIONS } from '@/constants'
 import OjEmpty from '@/components/OjEmpty'
 import TrendPanel from './components/TrendPanel'
 import ExamPanel from './components/ExamPanel'
+import HardAnalysisDialog from './components/HardAnalysisDialog'
 
 // 通过率文案（没有已出结论的提交时显示 -）
 function formatRate(rate) {
@@ -25,6 +26,7 @@ export default defineComponent({
     OjEmpty,
     TrendPanel,
     ExamPanel,
+    HardAnalysisDialog,
   },
   setup() {
     // 加载状态（初始为加载中，数据回来前不显示空状态）
@@ -65,6 +67,14 @@ export default defineComponent({
       }
     }
 
+    // 难题分析弹窗
+    const analysisRef = ref(null)
+
+    // 打开难题分析
+    const openAnalysis = () => {
+      analysisRef.value?.open()
+    }
+
     onMounted(loadOverview)
 
     return {
@@ -74,6 +84,8 @@ export default defineComponent({
       statCards,
       formatRate,
       difficultyClass,
+      analysisRef,
+      openAnalysis,
     }
   },
 })

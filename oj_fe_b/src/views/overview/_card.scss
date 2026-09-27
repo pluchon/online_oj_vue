@@ -27,8 +27,8 @@
   }
 }
 
-// 「AI 分析」占位标签（难题榜，功能待做，见 PLAN 的 T-030）
-@mixin ai-placeholder-tag {
+// 「AI 分析」入口标签（难题榜，打开难题分析弹窗）
+@mixin ai-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -41,8 +41,16 @@
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1px;
-  cursor: not-allowed;
+  font-family: inherit;
+  cursor: pointer;
   user-select: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #6e5426;
+    border-style: solid;
+    background-color: rgba(240, 228, 204, 0.9);
+  }
 }
 
 // 圆角小标签（报名、通过率、难度等）

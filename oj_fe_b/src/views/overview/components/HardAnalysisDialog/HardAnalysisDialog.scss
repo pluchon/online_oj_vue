@@ -1,0 +1,259 @@
+// 难题分析弹窗样式（宣纸色系，与数据概览一致）
+@use '@/styles/variables' as *;
+
+.analysis-body {
+  min-height: 160px;
+  font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+  color: $text-main;
+}
+
+// 首次分析中的占位
+.analysis-waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  font-size: 14px;
+  color: $text-sub;
+  letter-spacing: 1px;
+}
+
+.analysis-result {
+  max-height: 62vh;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
+  // 可以滚动，但不显示滚动条
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // 重新分析中：旧结果变淡
+  &.is-stale {
+    opacity: 0.55;
+  }
+}
+
+.analysis-section {
+  margin-top: 18px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+// 区块标题：左侧图标与名称，右侧附加标签
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.title-extra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-left: auto;
+  letter-spacing: 0;
+}
+
+.section-icon {
+  font-size: 16px;
+
+  &.is-warning {
+    color: $difficulty-medium;
+  }
+
+  &.is-danger {
+    color: $difficulty-hard;
+  }
+}
+
+.section-empty {
+  margin: 0;
+  font-size: 13px;
+  color: $text-sub;
+}
+
+// 圆角小标签
+.chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-sizing: border-box;
+
+  &.tone-warning {
+    color: $difficulty-medium;
+    background-color: rgba(179, 116, 36, 0.13);
+  }
+
+  &.tone-danger {
+    color: $difficulty-hard;
+    background-color: rgba(168, 56, 43, 0.1);
+  }
+}
+
+.difficulty-chip {
+  color: #6b5f52;
+  background-color: rgba(138, 125, 110, 0.14);
+
+  &.difficulty-easy {
+    color: $difficulty-easy;
+    background-color: rgba(45, 122, 76, 0.12);
+  }
+
+  &.difficulty-medium {
+    color: $difficulty-medium;
+    background-color: rgba(179, 116, 36, 0.13);
+  }
+
+  &.difficulty-hard {
+    color: $difficulty-hard;
+    background-color: rgba(168, 56, 43, 0.12);
+  }
+}
+
+// AI 结论衬底
+.ai-note {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  background-color: rgba(246, 241, 233, 0.9);
+  border: 1px solid rgba(215, 202, 185, 0.6);
+  border-radius: 6px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 出题质量提醒：一行题目名称与右侧标签，下一行 AI 判断
+.suspect-row {
+  padding: 10px 0;
+  border-top: 1px solid rgba(215, 202, 185, 0.55);
+}
+
+.suspect-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.suspect-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.suspect-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.suspect-comment {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: $text-regular;
+}
+
+// 标签通过率：两个饼图左右并排
+.pie-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pie-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 8px 10px 0;
+  background-color: rgba(255, 253, 249, 0.8);
+  border: 1px solid rgba(215, 202, 185, 0.55);
+  border-radius: 6px;
+}
+
+.pie-caption {
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $text-sub;
+  letter-spacing: 1px;
+}
+
+// 判题结论分布
+.stack-bar {
+  display: flex;
+  height: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background-color: rgba(215, 202, 185, 0.4);
+  border-radius: 6px;
+}
+
+.stack-part {
+  height: 100%;
+}
+
+// 底部：左侧生成时间，右侧重新分析
+.analysis-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.generated-time {
+  font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+  font-size: 12.5px;
+  color: $text-sub;
+}
+
+.btn-analyze {
+  height: 36px;
+  min-width: 120px;
+  padding: 0 24px;
+  font-family: 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #f7f4ee;
+  background-color: $primary-color;
+  border: 1px solid $primary-color;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(.disabled) {
+    background-color: $primary-hover;
+    border-color: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 47, 38, 0.2);
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
