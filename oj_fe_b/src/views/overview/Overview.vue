@@ -83,7 +83,7 @@
               </div>
               <span class="rate-text">{{ formatRate(item.passRate) }}</span>
             </div>
-            <button type="button" class="btn-view-submits" @click="viewSubmits(item)">查看提交</button>
+            <button type="button" class="btn-view-submits" @click="viewAppeals(item)">查看申诉</button>
           </li>
         </ol>
         <OjEmpty v-else text="暂无已出结论提交满 5 条的题目" :image-size="100" />

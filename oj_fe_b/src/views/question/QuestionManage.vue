@@ -78,6 +78,13 @@
         >
           <template #default="{ row }">
             <button type="button" class="question-title-link" @click="openPreview(row.questionId)">{{ row.title }}</button>
+            <el-tooltip
+              v-if="row.upheldAppealCount > 0"
+              :content="`有 ${row.upheldAppealCount} 条申诉已判定成立，修改用例后可按题重判`"
+              placement="top"
+            >
+              <span class="appeal-fix-tag">待修题</span>
+            </el-tooltip>
           </template>
         </el-table-column>
 
@@ -177,6 +184,7 @@
         <!-- 空状态展示：使用小蒙定制插画与针对性文案 -->
         <template #empty>
           <OjEmpty
+            v-if="!loading"
             :text="loadError ? '题目列表加载失败' : '暂无题目数据'"
             :sub-text="loadError ? '请稍后点击搜索重试' : ''"
             :image-size="130"

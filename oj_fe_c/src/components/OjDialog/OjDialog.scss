@@ -140,6 +140,14 @@
   }
 }
 
+// 按钮铺满一行：多个按钮平分宽度，单个按钮独占一行
+.oj-dialog-footer.is-block {
+  .btn-dialog-cancel,
+  .btn-dialog-action {
+    flex: 1;
+  }
+}
+
 // 纯文本正文
 .oj-dialog-message {
   margin: 0;

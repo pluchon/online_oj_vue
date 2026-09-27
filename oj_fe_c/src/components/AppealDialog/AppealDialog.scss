@@ -1,0 +1,59 @@
+// 提交申诉弹窗样式（按钮用 OjDialog 自带的底部按钮）
+.appeal-dialog-body {
+  font-family: 'Songti SC', 'SimSun', serif;
+  color: #3a3226;
+
+  .appeal-text,
+  .appeal-result {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .appeal-result {
+    padding: 10px 12px;
+    border-radius: 4px;
+
+    &.is-allowed {
+      color: #2f4a33;
+      background-color: rgba(53, 68, 53, 0.07);
+      border: 1px solid rgba(53, 68, 53, 0.2);
+    }
+
+    &.is-denied {
+      color: #6b4a2e;
+      background-color: rgba(156, 91, 35, 0.07);
+      border: 1px solid rgba(156, 91, 35, 0.2);
+    }
+  }
+
+  // 剩余次数标签
+  .appeal-quota {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+
+    .quota-tag {
+      padding: 2px 10px;
+      font-size: 12.5px;
+      color: #354435;
+      background-color: rgba(53, 68, 53, 0.07);
+      border: 1px solid rgba(53, 68, 53, 0.22);
+      border-radius: 10px;
+    }
+  }
+
+  .appeal-reason {
+    :deep(.el-textarea__inner) {
+      font-family: inherit;
+      font-size: 13.5px;
+      background-color: rgba(250, 247, 241, 0.9);
+      box-shadow: 0 0 0 1px rgba(195, 182, 164, 0.7) inset;
+
+      &:focus {
+        box-shadow: 0 0 0 1px #354435 inset;
+      }
+    }
+  }
+}

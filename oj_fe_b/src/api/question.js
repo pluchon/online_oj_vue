@@ -84,3 +84,19 @@ export function deleteQuestionApi(questionId) {
     method: 'delete'
   })
 }
+
+// 预览按题重判的影响范围（修改用例后使用）
+export function getRejudgePreviewApi(questionId) {
+  return request({
+    url: `/system/submit/rejudge/${questionId}`,
+    method: 'get'
+  })
+}
+
+// 按题重判，返回本次投递判题的条数
+export function rejudgeQuestionApi(questionId) {
+  return request({
+    url: `/system/submit/rejudge/${questionId}`,
+    method: 'post'
+  })
+}

@@ -1,0 +1,61 @@
+// 状态配色（申诉状态、判题结论等共用）：tone-pending / warn / pass / fail / muted
+.tone-text {
+  font-size: 13px;
+  font-weight: 600;
+
+  &.tone-pending {
+    color: #2f6a9e;
+  }
+
+  &.tone-warn {
+    color: #b9770e;
+  }
+
+  &.tone-pass {
+    color: #2e8b57;
+  }
+
+  &.tone-fail {
+    color: #c0392b;
+  }
+
+  &.tone-muted {
+    color: #7a6e60;
+  }
+}
+
+// 状态胶囊（带浅底色）
+.status-chip {
+  display: inline-block;
+  min-width: 52px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+
+  &.tone-pending {
+    color: #2f6a9e;
+    background-color: rgba(47, 106, 158, 0.12);
+  }
+
+  &.tone-warn {
+    color: #a3670a;
+    background-color: rgba(185, 119, 14, 0.14);
+  }
+
+  &.tone-pass {
+    color: #25734a;
+    background-color: rgba(46, 139, 87, 0.13);
+  }
+
+  &.tone-fail {
+    color: #a93226;
+    background-color: rgba(192, 57, 43, 0.12);
+  }
+
+  &.tone-muted {
+    color: #7a6e60;
+    background-color: rgba(138, 125, 110, 0.14);
+  }
+}

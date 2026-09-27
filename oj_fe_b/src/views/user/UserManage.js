@@ -24,8 +24,8 @@ export default defineComponent({
     OjEmpty,
   },
   setup() {
-    // 表格加载状态
-    const loading = ref(false)
+    // 表格加载状态（初始为加载中，首屏数据回来前不显示空状态）
+    const loading = ref(true)
 
     // 最近一次加载是否失败（用于区分空数据与加载失败）
     const loadError = ref(false)

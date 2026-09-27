@@ -34,8 +34,9 @@
         color: #e0e0e0;
       }
 
-      .header-btn {
-        color: #999999;
+      // 与浅色规则同样带上 .header-right，否则优先级更低，深色背景上会沿用浅色模式的文字颜色
+      .header-right .header-btn {
+        color: #c8c8c8;
 
         &:hover {
           color: #ffffff;

@@ -23,6 +23,7 @@ import AppNavbar from '@/components/AppNavbar'
 import CodeEditor from '@/components/CodeEditor'
 import OjDialog from '@/components/OjDialog'
 import AiTutorPanel from '@/components/AiTutorPanel'
+import AppealDialog from '@/components/AppealDialog'
 import submitSuccessImage from '@/assets/images/c_submit_success_background.png'
 import { setPageTitle } from '@/utils/title'
 import { renderMarkdown } from '@/utils/markdown'
@@ -36,7 +37,8 @@ import {
   JUDGE_STATUS_WA,
   PROGRAM_TYPE_JAVA,
   EXAM_CONTEST_STATUS,
-  USER_QUESTION_STATUS
+  USER_QUESTION_STATUS,
+  APPEAL_STATUS_META
 } from '@/constants'
 import {
   getQuestionDetailApi,
@@ -67,6 +69,7 @@ export default defineComponent({
     CodeEditor,
     OjDialog,
     AiTutorPanel,
+    AppealDialog,
     ArrowLeft,
     ArrowRight,
     Loading,
@@ -504,6 +507,10 @@ export default defineComponent({
         historyTotal.value = 0
         activeCaseIndex.value = 0
         loadSimilarQuestions(data.questionId)
+        // 以前提交过这道题时直接显示提交记录页签，方便查看与申诉历史提交
+        loadHistory(1).then(() => {
+          if (historyTotal.value > 0) hasSubmitted.value = true
+        })
       } catch (err) {
         // 错误提示已由请求拦截器统一给出
       } finally {
@@ -679,7 +686,7 @@ export default defineComponent({
     const historyLoading = ref(false)
     const historyError = ref(false)
 
-    // 本题是否已在当前页面提交过（提交后才展示提交记录页签）
+    // 是否展示提交记录页签（以前提交过或在当前页面提交后）
     const hasSubmitted = ref(false)
 
     // 分页加载本人本题提交记录（未登录不请求）
@@ -722,6 +729,17 @@ export default defineComponent({
         text: JUDGE_STATUS_TEXT[item.status] || (passed ? '通过' : '未通过'),
         cls: passed ? 'pass' : 'fail'
       }
+    }
+
+    // 申诉弹窗引用
+    const appealDialogRef = ref(null)
+
+    // 已申诉提交的状态文案与样式
+    const historyAppeal = (item) => APPEAL_STATUS_META[item.appealStatus] || { text: '', cls: '' }
+
+    // 对一条未通过的提交发起申诉
+    const openAppeal = (item) => {
+      appealDialogRef.value?.open(item.submitId)
     }
 
     // 提交时间简写为 月-日 时:分
@@ -872,6 +890,9 @@ export default defineComponent({
       submitSuccessImage,
       loadHistory,
       historyVerdict,
+      historyAppeal,
+      openAppeal,
+      appealDialogRef,
       formatHistoryTime,
       handleLoadHistoryCode,
       caseCells,

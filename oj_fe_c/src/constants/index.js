@@ -47,6 +47,20 @@ export const JUDGE_STATUS_AC = 1
 // 答案错误状态码（后端 JudgeStatusEnum.WA，运行结果有逐用例输出）
 export const JUDGE_STATUS_WA = 2
 
+// 申诉状态（后端 AppealStatusEnum）：文案与配色
+export const APPEAL_STATUS_META = {
+  0: { text: '申诉处理中', cls: 'appeal-pending' },
+  1: { text: '申诉处理中', cls: 'appeal-pending' },
+  2: { text: '申诉已通过', cls: 'appeal-upheld' },
+  3: { text: '申诉未通过', cls: 'appeal-rejected' }
+}
+
+// 申诉 AI 初审耗时较长，单独放宽请求超时
+export const APPEAL_REVIEW_TIMEOUT_MS = 70000
+
+// 申诉理由最大长度（与后端 AppealCreateDTO 校验一致）
+export const APPEAL_REASON_MAX_LENGTH = 100
+
 // 编程语言（后端 ProgramTypeEnum，目前仅支持 Java）
 export const PROGRAM_TYPE_JAVA = 0
 
@@ -72,7 +86,8 @@ export const MESSAGE_READ_STATUS = {
 // 消息类型（后端 MessageTypeEnum）
 export const MESSAGE_TYPE = {
   SYSTEM: 1,
-  EXAM: 2
+  EXAM: 2,
+  AUDIT: 3
 }
 
 // 用户性别（后端 UserSexEnum）

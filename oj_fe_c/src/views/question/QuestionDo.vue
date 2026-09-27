@@ -486,6 +486,19 @@
                     <span class="history-meta">{{ item.timeCost ? item.timeCost + ' ms' : '—' }}</span>
                     <span class="history-time">{{ formatHistoryTime(item.createTime) }}</span>
                     <span class="history-action">载入代码</span>
+                    <span
+                      v-if="item.appealStatus != null"
+                      class="history-appeal-status"
+                      :class="historyAppeal(item).cls"
+                    >{{ historyAppeal(item).text }}</span>
+                    <span
+                      v-else-if="item.appealable"
+                      class="history-appeal-link"
+                      role="button"
+                      title="觉得被判错了？先由 AI 初审再申诉"
+                      @click.stop="openAppeal(item)"
+                    >申诉</span>
+                    <span v-else />
                   </button>
                 </div>
 
@@ -518,6 +531,9 @@
         @close="tutorOpen = false"
       />
     </main>
+
+    <!-- 提交申诉（AI 初审 → 填写理由） -->
+    <AppealDialog ref="appealDialogRef" @submitted="loadHistory(historyPage)" />
 
     <!-- 通用确认弹窗 -->
     <oj-dialog

@@ -220,6 +220,7 @@
         <!-- 空状态与加载失败共用插画，文案区分 -->
         <template #empty>
           <OjEmpty
+            v-if="!loading"
             :text="loadError ? '用户列表加载失败' : '暂无用户数据'"
             :sub-text="loadError ? '请稍后点击搜索重试' : ''"
             :image-size="130"

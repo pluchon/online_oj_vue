@@ -6,9 +6,9 @@ import {
   Search,
   RefreshRight,
   Check,
-  Clock,
   Bell,
-  Trophy
+  Trophy,
+  DocumentChecked
 } from '@element-plus/icons-vue'
 import AppNavbar from '@/components/AppNavbar'
 import OjDialog from '@/components/OjDialog'
@@ -28,9 +28,9 @@ export default defineComponent({
     Search,
     RefreshRight,
     Check,
-    Clock,
     Bell,
-    Trophy
+    Trophy,
+    DocumentChecked
   },
   setup() {
     // 全部已读确认弹窗
@@ -53,7 +53,8 @@ export default defineComponent({
     const categoryOptions = [
       { label: '全部通知', value: 'all' },
       { label: '系统通知', value: MESSAGE_TYPE.SYSTEM },
-      { label: '竞赛通知', value: MESSAGE_TYPE.EXAM }
+      { label: '竞赛通知', value: MESSAGE_TYPE.EXAM },
+      { label: '审核通知', value: MESSAGE_TYPE.AUDIT }
     ]
     const currentCategory = ref('all')
 
@@ -103,7 +104,8 @@ export default defineComponent({
     // 消息类型对应的文案、样式与图标（以后端 type 为准）
     const TYPE_INFO = {
       [MESSAGE_TYPE.SYSTEM]: { label: '系统通知', typeClass: 'system', iconComponent: Bell },
-      [MESSAGE_TYPE.EXAM]: { label: '竞赛通知', typeClass: 'exam', iconComponent: Trophy }
+      [MESSAGE_TYPE.EXAM]: { label: '竞赛通知', typeClass: 'exam', iconComponent: Trophy },
+      [MESSAGE_TYPE.AUDIT]: { label: '审核通知', typeClass: 'audit', iconComponent: DocumentChecked }
     }
     const getTypeInfo = (item) => TYPE_INFO[item?.type] || TYPE_INFO[MESSAGE_TYPE.SYSTEM]
 

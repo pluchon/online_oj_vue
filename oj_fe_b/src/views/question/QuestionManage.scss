@@ -258,6 +258,22 @@
     }
 
     // 题目标题：点击查看详情
+    // 申诉成立、待修题的标记
+    .appeal-fix-tag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 0 6px;
+      height: 18px;
+      line-height: 18px;
+      font-size: 11.5px;
+      color: #8b352a;
+      background-color: rgba(139, 53, 42, 0.1);
+      border: 1px solid rgba(139, 53, 42, 0.3);
+      border-radius: 3px;
+      vertical-align: middle;
+      cursor: default;
+    }
+
     .question-title-link {
       max-width: 100%;
       padding: 0;

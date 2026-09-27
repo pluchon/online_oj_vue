@@ -73,9 +73,9 @@ export default defineComponent({
       }
     }
 
-    // 跳到提交管理，按这道题筛选
-    const viewSubmits = (item) => {
-      router.push({ path: '/system/submit', query: { questionId: item.questionId, title: item.title } })
+    // 跳到申诉管理，按这道题的名称筛选
+    const viewAppeals = (item) => {
+      router.push({ path: '/system/appeal', query: { title: item.title } })
     }
 
     onMounted(loadOverview)
@@ -89,7 +89,7 @@ export default defineComponent({
       statCards,
       participationRate,
       loadOverview,
-      viewSubmits,
+      viewAppeals,
       formatRate,
     }
   },

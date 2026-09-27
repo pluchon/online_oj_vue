@@ -201,6 +201,7 @@
         <!-- 空状态展示：使用小蒙定制插画与针对性文案 -->
         <template #empty>
           <OjEmpty
+            v-if="!loading"
             :text="loadError ? '竞赛列表加载失败' : '暂无竞赛数据'"
             :sub-text="loadError ? '请稍后点击搜索重试' : ''"
             :image-size="130"

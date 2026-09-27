@@ -12,6 +12,8 @@
   >
     <!-- 顶部居中加粗标题（支持右上角可选 x 按钮） -->
     <template #header>
+      <!-- AI 处理中的弹窗边框光效（相对整个弹窗定位） -->
+      <AiGlowBorder overlay :active="glowing" :border-radius="12" />
       <div class="oj-dialog-header">
         <h3 class="oj-dialog-title">
           <slot name="title">{{ title }}</slot>
@@ -39,7 +41,7 @@
 
     <!-- 底部操作区（默认提供取消与主操作按钮） -->
     <template v-if="showFooter" #footer>
-      <div class="oj-dialog-footer">
+      <div class="oj-dialog-footer" :class="{ 'is-block': blockFooter }">
         <slot name="footer">
           <button
             v-if="showCancel"
@@ -53,8 +55,8 @@
             v-if="showConfirm"
             type="button"
             class="btn-dialog-action"
-            :class="{ disabled: confirmLoading }"
-            :disabled="confirmLoading"
+            :class="{ disabled: confirmLoading || confirmDisabled }"
+            :disabled="confirmLoading || confirmDisabled"
             @click="handleConfirm"
           >
             <span>{{ confirmLoading ? loadingText : confirmText }}</span>

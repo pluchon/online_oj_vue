@@ -1,8 +1,12 @@
 // 通用古典学者风骨弹窗组件交互逻辑
 import { defineComponent } from 'vue'
+import AiGlowBorder from '@/components/AiGlowBorder'
 
 export default defineComponent({
   name: 'OjDialog',
+  components: {
+    AiGlowBorder
+  },
   props: {
     // 弹窗显隐状态双向绑定
     modelValue: {
@@ -73,6 +77,21 @@ export default defineComponent({
     showClose: {
       type: Boolean,
       default: false
+    },
+    // 确认按钮是否禁用（如必填项未填）
+    confirmDisabled: {
+      type: Boolean,
+      default: false
+    },
+    // 是否在弹窗边框上播放 AI 处理中的环绕光效
+    glowing: {
+      type: Boolean,
+      default: false
+    },
+    // 底部按钮是否铺满一行（多个按钮平分宽度）
+    blockFooter: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue', 'confirm', 'cancel', 'close'],
@@ -97,7 +116,7 @@ export default defineComponent({
 
     // 确认执行
     const handleConfirm = () => {
-      if (props.confirmLoading) return
+      if (props.confirmLoading || props.confirmDisabled) return
       emit('confirm')
     }
 

@@ -189,25 +189,6 @@
       :show-footer="false"
     >
       <div v-if="currentMessage" class="message-dialog-body">
-        <!-- 弹窗元数据标签行（分类、发送时间、已读/未读状态做成规整标签徽章） -->
-        <div class="dialog-meta-row">
-          <span class="meta-tag type-tag" :class="getTypeInfo(currentMessage).typeClass">
-            <el-icon class="tag-icon"><component :is="getTypeInfo(currentMessage).iconComponent" /></el-icon>
-            <span>{{ getTypeInfo(currentMessage).label }}</span>
-          </span>
-          <span class="meta-tag time-tag">
-            <el-icon class="tag-icon"><Clock /></el-icon>
-            <span>{{ currentMessage.createTime || '--' }}</span>
-          </span>
-          <span
-            class="meta-tag status-tag"
-            :class="isUnread(currentMessage) ? 'unread' : 'read'"
-          >
-            <span class="status-dot"></span>
-            <span>{{ isUnread(currentMessage) ? '未读' : '已读' }}</span>
-          </span>
-        </div>
-
         <!-- 正文卡片框（雅致学者宣纸容器） -->
         <div class="dialog-content-box">
           <p class="content-text">{{ currentMessage.content }}</p>

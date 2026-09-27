@@ -1,5 +1,5 @@
-// 提交管理页面样式（沿用用户管理与题目管理的画卷展台风格）
-.submit-manage-panel {
+// 申诉管理页面样式（沿用管理页的画卷展台风格；状态配色见全局 tone.scss）
+.appeal-manage-panel {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -36,36 +36,12 @@
         letter-spacing: 1px;
       }
 
-      .filter-select {
-        :deep(.el-select__wrapper) {
-          background-color: rgba(246, 241, 233, 0.85) !important;
-          border: 1px solid rgba(188, 172, 154, 0.65) !important;
-          border-radius: 4px !important;
-          box-shadow: none !important;
-          min-height: 36px;
-
-          &.is-focused {
-            border-color: #24201c !important;
-            background-color: #ffffff !important;
-            box-shadow: 0 0 0 1px #24201c inset !important;
-          }
-        }
-      }
-
-      .filter-question {
-        width: 220px;
-      }
-
-      .filter-verdict {
-        width: 120px;
-      }
-
-      .filter-source {
-        width: 190px;
-      }
-
       .filter-input {
-        width: 150px;
+        width: 180px;
+
+        &.filter-user-id {
+          width: 200px;
+        }
 
         :deep(.el-input__wrapper) {
           background-color: rgba(246, 241, 233, 0.85) !important;
@@ -86,6 +62,24 @@
         :deep(.el-input__inner) {
           color: #24201c;
           font-size: 13.5px;
+        }
+      }
+
+      .filter-select {
+        width: 140px;
+
+        :deep(.el-select__wrapper) {
+          background-color: rgba(246, 241, 233, 0.85) !important;
+          border: 1px solid rgba(188, 172, 154, 0.65) !important;
+          border-radius: 4px !important;
+          box-shadow: none !important;
+          min-height: 36px;
+
+          &.is-focused {
+            border-color: #24201c !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 1px #24201c inset !important;
+          }
         }
       }
     }
@@ -138,45 +132,6 @@
           color: #1f1c19;
         }
       }
-    }
-  }
-
-  // 左下角按题重判按钮
-  .rejudge-wrap {
-    display: inline-flex;
-  }
-
-  .btn-rejudge {
-    height: 34px;
-    padding: 0 20px;
-    background-color: #8b352a;
-    border: 1px solid #8b352a;
-    color: #f7f4ee;
-    border-radius: 4px;
-    font-family: 'Songti SC', 'SimSun', serif;
-    font-size: 13.5px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    .btn-icon {
-      font-size: 14px;
-    }
-
-    &:hover:not(:disabled) {
-      background-color: #6e251c;
-      border-color: #6e251c;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(139, 53, 42, 0.18);
-    }
-
-    &:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
     }
   }
 
@@ -244,49 +199,13 @@
       color: #8a7d6e;
     }
 
-    .source-practice {
-      font-size: 13px;
-      color: #5b6b5e;
-    }
-
-    .source-exam {
-      font-size: 13px;
-      color: #6b4f2a;
-    }
-
-    // 判题结论配色
-    .verdict-text {
-      font-size: 13px;
-      font-weight: 600;
-
-      &.verdict-pass {
-        color: #2e8b57;
-      }
-
-      &.verdict-fail {
-        color: #c0392b;
-      }
-
-      &.verdict-warn {
-        color: #b9770e;
-      }
-
-      &.verdict-muted {
-        color: #7a6e60;
-      }
-
-      &.verdict-judging {
-        color: #2f6a9e;
-      }
-    }
-
     .action-cell {
       display: flex;
       align-items: center;
       justify-content: center;
 
       .action-btn {
-        width: 72px;
+        width: 64px;
         height: 26px;
         border-radius: 4px;
         border: 1px solid transparent;
@@ -304,6 +223,23 @@
         user-select: none;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
+        &:hover {
+          transform: translateY(-1px);
+        }
+
+        // 待处理、存疑：需要处理，用主色
+        &.btn-action-handle {
+          background-color: #8b352a;
+          border-color: #8b352a;
+          color: #ffffff;
+
+          &:hover {
+            background-color: #6e251c;
+            border-color: #6e251c;
+          }
+        }
+
+        // 已裁定：只能查看
         &.btn-action-view {
           background-color: #344a3e;
           border-color: #344a3e;
@@ -312,8 +248,6 @@
           &:hover {
             background-color: #24352b;
             border-color: #24352b;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(52, 74, 62, 0.28);
           }
         }
       }

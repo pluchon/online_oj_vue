@@ -65,12 +65,17 @@
         }
       }
 
-      .header-btn {
-        color: #b0a495;
+      // 与浅色规则同样带上 .header-right，否则优先级更低，深色背景上会沿用浅色模式的深棕色文字
+      .header-right .header-btn {
+        color: #d8cfc2;
 
         &:hover {
-          color: #f7f4ee;
+          color: #ffffff;
           background-color: #38322c;
+        }
+
+        &.is-disabled {
+          color: #8a7f72;
         }
       }
     }

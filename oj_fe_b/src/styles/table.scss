@@ -134,6 +134,21 @@
   }
 }
 
+// 管理页列表空状态：撑满表格区剩余高度（面板高度减去页头、内边距、筛选栏与表头），插画水平垂直居中
+.custom-editorial-table {
+  .el-table__empty-block {
+    min-height: calc(100vh - 290px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .el-table__empty-text {
+    width: auto;
+    line-height: normal;
+  }
+}
+
 // 表格展示区容器
 .table-container {
   flex: 1;

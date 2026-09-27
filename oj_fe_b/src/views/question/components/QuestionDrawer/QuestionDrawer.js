@@ -1,6 +1,7 @@
 // 题目新增与编辑抽屉组件业务逻辑
 import { defineComponent, ref, reactive, computed, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { confirmRejudge } from '@/utils/rejudge'
 import { Plus, Delete, MagicStick, Loading } from '@element-plus/icons-vue'
 import {
   addQuestionApi,
@@ -216,6 +217,9 @@ export default defineComponent({
     // 初始表单内容快照，用于对比判断内容是否发生修改
     let originSnapshot = ''
 
+    // 编辑时载入的用例（保存后与提交的用例比较，决定是否提示重判）
+    let originalCasesJson = ''
+
     // 提取表单关键字段生成序列化快照
     const getFormDataSnapshot = () => {
       return JSON.stringify({
@@ -254,6 +258,7 @@ export default defineComponent({
           }
         })
         testCaseList.value = toEditableCases(detail.cases)
+        originalCasesJson = JSON.stringify(buildCasesPayload())
         formData.tagIds = (detail.tags || []).map(tag => tag.tagId)
         originalPurpose.value = detail.purpose ?? QUESTION_PURPOSE.PRACTICE
         recordSnapshot()
@@ -492,6 +497,10 @@ export default defineComponent({
             ElMessage.success('修改题目成功')
             visible.value = false
             emit('success', 'edit')
+            // 用例改动后询问是否按新用例重判这道题（申诉成立后修题即走这里）
+            if (JSON.stringify(cases) !== originalCasesJson) {
+              confirmRejudge(editPayload.questionId, editPayload.title)
+            }
           }
         } catch (err) {
           // 错误提示已由请求拦截器统一给出

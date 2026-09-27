@@ -58,13 +58,6 @@ export const CASE_TYPE = {
   SAMPLE: 1
 }
 
-// 提交记录通过状态（后端 SubmitPassEnum）
-export const SUBMIT_PASS = {
-  NOT_PASS: 0,
-  PASS: 1,
-  JUDGING: 2
-}
-
 // 判题结论（后端 JudgeStatusEnum），tone 决定列表里的颜色
 export const JUDGE_STATUS_OPTIONS = [
   { value: 1, label: '运行通过', tone: 'pass' },
@@ -77,8 +70,36 @@ export const JUDGE_STATUS_OPTIONS = [
   { value: 8, label: '系统错误', tone: 'muted' }
 ]
 
-// 提交来源筛选里「练习」选项的取值（其余选项为竞赛ID）
-export const SUBMIT_SOURCE_PRACTICE = 'practice'
+// 申诉状态（后端 AppealStatusEnum），tone 决定颜色；通过、不通过为终态
+export const APPEAL_STATUS = {
+  PENDING: 0,
+  DOUBTFUL: 1,
+  UPHELD: 2,
+  REJECTED: 3
+}
+
+// 申诉状态选项
+export const APPEAL_STATUS_OPTIONS = [
+  { value: APPEAL_STATUS.PENDING, label: '待处理', tone: 'pending' },
+  { value: APPEAL_STATUS.DOUBTFUL, label: '存疑', tone: 'warn' },
+  { value: APPEAL_STATUS.UPHELD, label: '通过', tone: 'pass' },
+  { value: APPEAL_STATUS.REJECTED, label: '不通过', tone: 'fail' }
+]
+
+// 申诉时间筛选（最近天数）
+export const APPEAL_DAYS_OPTIONS = [
+  { value: 3, label: '近三天' },
+  { value: 7, label: '近七天' },
+  { value: 15, label: '近十五天' },
+  { value: 30, label: '近三十天' },
+  { value: 180, label: '近半年' },
+  { value: 365, label: '近一年' }
+]
+
+// 语言类型（后端 ProgramTypeEnum）
+export const PROGRAM_TYPE_LABELS = {
+  0: 'Java'
+}
 
 // AI 接口请求超时（模型生成与标程运行耗时较长）
 export const AI_REQUEST_TIMEOUT_MS = 120000
