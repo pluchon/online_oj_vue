@@ -1,0 +1,288 @@
+// 数据概览页面样式（沿用管理页的画卷展台风格）
+.overview-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  min-height: calc(100vh - 106px);
+  background-color: rgba(253, 250, 244, 0.9);
+  border: 1px solid rgba(195, 180, 160, 0.55);
+  border-radius: 6px;
+  box-shadow:
+    0 12px 36px -10px rgba(50, 42, 32, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  padding: 20px 32px 28px;
+  box-sizing: border-box;
+  font-family: 'Songti SC', 'SimSun', serif;
+  color: #26221d;
+
+  // 顶部：更新时间与刷新
+  .overview-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+
+    .overview-updated {
+      font-size: 12.5px;
+      color: #8a7d6e;
+    }
+
+    .btn-refresh {
+      height: 32px;
+      padding: 0 16px;
+      background-color: rgba(246, 241, 233, 0.85);
+      border: 1px solid rgba(188, 172, 154, 0.7);
+      color: #3d352b;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background-color: #eee7db;
+        border-color: #8c7e6c;
+      }
+
+      &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // 统计卡片
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 18px 20px;
+      background-color: rgba(246, 241, 233, 0.75);
+      border: 1px solid rgba(195, 180, 160, 0.5);
+      border-radius: 6px;
+    }
+
+    .stat-label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #5c5145;
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #1f1c19;
+      line-height: 1.2;
+    }
+
+    .stat-sub {
+      font-size: 12.5px;
+      color: #8a7d6e;
+    }
+  }
+
+  .overview-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  // 通用卡片
+  .overview-card {
+    padding: 16px 20px;
+    background-color: rgba(255, 253, 249, 0.8);
+    border: 1px solid rgba(195, 180, 160, 0.5);
+    border-radius: 6px;
+    min-width: 0;
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .card-hint {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8a7d6e;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  // 最近竞赛
+  .exam-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .exam-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .exam-title {
+      font-size: 16px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .exam-status {
+      flex-shrink: 0;
+      font-size: 12px;
+      padding: 1px 8px;
+      border-radius: 10px;
+
+      &.is-ongoing {
+        color: #2e6b4a;
+        background-color: rgba(61, 122, 87, 0.12);
+      }
+
+      &.is-finished {
+        color: #7a6e60;
+        background-color: rgba(138, 125, 110, 0.14);
+      }
+    }
+
+    .exam-time {
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 12.5px;
+      color: #6b5f52;
+    }
+
+    .exam-numbers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .exam-number {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 14px 0;
+      background-color: rgba(246, 241, 233, 0.75);
+      border-radius: 6px;
+    }
+
+    .number-value {
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .number-label {
+      font-size: 12.5px;
+      color: #8a7d6e;
+    }
+  }
+
+  // 难题榜
+  .hard-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    .hard-item {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr) 56px 110px 220px 84px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 4px;
+      border-bottom: 1px solid rgba(215, 202, 185, 0.45);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .hard-rank {
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #8b352a;
+      text-align: center;
+    }
+
+    .hard-title {
+      font-size: 14px;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hard-difficulty,
+    .hard-count {
+      font-size: 13px;
+      color: #6b5f52;
+    }
+
+    .hard-rate {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rate-track {
+      flex: 1;
+      height: 6px;
+      background-color: rgba(195, 180, 160, 0.35);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rate-fill {
+      height: 100%;
+      background-color: #8b352a;
+      border-radius: 3px;
+    }
+
+    .rate-text {
+      width: 48px;
+      font-family: 'Courier New', Courier, monospace, serif;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .btn-view-submits {
+      height: 26px;
+      border-radius: 4px;
+      border: 1px solid #344a3e;
+      background-color: #344a3e;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #24352b;
+        border-color: #24352b;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}

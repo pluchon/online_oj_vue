@@ -16,6 +16,11 @@
           class="el-menu"
           :router="true"
         >
+          <el-menu-item index="/system/overview">
+            <el-icon class="menu-icon"><DataAnalysis /></el-icon>
+            <span class="menu-text">数据概览</span>
+          </el-menu-item>
+
           <el-menu-item index="/system/user">
             <el-icon class="menu-icon"><User /></el-icon>
             <span class="menu-text">用户管理</span>

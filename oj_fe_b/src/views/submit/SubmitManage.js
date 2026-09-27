@@ -1,5 +1,6 @@
 // 提交管理业务逻辑（查看学员提交、按题重判）
 import { defineComponent, ref, reactive, h, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, RefreshRight } from '@element-plus/icons-vue'
 import { getSubmitListApi, getRejudgePreviewApi, rejudgeQuestionApi } from '@/api/submit'
@@ -28,6 +29,8 @@ export default defineComponent({
     SubmitDetailDialog,
   },
   setup() {
+    const route = useRoute()
+
     // 表格加载状态
     const loading = ref(false)
 
@@ -267,6 +270,12 @@ export default defineComponent({
     }
 
     onMounted(() => {
+      // 从数据概览的难题榜跳来时，按带过来的题目预先筛选
+      const { questionId, title } = route.query
+      if (questionId) {
+        queryParams.questionId = String(questionId)
+        questionOptions.value = [{ questionId: String(questionId), title: title || '' }]
+      }
       loadSubmitList()
       searchQuestions('')
     })

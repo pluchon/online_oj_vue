@@ -23,8 +23,14 @@ const router = createRouter({
       path: '/system',
       name: 'system',
       component: System,
-      redirect: '/system/user',
+      redirect: '/system/overview',
       children: [
+        {
+          path: 'overview',
+          name: 'Overview',
+          component: () => import('../views/overview/Overview.vue'),
+          meta: { title: '数据概览' },
+        },
         {
           path: 'user',
           name: 'UserManage',
