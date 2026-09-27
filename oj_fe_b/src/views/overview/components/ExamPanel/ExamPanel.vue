@@ -46,14 +46,8 @@
       </ol>
     </div>
 
-    <!-- 底部：左侧 AI 分析占位，右侧翻页 -->
+    <!-- 底部翻页 -->
     <div class="exam-footer">
-      <el-tooltip content="即将上线" placement="top">
-        <span class="ai-tag">
-          <el-icon><MagicStick /></el-icon>
-          AI 分析
-        </span>
-      </el-tooltip>
       <Pagination
         v-model:page="query.pageNum"
         class="exam-pagination"

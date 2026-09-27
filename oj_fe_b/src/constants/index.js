@@ -117,11 +117,6 @@ export const OVERVIEW_EXAM_DAYS_OPTIONS = [
 // 数据概览最近竞赛每页场数（与难题榜 5 道等高）
 export const OVERVIEW_EXAM_PAGE_SIZE = 5
 
-// 语言类型（后端 ProgramTypeEnum）
-export const PROGRAM_TYPE_LABELS = {
-  0: 'Java'
-}
-
 // AI 接口请求超时（模型生成与标程运行耗时较长）
 export const AI_REQUEST_TIMEOUT_MS = 120000
 

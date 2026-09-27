@@ -113,15 +113,10 @@
   .exam-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: flex-end;
     min-height: 42px;
     padding-top: 10px;
     border-top: 1px solid rgba(195, 180, 160, 0.35);
-  }
-
-  .ai-tag {
-    @include ai-placeholder-tag;
   }
 
   .exam-pagination {

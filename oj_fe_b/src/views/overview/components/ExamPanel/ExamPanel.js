@@ -1,6 +1,5 @@
 // 最近竞赛面板：按时间段汇总报名与参赛人数，竞赛列表后端分页（口径见 D-019）
 import { defineComponent, ref, reactive, computed, onMounted } from 'vue'
-import { MagicStick } from '@element-plus/icons-vue'
 import { getOverviewExamApi } from '@/api/overview'
 import { OVERVIEW_EXAM_DAYS_OPTIONS, OVERVIEW_EXAM_PAGE_SIZE } from '@/constants'
 import OjEmpty from '@/components/OjEmpty'
@@ -14,7 +13,6 @@ function shortTime(time) {
 export default defineComponent({
   name: 'ExamPanel',
   components: {
-    MagicStick,
     OjEmpty,
     Pagination,
   },
